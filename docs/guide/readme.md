@@ -9,7 +9,7 @@ java知识文档
 
 #### 安装教程
 
-1.  docsify serve docs
+1.  xxxx
 2.  xxxx
 3.  xxxx
 
