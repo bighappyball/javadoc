@@ -4,8 +4,9 @@
 java知识文档
 
 ## 安装教程
+1. npm i docsify-cli -g
 
-1.  docsify serve docs
+2.  docsify serve docs
 
 
 ## Markdown 语法
