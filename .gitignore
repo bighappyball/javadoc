@@ -17,7 +17,7 @@ src/main/resources/hibernate.cfg.xml
 src/main/resources/package/local.properties
 
 src/main/java/com/bsoft/mdt/controller/RpcController.java
-
+.history
 
 #src/main/resources/spring-service.xml
 
