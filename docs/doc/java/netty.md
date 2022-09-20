@@ -126,6 +126,35 @@ IO 多路复用:指的是一个进程/线程可以同时监视多个文件描述
 一个选择器只需要一个线程进行监控，换句话说，我们可以很简单地使用一个线程，通过选
 择器去管理多个通道。这是非常高效的，这种高效来自于 Java 的选择器组件Selector，以及其背后的操作系统底层的 IO 多路复用的支持。  
 #### 缓冲区（Buffer）
+应用程序与通道（Channel）主要的交互操作，就是进行数据的 read 读取和 write 写入。为了完成如此大任，NIO 为大家准备了第三个重要的组件——NIO Buffer（NIO 缓冲区）。通道的读取，就是将数据从通道读取到缓冲区中；通道的写入，就是将数据从缓冲区中写入到通道中。  
+IO 的 Buffer（缓冲区）本质上是一个内存块，既可以写入数据，也可以从中读取数据。NIO的 Buffer 类，是一个抽象类，位于 java.nio 包中，其内部是一个内存块（数组）。  
+***需要强调的是：Buffer 类是一个非线程安全类。***  
+**Buffer 类**  
+Buffer 类是一个抽象类，对应于 Java 的主要数据类型，在 NIO 中有 8 种缓冲区类，分别如下：
+ByteBuffer 、 CharBuffer 、 DoubleBuffer 、 FloatBuffer 、 IntBuffer 、 LongBuffer 、 ShortBuffer 、MappedByteBuffer。MappedByteBuffer 是专门用于内存映射的一种 ByteBuffer 类型。  
+Buffer 类在其内部，有一个 byte[]数组内存块，作为内存缓冲区。为了记录读写的状态和位置，Buffer 类提供了一些重要的属性。其中，有三个重要的成员属性：  
+* capacity（容量）  
+Buffer 类的对象在初始化时，会按照 capacity 分配内部的内存。在内存分配好之后,就不能再改变。
+* position（读写位置）  
+Buffer 类的 position 属性，表示当前的位置。position 属性与缓冲区的读写模式有关。在不同的模式下，position 属性的值是不同的。当缓冲区进行读写的模式改变时，position 会进行调整。
+在写入模式下，position 的值变化规则如下：  
+（1）在刚进入到写模式时，position 值为 0，表示当前的写入位置为从头开始。    
+（2）每当一个数据写到缓冲区之后，position 会向后移动到下一个可写的位置。  
+（3）初始的 position 值为 0，最大可写值 position 为 limit– 1。当position 值达到 limit时，缓冲区就已经无空间可写了。  
+在读模式下，position 的值变化规则如下：  
+（1）当缓冲区刚开始进入到读模式时，position 会被重置为 0。  
+（2）当从缓冲区读取时，也是从 position 位置开始读。读取数据后，position 向前移动到下一个可读的位置。  
+（3）position 最大的值为最大可读上限 limit，当 position 达到 limit 时，
+表明缓冲区已经无数据可读。  
+起点在哪里呢？当新建一个缓冲区时，缓冲区处于写入模式，这时是可以写数据的。数据写
+入后，如果要从缓冲区读取数据，这就要进行模式的切换，可以使用（即调用）flip 翻转方法，将缓冲区变成读取模式。  
+在这个 flip 翻转过程中，position 会进行非常巨大的调整，具体的规则是：position 由原来的写入位置，变成新的可读位置，也就是 0，表示可以从头开始读。flip 翻转的另外一半工作，就是要调整 limit 属性。  
+* limit（读写的限制）:
+* mark（标记）: 可以将当前的 position 临时存入 mark 中；需要的时候，可以再从 mark 标记恢复到 position 位置。  
+
+
+
+
 
 
 
