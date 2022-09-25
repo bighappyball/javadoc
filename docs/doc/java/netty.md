@@ -133,6 +133,12 @@ IO 的 Buffer（缓冲区）本质上是一个内存块，既可以写入数据�
 Buffer 类是一个抽象类，对应于 Java 的主要数据类型，在 NIO 中有 8 种缓冲区类，分别如下：
 ByteBuffer 、 CharBuffer 、 DoubleBuffer 、 FloatBuffer 、 IntBuffer 、 LongBuffer 、 ShortBuffer 、MappedByteBuffer。MappedByteBuffer 是专门用于内存映射的一种 ByteBuffer 类型。  
 Buffer 类在其内部，有一个 byte[]数组内存块，作为内存缓冲区。为了记录读写的状态和位置，Buffer 类提供了一些重要的属性。其中，有三个重要的成员属性：  
+|  属性  |  说明  |
+|  ----  | ----  |  
+|  capacity  |  容量，即可以容纳的最大数据量；在缓冲区创建时设置并且不能改变
+|limit| 上限，缓冲区中当前的数据量|  
+|position|  位置，缓冲区中下一个要被读或写的元素的索引|
+|mark| 标记，调用 mark()方法来设置 mark=position，再调用 reset()可以让 position 恢复到 mark标记的位position=mark|
 * capacity（容量）  
 Buffer 类的对象在初始化时，会按照 capacity 分配内部的内存。在内存分配好之后,就不能再改变。
 * position（读写位置）  
@@ -150,7 +156,123 @@ Buffer 类的 position 属性，表示当前的位置。position 属性与缓冲
 入后，如果要从缓冲区读取数据，这就要进行模式的切换，可以使用（即调用）flip 翻转方法，将缓冲区变成读取模式。  
 在这个 flip 翻转过程中，position 会进行非常巨大的调整，具体的规则是：position 由原来的写入位置，变成新的可读位置，也就是 0，表示可以从头开始读。flip 翻转的另外一半工作，就是要调整 limit 属性。  
 * limit（读写的限制）:
-* mark（标记）: 可以将当前的 position 临时存入 mark 中；需要的时候，可以再从 mark 标记恢复到 position 位置。  
+Buffer 类的 limit 属性，表示读写的最大上限。limit 属性，也与缓冲区的读写模式有关  
+在写模式下，limit 属性值的含义为可以写入的数据最大上限。  
+在读模式下，limit 的值含义为最多能从缓冲区中读取到多少数据。  
+是先写入再读取。当缓冲区写入完成后，就可以开始从 Buffer 读取数据，可以使用 flip 翻转方法，这时，limit 的值也会进行非常大的调整。  
+写模式下的 position 值，设置成读模式下的 limit 值，也就是说，将之前写入的最大数量，作为可以读取的上限值。  
+在 flip 翻转时，属性的调整，将涉及 position、limit 两个属性，这种调整比较微妙，不是太好理解，举一个简单例子：
+首先，创建缓冲区。刚开始，缓冲区处于写模式。position 为 0，limit 为最大容量。然后，向缓冲区写数据。每写入一个数据，position 向后面移动一个位置，也就是 position 的值加 1。假定写入了 5 个数，当写入完成后，position 的值为 5。  
+这时，使用（即调用）flip 方法，将缓冲区切换到读模式。limit 的值，先会被设置成写模式时的 position 值。这里新的 limit 是 5，表示可以读取的最大上限是 5 个数。同时，新的 position 会被重置为 0，表示可以从 0 开始读  
+* mark（标记）: 可以将当前的 position 临时存入 mark 中；需要的时候，可以再从 mark 标记恢复到 position 位置。   
+#### NIO Buffer 类的重要方法  
+* allocate()创建缓冲区  
+IntBuffer 是具体的 Buffer 子类，通过调用 IntBuffer.allocate(20)，创建了一个 Intbuffer实例对象，并且分配了 20 * 4 个字节的内存空间。一个缓冲区在新建后，处于写入的模式，position 写入位置为 0，最大可写上限 limit 为的初始化值（这里是 20），而缓冲区的容量 capacity 也是初始化值。    
+* put()写入到缓冲区  
+put 方法很简单，只有一个参数，即为所需要写入的对象。不过，写入的数据类型要求与缓冲区的类型保持一致。  
+* flip()翻转  
+如果需要读取数据，还需要将缓冲区转换成读模式。flip()翻转方法是 Buffer 类提供的一个模式转变的重要方法，它的作用就是将写入模式翻转成读取模式。  
+flip()方法的从写入到读取转换:  
+首先，设置可读的长度上限 limit。将写模式下的缓冲区中内容的最后写入位置 position 值，作为读模式下的 limit 上限值。  
+其次，把读的起始位置 position 的值设为 0，表示从头开始读。  
+最后，清除之前的 mark 标记，因为 mark 保存的是写模式下的临时位置。在读模式下，如果继续使用旧的 mark 标记，会造成位置混乱。 
+```` java
+public final Buffer flip() {
+ limit = position; //设置可读的长度上限 limit,为写入的 position
+ position = 0; //把读的起始位置 position 的值设为 0，表示从头开始读
+ mark = UNSET_MARK; // 清除之前的 mark 标记
+ return this;
+}
+````
+在读取完成后，如何再一次将缓冲区切换成写入模式呢？:  
+可以调用 Buffer.clear()清空或者 Buffer.compact()压缩方法，它们可以将缓冲区转换为写模式。  
+* get()从缓冲区读取  
+调用 flip 方法，将缓冲区切换成读取模式。这时，可以开始从缓冲区中进行数据读取了。读数据很简单，调用 get 方法，每次从position 的位置读取一个数据，并且进行相应的缓冲区属性的调整。  
+缓冲区是不是可以重复读呢？答案是可以的  
+* rewind()倒带  
+已经读完的数据，如果需要再读一遍，可以调用 rewind()方法。rewind()也叫倒带，就像播放磁带一样倒回去，再重新播放:  
+（1）position 重置为 0，所以可以重读缓冲区中的所有数据。  
+（2）limit 保持不变，数据量还是一样的，仍然表示能从缓冲区中读取多少个元素。  
+（3）mark 标记被清理，表示之前的临时位置不能再用了。  
+```` java
+public final Buffer rewind() {
+position = 0;//重置为 0，所以可以重读缓冲区中的所有数据
+mark = -1; // mark 标记被清理，表示之前的临时位置不能再用了
+return this;
+}  
+````
+* mark( )和 reset( )  
+Buffer.mark()方法的作用是将当前 position 的值保存起来，放在 mark 属性中，让 mark 属性记住这个临时位置；之后，可以调用Buffer.reset()方法将 mark 的值恢复到 position 中。  
+* clear( )清空缓冲区  
+在读取模式下，调用 clear()方法将缓冲区切换为写入模式。此方法会将 position 清零，limit设置为 capacity 最大容量值，可以一直写入，直到缓冲区写满。  
+* 总结  
+总体来说，使用 Java NIO Buffer 类的基本步骤如下:  
+（1）使用创建子类实例对象的 allocate()方法，创建一个 Buffer 类的实例对象。  
+（2）调用 put 方法，将数据写入到缓冲区中。  
+（3）写入完成后，在开始读取数据前，调用 Buffer.flip()方法，将缓冲区转换为读模式。  
+（4）调用 get 方法，从缓冲区中读取数据。  
+（5）读取完成后，调用 Buffer.clear() 或 Buffer.compact()方法，将缓冲区转换为写入模式。  
+### NIO Channel（通道）类  
+#### Channel（通道）的主要类型  
+（1）FileChannel 文件通道，用于文件的数据读写。  
+（2）SocketChannel 套接字通道，用于 Socket 套接字 TCP 连接的数据读写。  
+（3）ServerSocketChannel 服务器嵌套字通道（或服务器监听通道），允许我们监听 TCP 连接请求，为每个监听到的请求，创建一个 SocketChannel 套接字通道。  
+（4）DatagramChannel 数据报通道，用于 UDP 协议的数据读写。 
+#### FileChannel 文件通道  
+ FileChannel 是专门操作文件的通道。通过 FileChannel，既可以从一个文件中读取数据，也可以将数据写入到文件中。特别申明一下，**FileChannel 为阻塞模式，不能设置为非阻塞模式**。  
+ 下面分别介绍：FileChannel 的获取、读取、写入、关闭四个操作：  
+ 1. 获取 FileChannel 通道  
+ ````java 
+ //创建一条文件输入流
+FileInputStreamfis = new FileInputStream(srcFile);
+//获取文件流的通道
+FileChannelinChannel = fis.getChannel();
+//创建一条文件输出流
+FileOutputStreamfos = new FileOutputStream(destFile);
+//获取文件流的通道
+FileChanneloutchannel = fos.getChannel();
+````
+或者  
+````java
+// 创建 RandomAccessFile 随机访问对象
+RandomAccessFileaFile = new RandomAccessFile("filename.txt"，"rw");
+//获取文件流的通道
+FileChannelinChannel = aFile.getChannel();
+````
+2. 读取 FileChannel 通道  
+````java
+RandomAccessFileaFile = new RandomAccessFile(fileName, "rw");
+//获取通道
+FileChannelinChannel=aFile.getChannel();
+//获取一个字节缓冲区
+ByteBufferbuf = ByteBuffer.allocate(CAPACITY);
+int length = -1;
+//调用通道的 read 方法，读取数据并买入字节类型的缓冲区
+while ((length = inChannel.read(buf)) != -1) {
+//省略……处理读取到的 buf 中的数据
+}
+````
+3. 写入 FileChannel 通道  
+写入数据到通道，在大部分应用场景，都会调用通道的 int write（ByteBufferbuf）方法。此方法的参数——ByteBuffer 缓冲区，是数据的来源。write 方法的作用，是从 ByteBuffer 缓冲区中读取数据，然后写入到通道自身，而返回值是写入成功的字节数。  
+````java
+//如果 buf 刚写完数据，需要 flip 翻转 buf，使其变成读取模式
+buf.flip();
+int outlength = 0;
+//调用 write 方法，将 buf 的数据写入通道
+while ((outlength = outchannel.write(buf)) != 0) {
+System.out.println("写入的字节数：" + outlength);
+}
+````
+**此时的 ByteBuffer 缓冲区要求是可读的，处于读模式下。**  
+
+
+
+
+
+
+
+
+
 
 
 
