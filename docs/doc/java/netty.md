@@ -264,6 +264,161 @@ System.out.println("写入的字节数：" + outlength);
 }
 ````
 **此时的 ByteBuffer 缓冲区要求是可读的，处于读模式下。**  
+4．关闭通道
+当通道使用完成后，必须将其关闭。关闭非常简单，调用 close 方法即可。  
+5．强制刷新到磁  
+在将缓冲区写入通道时，出于性能原因，操作系统不可能每次都实时将数据写入磁盘。如果需要保证写入通道的缓冲数据，最终都真正地写入磁盘，可以调用 FileChannel 的 force()方法。  
+***TODO 使用 FileChannel 完成文件复制的实践案例***  
+#### SocketChannel 套接字通道  
+在 NIO 中，涉及网络连接的通道有两个，一个是 SocketChannel 负责连接传输，另一个是ServerSocketChannel 负责连接的监听。  
+ServerSocketChannel 应用于服务器端，而 SocketChannel 同时处于服务器端和客户端。  换句话说，对应于一个连接，两端都有一个负责传输的 SocketChannel 传输通道。  
+无论是 ServerSocketChannel，还是 SocketChannel，都支持阻塞和非阻塞两种模式:  
+（1）socketChannel.configureBlocking（false）设置为非阻塞模式。  
+（2）socketChannel.configureBlocking（true）设置为阻塞模式。 
+在阻塞模式下，SocketChannel 通道的 connect 连接、read 读、write 写操作，都是同步的和阻塞式的，在效率上与 Java 旧的 OIO 的面向流的阻塞式读写操作相同。  
+在非阻塞模式下，通道的操作是异步、高效率的，这也是相对于传统的OIO 的优势所在。下面详细介绍在非阻塞模式下通道的打开、读写和关闭操作等操作:     
+
+1. 获取 SocketChannel 传输通道  
+在客户端，先通过 SocketChannel 静态方法 open()获得一个套接字传输通道；然后，将 socket套接字设置为非阻塞模式；最后，通过 connect()实例方法，对服务器的 IP 和端口发起连接。
+````java
+ //获得一个套接字传输通道
+SocketChannelsocketChannel = SocketChannel.open();
+ //设置为非阻塞模式
+socketChannel.configureBlocking(false);
+ //对服务器的 IP 和端口发起连接
+socketChannel.connect(new InetSocketAddress("127.0.0.1"，80));
+````
+非阻塞情况下，与服务器的连接可能还没有真正建立，socketChannel.connect 方法就返回了，因此需要不断地自旋，检查当前是否是连接到了主机：
+````java
+while(! socketChannel.finishConnect() ){
+ //不断地自旋、等待，或者做一些其他的事情…… 
+}
+````
+当新连接事件到来时，在服务器端的 ServerSocketChannel 能成功地查询出一个新连接事件，并且通过调用服务器端 ServerSocketChannel 监听套接字的 accept()方法，来获取新连接的套接字通道：  
+````java
+//新连接事件到来，首先通过事件，获取服务器监听通道
+ServerSocketChannel server = (ServerSocketChannel) key.channel();
+//获取新连接的套接字通道
+SocketChannelsocketChannel = server.accept();
+//设置为非阻塞模式
+socketChannel.configureBlocking(false);
+````
+强调一下，NIO 套接字通道，主要用于非阻塞应用场景。所以，需要调用 configureBlocking（false），从阻塞模式设置为非阻塞模式。  
+2. 读取 SocketChannel 传输通道  
+当 SocketChannel 通道可读时，可以从 SocketChannel 读取数据，具体方法与前面的文件通道读取方法是相同的。调用 read 方法，将数据读入缓冲区 ByteBuffer。  
+````java
+ByteBufferbuf = ByteBuffer.allocate(1024);
+int bytesRead = socketChannel.read(buf);
+````
+在读取时，因为是异步的，因此我们必须检查 read 的返回值，以便判断当前是否读取到了数据。read()方法的返回值，是读取的字节数。如果返回-1，那么表示读取到对方的输出结束标志，对方已经输出结束，准备关闭连接。实际上，通过 read 方法读数据，本身是很简单的，比较困难的是，在非阻塞模式下，如何知道通道何时是可读的呢？这就需要用到 NIO 的新组件——Selector通道选择器  
+3. 写入到 SocketChannel 传输通道  
+````java
+//写入前需要读取缓冲区，要求 ByteBuffer 是读取模式
+buffer.flip();
+socketChannel.write(buffer);
+````
+4. 关闭 SocketChannel 传输通道  
+在关闭 SocketChannel 传输通道前，如果传输通道用来写入数据，则建议调用一次shutdownOutput() 终 止 输 出 方 法 ， 向 对 方 发 送 一 个 输 出 的 结 束 标 志 （ -1 ） 。 然 后 调 用socketChannel.close()方法，关闭套接字连接。
+````java
+//终止输出方法，向对方发送一个输出的结束标志
+socketChannel.shutdownOutput();
+//关闭套接字连接
+IOUtil.closeQuietly(socketChannel);
+````
+#### DatagramChannel 数据报通道
+和 Socket 套接字的 TCP 传输协议不同，UDP 协议不是面向连接的协议。使用 UDP 协议时，只要知道服务器的 IP 和端口，就可以直接向对方发送数据。在 Java 中使用 UDP 协议传输数据，比 TCP 协议更加简单。在 Java NIO 中，使用 DatagramChannel 数据报通道来处理 UDP 协议的数据传输。  
+1. 获取 DatagramChannel 数据报通道  
+获取数据报通道的方式很简单，调用 DatagramChannel 类的 open 静态方法即可。然后调用configureBlocking（false）方法，设置成非阻塞模式。  
+````java
+//获取 DatagramChannel 数据报通道
+DatagramChannel channel = DatagramChannel.open();
+//设置为非阻塞模式
+datagramChannel.configureBlocking(false);
+````
+如果需要接收数据，还需要调用 bind 方法绑定一个数据报的监听端口，具体如下：
+````java
+//调用 bind 方法绑定一个数据报的监听端口
+channel.socket().bind(new InetSocketAddress(18080));
+````
+2. 读取 DatagramChannel 数据报通道数据  
+当 DatagramChannel 通道可读时，可以从 DatagramChannel 读取数据。和前面的 SocketChannel的读取方式不同，不是调用 read 方法，而是调用 receive（ByteBufferbuf）方法将数据从DatagramChannel 读入，再写入到 ByteBuffer 缓冲区中。  
+````java
+//创建缓冲区
+ByteBufferbuf = ByteBuffer.allocate(1024);
+//从 DatagramChannel 读入，再写入到 ByteBuffer 缓冲区
+SocketAddressclientAddr= datagramChannel.receive(buffer);
+````
+通道读取 receive（ByteBufferbuf）方法的返回值，是 SocketAddress 类型，表示返回发送端的连接地址（包括 IP 和端口）。通过 receive 方法读数据非常简单，但是，在非阻塞模式下，如何知道 DatagramChannel 通道何时是可读的呢？和 SocketChannel 一样，同样需要用到 NIO 的新组件—Selector 通道选择器，稍后介绍。  
+3. 写入 DatagramChannel 数据报通道  
+向 DatagramChannel 发送数据，和向 SocketChannel 通道发送数据的方法也是不同的。这里不是调用 write 方法，而是调用 send 方法。示例代码如下：  
+````java
+//把缓冲区翻转到读取模式
+buffer.flip();
+//调用 send 方法，把数据发送到目标 IP+端口
+dChannel.send(buffer, new InetSocketAddress(NioDemoConfig.SOCKET_SERVER_IP, 
+ NioDemoConfig.SOCKET_SERVER_PORT));
+//清空缓冲区，切换到写入模式
+buffer.clear();
+````
+由于 UDP 是面向非连接的协议，因此，在调用 send 方法发送数据的时候，需要指定接收方的地址（IP 和端口）。  
+4. 关闭 DatagramChannel 数据报通道
+这个比较简单，直接调用 close()方法，即可关闭数据报通道。
+````java
+//简单关闭即可
+dChannel.close();
+````
+### NIO Selector 选择器
+#### 选择器以及注册
+选择器（Selector）是什么呢？选择器和通道的关系又是什么？  
+简单地说：选择器的使命是完成 IO 的多路复用。一个通道代表一条连接通路，通过选择器可以同时监控多个通道的 IO（输入输出）状况。选择器和通道的关系，是监控和被监控的关系。  
+一般来说，一个单线程处理一个选择器，一个选择器可以监控很多通道。通过选择器，一个单线程可以处理数百、数千、数万、甚至更多的通道。在极端情况下（数万个连接），只用一个线程就可以处理所有的通道，这样会大量地减少线程之间上下文切换的开销。  
+通道和选择器之间的关系，通过 register（注册）的方式完成   
+````java
+Channel.register（Selector sel，int ops）
+````
+可供选择器监控的通道 IO 事件类型，包括以下四种：  
+（1）可读：SelectionKey.OP_READ  
+（2）可写：SelectionKey.OP_WRITE  
+（3）连接：SelectionKey.OP_CONNECT  
+（4）接收：SelectionKey.OP_ACCEPT  
+如果选择器要监控通道的多种事件，可以用“按位或”运算符来实现  
+````java
+//监控通道的多种事件，用“按位或”运算符来实现
+int key = SelectionKey.OP_READ | SelectionKey.OP_WRITE ;
+````
+什么是 IO 事件呢？  
+IO 事件不是对通道的 IO操作，而是通道的某个 IO 操作的一种就绪状态，表示通道具备完成某个 IO 操作的条件。  
+#### SelectableChannel 可选择通道
+并不是所有的通道，都是可以被选择器监控或选择的。比方说，FileChannel 文件通道就不能被选择器复用。判断一个通道能否被选择器监控或选择，有一个前提：判断它是否继承了抽象类SelectableChannel（可选择通道）。如果继承了 SelectableChannel，则可以被选择，否则不能。  
+#### SelectionKey 选择键  
+通道和选择器的监控关系注册成功后，就可以选择就绪事件。具体的选择工作，和调用选择器 Selector 的 select()方法来完成。通过 select 方法，选择器可以不断地选择通道中所发生操作的就绪状态，返回注册过的感兴趣的那些 IO 事件。换句话说，一旦在通道中发生了某些 IO 事件（就绪状态达成），并且是在选择器中注册过的 IO 事件，就会被选择器选中，并放入 SelectionKey 选择键的集合中。  
+SelectionKey 选择键就是那些被选择器选中的 IO 事件  
+#### 选择器使用流程
+（1）获取选择器实例；  
+````java
+//调用静态工厂方法 open()来获取 Selector 实例
+Selector selector = Selector.open()
+````
+Selector 选择器的类方法 open()的内部，是向选择器 SPI（SelectorProvider）发出请求，通过默认的 SelectorProvider（选择器提供者）对象，获取一个新的选择器实例。Java 中 SPI 全称为（Service 
+Provider Interface，服务提供者接口），是 JDK 的一种可以扩展的服务提供和发现机制。Java 通过SPI 的方式，提供选择器的默认实现版本。也就是说，其他的服务提供商可以通过 SPI 的方式，提供定制化版本的选择器的动态替换或者扩展。  
+（2）将通道注册到选择器中；  
+````java
+// 2.获取通道
+ServerSocketChannelserverSocketChannel = ServerSocketChannel.open();
+// 3.设置为非阻塞
+serverSocketChannel.configureBlocking(false);
+// 4.绑定连接
+serverSocketChannel.bind(new 
+InetSocketAddress(SystemConfig.SOCKET_SERVER_PORT));
+// 5.将通道注册到选择器上,并制定监听事件为：“接收连接”事件
+serverSocketChannel.register(selector，SelectionKey.OP_ACCEPT);
+````
+>注 册 到 选 择 器 的 通 道 ， 必 须 处 于 非 阻 塞 模 式 下 ， 否 则 将 抛 出IllegalBlockingModeException 异常。这意味着，FileChannel 文件通道不能与选择器一起使用，因为FileChannel 文件通道只有阻塞模式，不能切换到非阻塞模式；而 Socket 套接字相关的所有通道都可以。  
+>一个通道，并不一定要支持所有的四种 IO 事件。例如服务器监听通道ServerSocketChannel，仅仅支持 Accept（接收到新连接）IO 事件；而SocketChannel 传输通道，则不支持 Accept（接收到新连接）IO 事件。如何判断通道支持哪些事件呢？可以在注册之前，可以通过通道的 validOps()方法，来获取该通道所有支持的 IO 事件集合。  
+
+（3）轮询感兴趣的 IO 就绪事件（选择键集合）。    
+通过 Selector 选择器的 select()方法，选出已经注册的、已经就绪的 IO 事件，保存到 SelectionKey选择键集合中。SelectionKey 集合保存在选择器实例内部，是一个元素为 SelectionKey 类型的集合（Set）。调用选择器的 selectedKeys()方法，可以取得选择键集合  
+
 
 
 
