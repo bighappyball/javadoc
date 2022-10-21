@@ -3,7 +3,7 @@
 # Java 知识星球
 
 - The moments of pain is worth for the honor of a lifetime
-- 短暂的痛苦，值得换来终身荣誉
+<!-- - 短暂的痛苦，值得换来终身荣誉 -->
 
 
 [![star](https://gitee.com/moxi159753/mogu_blog_v2/badge/star.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/stargazers)
