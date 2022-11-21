@@ -11,6 +11,9 @@ java知识文档
 
 ## Markdown 语法
 
+### 图片
+![alt 系统调用流程图](./docs/_media/netty/2.png)  
+
 ### 字体
 *斜体文本*
 _斜体文本_
