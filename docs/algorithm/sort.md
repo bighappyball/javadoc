@@ -67,7 +67,42 @@
 
 ![alt 插入排序](../_media/argorithm/sort/849589-20171015225645277-1151100000.gif) 
 
+```java
+    public static void insertSort(int[] nums) {
+        for (int i = 1; i < nums.length; i++) {
+            int pre = i - 1;
+            int cur = nums[i];
+            while (nums[pre] > cur && pre >= 0) {
+                nums[pre + 1] = nums[pre];
+                pre--;
+            }
+            nums[pre + 1] = cur;
+        }
+    }
+```
 
+### 希尔排序（Shell Sort）
 
+1959年Shell发明，第一个突破O(n2)的排序算法，是简单插入排序的改进版。它与插入排序的不同之处在于，它会优先比较距离较远的元素。希尔排序又叫缩小增量排序。
 
+时间平均n1.3  时间最坏n2  时间最好n 空间 1  稳定
+
+![alt 希尔排序](../_media/argorithm/sort/849589-20180331170017421-364506073.gif) 
+
+```java
+    public static void shellSort(int[] nums) {
+        int len = nums.length;
+        for (int i = Math.floorDiv(len, 2); i > 0; i = Math.floorDiv(len, 2)) {
+            for (int j = i; j < len; j++) {
+                int pre = j;
+                int cur = nums[j];
+                while (pre - i >= 0 && cur < nums[pre - i]) {
+                    nums[pre] = nums[pre - i];
+                    pre = pre - i;
+                }
+                nums[pre] = cur;
+            }
+        }
+    }
+```
 
