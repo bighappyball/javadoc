@@ -8,6 +8,7 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="shortcut icon" href="favicon.ico">
 </head>
 
 <body>
@@ -17,10 +18,11 @@
       repo: '',
       // 左侧导航栏
       loadSidebar: 'summary.md',
+      loadNavbar:true,
       subMaxLevel: 6,
       // logo: './_media/logo.png',
       // 文档标题
-      name: 'Java知识星球',
+      // name: 'Java知识星球',
       //自动为每个页面增加标题
       autoHeader: true,
       //小屏设备下合并导航栏到侧边栏
@@ -69,14 +71,18 @@
     }
   </script>
   <!-- Docsify v4 -->
-  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/docsify.min.js"></script>
   <!-- 字数统计 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
   <!-- 搜索 -->
   <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script> -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
   <!-- 复制到剪贴板 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script> -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <!-- emoji表情支持 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/plugins/emoji.min.js"></script>
+ <!-- 图片缩放 - Zoom image -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 </body>
 
 </html>

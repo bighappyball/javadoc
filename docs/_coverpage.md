@@ -6,8 +6,8 @@
 <!-- - 短暂的痛苦，值得换来终身荣誉 -->
 
 
-[![star](https://gitee.com/moxi159753/mogu_blog_v2/badge/star.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/stargazers)
-[![fork](https://gitee.com/moxi159753/mogu_blog_v2/badge/fork.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/members)
+<!-- [![star](https://gitee.com/moxi159753/mogu_blog_v2/badge/star.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/stargazers)
+[![fork](https://gitee.com/moxi159753/mogu_blog_v2/badge/fork.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/members) -->
 
 <!-- [Gitee](<https://gitee.com/moxi159753/mogu_blog_v2>) -->
 [Github](<https://github.com/bighappyball/javadoc>)
