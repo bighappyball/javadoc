@@ -14,6 +14,13 @@
 [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
 
 
+### 构造二叉树
+
+### 平衡二叉树
+一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
+
+[110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
+
 
 ### 广度优先搜索
 
