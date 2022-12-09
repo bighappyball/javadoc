@@ -13,18 +13,26 @@
 
 [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
 
+### 二叉树翻转
+
+[27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
+
+
 
 ### 构造二叉树
 
 ### 平衡二叉树
+
 一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
 
-[110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
+[110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)  用递归方法和后序遍历写
+
+### 完全二叉树
+
+在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2h 节点之间的最后一级 h 。
 
 
-### 广度优先搜索
-
-### 最大路径和
+### 最大路径和/直径/宽度
 
 [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 

@@ -5,8 +5,8 @@
 4. 大胆猜测 小心验证
 5. 坚持看
 
-## 源码
-spring springmvc-mybaits springboot-tomcat springcloud
+## 源码阅读顺序
+springmvc-spring-mybaits  springboot-tomcat  springcloud
 
 ## spring ioc
 
@@ -152,8 +152,6 @@ refresh() ioc加载流程:
     构造器循环依赖无法解决,set方法可以通过三级缓存来解决
     1. 三级缓存: 一级放成品对象 二级放半成品  
     为什么不用二级?  
-    
-
     2. 提前暴露对象
 
 
