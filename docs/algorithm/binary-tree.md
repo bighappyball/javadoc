@@ -21,6 +21,9 @@
 
 ### 构造二叉树
 
+前序找根，中序来分。意思是每次都可以通过前序找到根节点，再用中序遍历确定新的左右子树的范围，最后递归这个过程就可以了。
+
+
 ### 平衡二叉树
 
 一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
@@ -32,13 +35,124 @@
 在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2h 节点之间的最后一级 h 。
 
 
-### 最大路径和/直径/宽度
+### 最大/最小问题
 
 [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 
+[111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
+
+### 回溯算法
+
+[二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
+
+[二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
 
 ### 构造二叉树
 
+[思路:](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
+
+解法一、递归  
+先序遍历的顺序是根节点，左子树，右子树。中序遍历的顺序是左子树，根节点，右子树。
+
+所以我们只需要根据先序遍历得到根节点，然后在中序遍历中找到根节点的位置，它的左边就是左子树的节点，右边就是右子树的节点。
+
+生成左子树和右子树就可以递归的进行了。
+
+``` java
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return build(preorder,0,preorder.length,inorder,0,inorder.length);
+    }
+
+    public TreeNode build(int[] preorder,int pStart, int pEnd,int[] inorder,int inStart,int inEnd){
+        if(pStart==pEnd){
+            return null;
+        }
+        int rootVal=preorder[pStart];
+        TreeNode root=new TreeNode(rootVal);
+        // 从中序遍历中找根节点
+        int iRootIndex=0;
+        for(int i=inStart;i<inEnd;i++){
+            if(rootVal==inorder[i]){
+                iRootIndex=i;
+                break;
+            }
+        }
+        int leftNum=iRootIndex-inStart;
+        root.left=build(preorder,pStart+1,pStart+leftNum+1,inorder,inStart,iRootIndex);
+        root.right=build(preorder,pStart+leftNum+1,pEnd,inorder,iRootIndex+1,inEnd);
+        return root;
+    }
+```
+
+优化 我们可以用一个HashMap把中序遍历数组的每个元素的值和下标存起来，这样寻找根节点的位置就可以直接得到了
+
+```java
+ Map<Integer,Integer> map=new HashMap();
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        for(int i=0;i<inorder.length;i++){
+            map.put(inorder[i],i);
+        }
+        return build(preorder,0,preorder.length,inorder,0,inorder.length);
+    }
+
+    public TreeNode build(int[] preorder,int pStart, int pEnd,int[] inorder,int inStart,int inEnd){
+        if(pStart==pEnd){
+            return null;
+        }
+        int rootVal=preorder[pStart];
+        TreeNode root=new TreeNode(rootVal);
+        // 从中序遍历中找根节点
+        int iRootIndex=map.get(rootVal);
+       
+        int leftNum=iRootIndex-inStart;
+        root.left=build(preorder,pStart+1,pStart+leftNum+1,inorder,inStart,iRootIndex);
+        root.right=build(preorder,pStart+leftNum+1,pEnd,inorder,iRootIndex+1,inEnd);
+    return root;
+    }
+```
+
+解法二、迭代 栈
+
+我们用一个栈保存已经遍历过的节点，遍历前序遍历的数组，一直作为当前根节点的左子树，直到当前节点和中序遍历的数组的节点相等了，那么我们正序遍历中序遍历的数组，倒着遍历已经遍历过的根节点（用栈的 pop 实现），找到最后一次相等的位置，把它作为该节点的右子树。
+
+用一个栈保存已经遍历的节点，用 curRoot 保存当前正在遍历的节点
+
+```java
+ public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if(preorder.length==0){
+            return null;
+        }
+        LinkedList<TreeNode> roots=new LinkedList();
+        int pre=0,in=0;
+        TreeNode curRoot=new TreeNode(preorder[pre++]);
+        TreeNode root=curRoot;
+        roots.push(curRoot);
+        while(pre<preorder.length){
+            if(curRoot.val==inorder[in]){
+                //每次进行出栈，实现倒着遍历
+                while(!roots.isEmpty()&&roots.peek().val==inorder[in]){
+                    curRoot=roots.peek();
+                    roots.pop();
+                    in++;
+                }
+                // 设为当前的右孩子
+                curRoot.right=new TreeNode(preorder[pre]);
+                curRoot=curRoot.right;
+                roots.push(curRoot);
+                pre++;
+            }else{
+                //否则的话就一直作为左子树
+                curRoot.left = new TreeNode(preorder[pre]);
+                curRoot = curRoot.left;
+                roots.push(curRoot);
+                pre++;
+            }
+        }
+        return root;
+    }
+```
+
+[105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
 
 ###  最近的共同祖先
 

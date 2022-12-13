@@ -9,5 +9,6 @@
 * [源码](/analysis/)
 * [算法](/algorithm/)
 * [项目](/program/)
+* [资料](/docment/)
 
 
