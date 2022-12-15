@@ -63,6 +63,17 @@ window.$docsify = {
 };
 ```
 
+### tabs页
+<!-- tabs:start -->
+
+#### **English**
+
+Hello!
+
+
+<!-- tabs:end -->
+
+
 ### 设置首页文件加载路径
 
 在 index.html 中通过配置 window.$docsify 的 homepage 属性值设置首页文件加载路径。默认情况下，docsify 将 README.md 作为入口文件渲染，如果想将其它文件作为入口文件渲染时使用。
