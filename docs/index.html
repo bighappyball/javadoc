@@ -9,32 +9,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
   <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
+    title="docsify-darklight-theme" type="text/css" />
+  <!-- Themes (light + dark) -->
+  <!-- <link rel="stylesheet" media="(prefers-color-scheme: dark)"
+    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"> -->
+  <!-- <link rel="stylesheet" media="(prefers-color-scheme: light)"
+    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css"> -->
+    <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" /> -->
 </head>
 
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      repo: '',
+      repo: 'https://github.com/docsifyjs/docsify/',
       // 左侧导航栏
       loadSidebar: 'summary.md',
-      loadNavbar:true,
+      loadNavbar: true,
       subMaxLevel: 6,
+      sidebarDisplayLevel: 1, 
       // logo: './_media/logo.png',
       // 文档标题
-      // name: 'Java知识星球',
+      name: '知识星球',
       //自动为每个页面增加标题
-      autoHeader: true,
+      // autoHeader: true,
       //小屏设备下合并导航栏到侧边栏
       mergeNavbar: true,
       // 开启首页
       coverpage: true,
+      themeColor: "#409EFF",
       // 统计字数
       count: {
         countable: true,
-        fontsize: '0.9em',
+        position: 'top',
+        margin: '0px',
+        float: 'left',
+        fontsize: '0.8em',
         color: 'rgb(90,90,90)',
-        language: 'chinese'
+        language: 'chinese',
+        localization: {
+          words: "",
+          minute: ""
+        },
+        isExpected: true
+      },
+      tabs: {
+        theme: 'classic' // default
+      },
+      pagination: {
+        previousText: '上一章节',
+        // or
+        nextText: {
+          '/en/': 'NEXT',
+          '/': '下一章节'
+        },
+        crossChapter: true,
+        crossChapterText: true,
       },
       // 搜索完整配置参数
       search: {
@@ -67,9 +98,61 @@
         // 您可以提供一个正则表达式来匹配前缀。在这种情况下，
         // 匹配到的字符串将被用来识别索引
         pathNamespaces: /^(\/(zh-cn|ru-ru))?(\/(v1|v2))?/
-      }
+      },
+      autoFooter: {
+        name: "chenxhe",          // company display name (required)
+        copyYear: 2022,             // start copyright year (required)
+        url: "",          // company url (optional)
+        policy: true,   // show Privacy Policy (optional)
+        terms: true,   // show Terms of Service (optional)
+        cookies: true,   // show Cookies Policy (optional)
+        onBody: true             // if true it is on the main doc
+      },
+      darklightTheme: {
+        siteFont: 'PT Sans | Source Sans Pro',
+        defaultTheme: 'dark',
+        codeFontFamily: 'Roboto Mono, Monaco, courier, monospace',
+        bodyFontSize: '16px',
+        dark: {
+          accent: '#42b983',
+          toogleBackground: '#ffffff',
+          background: '#091a28',
+          textColor: '#b4b4b4',
+          codeTextColor: '#ffffff',
+          codeBackgroundColor: '#0e2233',
+          borderColor: '#0d2538',
+          blockQuoteColor: '#858585',
+          highlightColor: '#d22778',
+          sidebarSublink: '#b4b4b4',
+          codeTypeColor: '#ffffff',
+          coverBackground: 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/sun.svg)'
+        },
+        light: {
+          accent: '#42b983',
+          toogleBackground: '#091a28',
+          background: '#ffffff',
+          textColor: '#34495e',
+          codeTextColor: '#525252',
+          codeBackgroundColor: '#f8f8f8',
+          borderColor: 'rgba(0, 0, 0, 0.07)',
+          blockQuoteColor: '#858585',
+          highlightColor: '#d22778',
+          sidebarSublink: '#b4b4b4',
+          codeTypeColor: '#091a28',
+          coverBackground: 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
+          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/moon.svg)'
+        }
+      },
+      // timeUpdater: {
+      //   text: "<div align='right' width='200px' style='color:rgb(90,90,90);font-size:0.9em'>{docsify-updated}</div>",
+      //   formatUpdated: "{YYYY}/{MM}/{DD}",
+      //   whereToPlace: "top",  // "top" or "bottom", default to "bottom"
+      // },
     }
   </script>
+  <!-- 翻页插件 -->
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <!-- Docsify v4 -->
   <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/docsify.min.js"></script>
   <!-- 字数统计 -->
@@ -81,8 +164,22 @@
   <!-- <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script> -->
   <!-- emoji表情支持 -->
   <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/plugins/emoji.min.js"></script>
- <!-- 图片缩放 - Zoom image -->
+  <!-- 图片缩放 - Zoom image -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  <!-- 主题 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script>
+  <!-- java代码高亮 -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
+  <!-- tabs -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
+  <!-- 文档更新时间 -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-updated/src/time-updater.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js" type="text/javascript">
+  </script>
+
+  <!-- 目录折叠 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
 </body>
 
 </html>
+<footer id="mb-footer"></footer>

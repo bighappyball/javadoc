@@ -1,34 +1,32 @@
 ## IoC 理论
 
-[谈谈对 Spring IoC 的理解](https://www.cnblogs.com/xdp-gacl/p/4249939.html)  
-[Spring 的 IoC 原理](https://blog.csdn.net/m13666368773/article/details/7802126)  
-[Spring IoC 原理](https://blog.csdn.net/it_man/article/details/4402245)
+[谈谈对 Spring IoC 的理解](https://www.cnblogs.com/xdp-gacl/p/4249939.html)  |  [Spring 的 IoC 原理](https://blog.csdn.net/m13666368773/article/details/7802126) |  [Spring IoC 原理](https://blog.csdn.net/it_man/article/details/4402245)
 
-IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么技术，而是一种设计思想, 它还有一个别名为 DI（Dependency Injection）,即依赖注入。所谓 IoC ，就是由 Spring IoC 容器来负责对象的生命周期和对象之间的关系
+IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么技术，而是一种设计思想, 它还有一个别名为 DI（Dependency Injection）,即依赖注入。
 
-如何理解“控制反转”好呢？理解好它的关键在于我们需要回答如下四个问题：
-1. 谁控制谁?  在传统的开发模式下，我们都是采用直接 new 一个对象的方式来创建对象，也就是说你依赖的对象直接由你自己控制，但是有了 IoC 容器后，则直接由 IoC 容器来控制。所以“谁控制谁”，当然是 IoC 容器控制对象
-2. 控制什么? 控制对象。
-3. 为何是反转? 没有 IoC 的时候我们都是在自己对象中主动去创建被依赖的对象，这是正转。但是有了 IoC 后，所依赖的对象直接由 IoC 容器创建后注入到被注入的对象中，依赖的对象由原来的主动获取变成被动接受，所以是反转。
-4. 哪些方面反转了? 所依赖对象的获取被反转了。
+所谓 IoC ，就是由 Spring IoC 容器来负责对象的生命周期和对象之间的关系 , 如何理解“控制反转”好呢？理解好它的关键在于我们需要回答如下四个问题：
+
+> 1. 谁控制谁?  在传统的开发模式下，我们都是采用直接 new 一个对象的方式来创建对象，也就是说你依赖的对象直接由你自己控制，但是有了 IoC 容器后，则直接由 IoC 容器来控制。所以“谁控制谁”，当然是 IoC 容器控制对象
+> 2. 控制什么? 控制对象。
+> 3. 为何是反转? 没有 IoC 的时候我们都是在自己对象中主动去创建被依赖的对象，这是正转。但是有了 IoC 后，所依赖的对象直接由 IoC 容器创建后注入到被注入的对象中，依赖的对象由原来的主动获取变成被动接受，所以是反转。
+> 4. 哪些方面反转了? 所依赖对象的获取被反转了。
+>
 
 ### 注入形式
 
-IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、stter方法注入、接口注入。
-
-接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
+IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、stter方法注入、接口注入。接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
 
 ## IoC 之IoC各个组件
 
 ![alt IoC各个组件](../../_media/analysis/spring/企业微信截图_20221213163541.png)  
 
-该图为 ClassPathXmlApplicationContext 的类继承体系结构，虽然只有一部分，但是它基本上包含了 IoC 体系中大部分的核心类和接口。
+该图为 `ClassPathXmlApplicationContext` 的类继承体系结构，虽然只有一部分，但是它基本上包含了 IoC 体系中大部分的核心类和接口。
 
 ### Resource 体系
 
-org.springframework.core.io.Resource，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、RLResource、FileSystemResource 等。
+`org.springframework.core.io.Resource`，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、RLResource、FileSystemResource 等。
 
-![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213163941.png)  
+![alt Resource](../../_media/analysis/spring/企业微信截图_20221213163941.png)  
 
 ### ResourceLoader 体系
 
@@ -3412,3 +3410,1259 @@ public BeanDefinitionHolder decorateIfRequired(
 1. 解析默认标签的**默认**标签：`BeanDefinitionParserDelegate#parseBeanDefinitionElement(Element ele, ...)` 方法。该方法会依次解析 `<bean>` 标签的属性、各个子元素，解析完成后返回一个 GenericBeanDefinition 实例对象。
 2. 解析默认标签下的**自定义**标签：`BeanDefinitionParserDelegate#decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder)` 方法。
 3. 注册解析的 BeanDefinition：`BeanDefinitionReaderUtils#registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)` 方法。
+
+## IoC 之解析自定义标签
+
+### 1. 使用自定义标签
+
+扩展 Spring 自定义标签配置一般需要以下几个步骤：
+
+1. 创建一个需要扩展的组件。
+2. 定义一个 XSD 文件，用于描述组件内容。
+3. 创建一个实现 `org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser` 接口的类，用来解析 XSD 文件中的定义和组件定义。
+4. 创建一个 Handler，继承 `org.springframework.beans.factory.xml.NamespaceHandlerSupport` 抽象类 ，用于将组件注册到 Spring 容器。
+5. 编写 `spring.handlers` 和 `Spring.schemas` 文件。
+
+下面就按照上面的步骤来实现一个自定义标签组件。
+
+#### 1.1 创建组件
+
+该组件就是一个普通的 Java Bean，没有任何特别之处。代码如下：
+
+```java
+public class User {
+
+    private String id;
+    private String userName;
+    private String email;
+
+}
+```
+
+#### 1.2 定义 XSD 文件
+
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cmsblogs.com/schema/user" targetNamespace="http://www.cmsblogs.com/schema/user" elementFormDefault="qualified">
+
+    <xsd:element name="user">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" />
+            <xsd:attribute name="userName" type="xsd:string" />
+            <xsd:attribute name="email" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
+```
+
+上面除了对 User 这个 Java Bean 进行了描述外，还定义了 `xmlns="http://www.cmsblogs.com/schema/user"` 和 `targetNamespace="http://www.cmsblogs.com/schema/user"` 这两个值，这两个值在后面是有大作用的。
+
+#### 1.3 定义 Parser 类
+
+定义一个 Parser 类，该类继承 `AbstractSingleBeanDefinitionParser` ，并实现 `#getBeanClass(Element element)` 和 `#doParse(Element element, BeanDefinitionBuilder builder)` 两个方法。主要是用于解析 XSD 文件中的定义和组件定义。
+
+```java
+public class UserDefinitionParser extends AbstractSingleBeanDefinitionParser {
+
+    @Override
+    protected Class<?> getBeanClass(Element element) {
+        return User.class;
+    }
+
+    @Override
+    protected void doParse(Element element, BeanDefinitionBuilder builder) {
+        String id = element.getAttribute("id");
+        String userName = element.getAttribute("userName");
+        String email = element.getAttribute("email");
+
+        if (StringUtils.hasText(id)) {
+            builder.addPropertyValue("id", id);
+        }
+
+        if (StringUtils.hasText(userName)) {
+            builder.addPropertyValue("userName", userName);
+        }
+
+        if (StringUtils.hasText(email)) {
+            builder.addPropertyValue("email", email);
+        }
+    }
+
+}
+```
+
+#### 1.4 定义 NamespaceHandler 类
+
+定义 NamespaceHandler 类，继承 NamespaceHandlerSupport ,主要目的是将组件注册到 Spring 容器中。
+
+```java
+public class UserNamespaceHandler extends NamespaceHandlerSupport {
+
+    @Override
+    public void init() {
+        registerBeanDefinitionParser("user", new UserDefinitionParser());
+    }
+
+}
+```
+
+#### 1.5 定义 spring.handlers 文件
+
+```java
+http\://www.cmsblogs.com/schema/user=org.springframework.core.customelement.UserNamespaceHandler
+```
+
+#### 1.6 定义 Spring.schemas 文件
+
+```
+http\://www.cmsblogs.com/schema/user.xsd=user.xsd
+```
+
+#### 1.7 运行
+
+经过上面几个步骤，就可以使用自定义的标签了。在 xml 配置文件中使用如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:myTag="http://www.cmsblogs.com/schema/user"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.cmsblogs.com/schema/user http://www.cmsblogs.com/schema/user.xsd">
+
+    <myTag:user id="user" email="12233445566@qq.com" userName="chenssy" />
+
+</beans>
+```
+
+运行测试：
+
+```java
+public static void main(String[] args){
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    User user = (User) context.getBean("user");
+    System.out.println(user.getUserName() + "----" + user.getEmail());
+}
+```
+
+运行结果如下图：
+
+![image-20221215173123793](../../_media/analysis/spring/image-20221215173123793.png)
+
+### 2. 解析自定义标签
+
+上面已经演示了 Spring 自定义标签的使用，下面就来分析自定义标签的解析过程。
+
+#### 2.1 parseCustomElement
+
+`DefaultBeanDefinitionDocumentReader` 的`#parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate)` 方法，负责标签的解析工作，根据命名空间的不同进行不同标签的解析。其中，**自定义标签**由 `BeanDefinitionParserDelegate` 的 `#parseCustomElement(Element ele, BeanDefinition containingBd)` 方法来实现。代码如下：
+
+```JAVA
+@Nullable
+public BeanDefinition parseCustomElement(Element ele) {
+    return parseCustomElement(ele, null);
+}
+
+@Nullable
+public BeanDefinition parseCustomElement(Element ele, @Nullable BeanDefinition containingBd) {
+    // <1> 获取 namespaceUri
+    String namespaceUri = getNamespaceURI(ele);
+    if (namespaceUri == null) {
+        return null;
+    }
+    // <2> 根据 namespaceUri 获取相应的 Handler
+    NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+    if (handler == null) {
+        error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", ele);
+        return null;
+    }
+    // 调用自定义的 Handler 处理
+    return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
+}
+```
+
+处理过程分为三步：
+
+1. 调用 `#getNamespaceURI((Node node)` 方法，获取 `namespaceUri` 。代码如下：
+
+   ```JAVA
+   @Nullable
+   public String getNamespaceURI(Node node) {
+   	return node.getNamespaceURI();
+   }
+   ```
+
+2. 调用 `XmlReaderContext#getNamespaceHandlerResolver()` 方法，获得命名空间的解析器。详细解析，见 [2.2 getNamespaceHandlerResolver](2.2 getNamespaceHandlerResolver)。
+
+3. 调用 `NamespaceHandlerResolver#resolve(String namespaceUri)` 方法，根据 `namespaceUri` 获取相应的 Handler 对象。这个映射关系我们在 `spring.handlers` 中已经定义了，所以只需要找到该类，然后初始化返回。详细解析，见 [2.3 resolve](#2.3 resolve) 。
+
+4. 调用 `NamespaceHandler#parse(Element element, ParserContext parserContext)` 方法，调用自定义的 Handler 处理。详细解析，见 [2.4 parse](#2.4 parse) 。
+
+#### 2.2 getNamespaceHandlerResolver
+
+调用 XmlReaderContext 的 `#getNamespaceHandlerResolver()` 方法，返回的命名空间的解析器，代码如下：
+
+```JAVA
+/**
+ * NamespaceHandler 解析器
+ */
+private final NamespaceHandlerResolver namespaceHandlerResolver;
+
+public final NamespaceHandlerResolver getNamespaceHandlerResolver() {
+	return this.namespaceHandlerResolver;
+}
+```
+
+##### 2.2.1 NamespaceHandlerResolver 的初始化
+
+那么，NamespaceHandlerResolver 是什么时候进行初始化的呢？
+
+在这篇博客中 [IoC 之注册 BeanDefinitions](#IoC 之注册 BeanDefinition) 提到在注册 BeanDefinition 时：
+
+- 首先，是通过 XmlBeanDefinitionReader 的 `#createBeanDefinitionDocumentReader()` 方法，获取 Document 解析器 BeanDefinitionDocumentReader 实例。
+- 然后，调用 BeanDefinitionDocumentReader 实例的 `#registerBeanDefinitions(Document doc, XmlReaderContext readerContext)` 方法，进行注册。而该方法需要提供两个参数，一个是 Document 实例 `doc`，一个是 XmlReaderContext 实例 `readerContext` 。
+
+`readerContext` 实例对象由 `XmlBeanDefinitionReader` 的 `#createReaderContext(Resource resource)` 方法创建。`namespaceHandlerResolver` 实例对象就是在这个时候初始化的，代码如下：
+
+```JAVA
+// XmlBeanDefinitionReader.java
+public XmlReaderContext createReaderContext(Resource resource) {
+	return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
+			this.sourceExtractor, this, getNamespaceHandlerResolver());
+}
+```
+
+- XmlReaderContext 构造函数中最后一个参数就是 `NamespaceHandlerResolver` 对象，该对象由 `getNamespaceHandlerResolver()` 提供，如下：
+
+  ```JAVA
+  // XmlBeanDefinitionReader.java
+  
+  public NamespaceHandlerResolver getNamespaceHandlerResolver() {
+  	if (this.namespaceHandlerResolver == null) {
+  		this.namespaceHandlerResolver = createDefaultNamespaceHandlerResolver();
+  	}
+  	return this.namespaceHandlerResolver;
+  }
+  
+  protected NamespaceHandlerResolver createDefaultNamespaceHandlerResolver() {
+  	ClassLoader cl = (getResourceLoader() != null ? getResourceLoader().getClassLoader() : getBeanClassLoader());
+  	return new DefaultNamespaceHandlerResolver(cl); // <x>
+  }
+  ```
+
+  - 从 `<x>` 处，我们可以看到，NamespaceHandlerResolver 对象的**最终类型**是 `org.springframework.beans.factory.xml.DefaultNamespaceHandlerResolver` 。
+
+#### 2.3 resolve
+
+所以， `getNamespaceHandlerResolver().resolve(namespaceUri)` 调用的就是 DefaultNamespaceHandlerResolver 的 `#resolve(String namespaceUri)` 方法。代码如下：
+
+```JAVA
+@Override
+@Nullable
+public NamespaceHandler resolve(String namespaceUri) {
+    // <1> 获取所有已经配置的 Handler 映射
+    Map<String, Object> handlerMappings = getHandlerMappings();
+    // <2> 根据 namespaceUri 获取 handler 的信息
+    Object handlerOrClassName = handlerMappings.get(namespaceUri);
+    // <3.1> 不存在
+    if (handlerOrClassName == null) {
+        return null;
+    // <3.2> 已经初始化
+    } else if (handlerOrClassName instanceof NamespaceHandler) {
+        return (NamespaceHandler) handlerOrClassName;
+    // <3.3> 需要进行初始化
+    } else {
+        String className = (String) handlerOrClassName;
+        try {
+            // 获得类，并创建 NamespaceHandler 对象
+            Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
+            if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
+                throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
+                        "] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
+            }
+            NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
+            // 初始化 NamespaceHandler 对象
+            namespaceHandler.init();
+            // 添加到缓存
+            handlerMappings.put(namespaceUri, namespaceHandler);
+            return namespaceHandler;
+        } catch (ClassNotFoundException ex) {
+            throw new FatalBeanException("Could not find NamespaceHandler class [" + className +
+                    "] for namespace [" + namespaceUri + "]", ex);
+        } catch (LinkageError err) {
+            throw new FatalBeanException("Unresolvable class definition for NamespaceHandler class [" +
+                    className + "] for namespace [" + namespaceUri + "]", err);
+        }
+    }
+}
+```
+
+- `<1>` 处，首先，调用 `#getHandlerMappings()` 方法，获取所有配置文件中的映射关系 `handlerMappings` 。详细解析，胖友先跳到 [2.3.1 getHandlerMappings](#2.3.1 getHandlerMappings) ，看完就回到此处，继续往下走。
+- `<2>` 处，然后，根据 `namespaceUri` 获取 handler 的信息。
+- `<3.1>` 处，`handlerOrClassName` 不存在，则返回 `null` 空。
+- `<3.2>` 处，`handlerOrClassName` 已经初始化成 NamespaceHandler 对象，直接返回它。
+- <3.3>处，handlerOrClassName还是类路径，则创建 NamespaceHandler 对象，并调用`NamespaceHandler#init()`方法，初始化 NamespaceHandler 对象。详细解析，见[2.3.2 init](#2.3.2 init)  另外，创建的 NamespaceHandler 对象，会添加到 `handlerMappings` 中，进行缓存。
+
+##### 2.3.1 getHandlerMappings
+
+```JAVA
+/** ClassLoader to use for NamespaceHandler classes. */
+@Nullable
+private final ClassLoader classLoader;
+
+/**
+ * NamespaceHandler 映射配置文件地址
+ *
+ * Resource location to search for.
+ */
+private final String handlerMappingsLocation;
+
+/**
+ * Stores the mappings from namespace URI to NamespaceHandler class name / instance.
+ *
+ * NamespaceHandler 映射。
+ *
+ * key：命名空间
+ * value：分成两种情况：1）未初始化时，对应的 NamespaceHandler 的类路径；2）已初始化，对应的 NamespaceHandler 对象
+ */
+@Nullable
+private volatile Map<String, Object> handlerMappings;
+
+/**
+ * Load the specified NamespaceHandler mappings lazily.
+ */
+private Map<String, Object> getHandlerMappings() {
+	// 双重检查锁，延迟加载
+	Map<String, Object> handlerMappings = this.handlerMappings;
+	if (handlerMappings == null) {
+		synchronized (this) {
+			handlerMappings = this.handlerMappings;
+			if (handlerMappings == null) {
+				if (logger.isTraceEnabled()) {
+					logger.trace("Loading NamespaceHandler mappings from [" + this.handlerMappingsLocation + "]");
+				}
+				try {
+					// 读取 handlerMappingsLocation
+					Properties mappings = PropertiesLoaderUtils.loadAllProperties(this.handlerMappingsLocation, this.classLoader);
+					if (logger.isTraceEnabled()) {
+						logger.trace("Loaded NamespaceHandler mappings: " + mappings);
+					}
+					// 初始化到 handlerMappings 中
+					handlerMappings = new ConcurrentHashMap<>(mappings.size());
+					CollectionUtils.mergePropertiesIntoMap(mappings, handlerMappings);
+					this.handlerMappings = handlerMappings;
+				} catch (IOException ex) {
+					throw new IllegalStateException(
+							"Unable to load NamespaceHandler mappings from location [" + this.handlerMappingsLocation + "]", ex);
+				}
+			}
+		}
+	}
+	return handlerMappings;
+}
+```
+
+- 虽然代码比较长，但是逻辑实际很简单。
+- 通过延迟加载( lazy-init )的方式，加载 `handlerMappingsLocation` 中配置的 NamespaceHandler 的映射，到 `handlerMappings` 中。
+- `handlerMappings` 的**值属性**有 2 种情况，胖友仔细看下注释。
+
+##### 2.3.2 init
+
+实现 NamespaceHandler 的 `#init()` 方法，主要是将自定义标签解析器进行注册。例如，我们自定义 UserNamespaceHandler 的 `#init()` 方法，代码如下：
+
+```JAVA
+// UserNamespaceHandler.java
+
+@Override
+public void init() {
+    registerBeanDefinitionParser("user",new UserDefinitionParser());
+}
+```
+
+- 直接调用父类 NamespaceHandlerSupport 的 `#registerBeanDefinitionParser(String elementName, BeanDefinitionParser parser)` 方法，注册指定元素的 BeanDefinitionParser 解析器。
+
+###### 2.3.2.1 registerBeanDefinitionParser
+
+NamespaceHandlerSupport 的 `#registerBeanDefinitionParser(String elementName, BeanDefinitionParser parser)` 方法，注册指定元素的 BeanDefinitionParser 解析器。代码如下：
+
+```JAVA
+// NamespaceHandlerSupport.java
+/**
+ * Stores the {@link BeanDefinitionParser} implementations keyed by the
+ * local name of the {@link Element Elements} they handle.
+ *
+ * key：元素名
+ * value：对应 BeanDefinitionParser 的解析器
+ */
+private final Map<String, BeanDefinitionParser> parsers = new HashMap<>();
+
+protected final void registerBeanDefinitionParser(String elementName, BeanDefinitionParser parser) {
+	this.parsers.put(elementName, parser);
+}
+```
+
+- 其实就是将映射关系放在一个 Map 结构的 `parsers` 对象中。
+
+##### 2.4 parse
+
+完成后返回 NamespaceHandler 对象，然后调用其 `#parse(Element element, ParserContext parserContext)` 方法开始自定义标签的解析。代码如下：
+
+```JAVA
+// NamespaceHandlerSupport.java
+@Override
+@Nullable
+public BeanDefinition parse(Element element, ParserContext parserContext) {
+	// <1> 获得元素对应的 BeanDefinitionParser 对象
+	BeanDefinitionParser parser = findParserForElement(element, parserContext);
+	// <2> 执行解析
+	return (parser != null ? parser.parse(element, parserContext) : null);
+}
+```
+
+- `<1>` 处，调用 `#findParserForElement(Element element, ParserContext parserContext)` 方法，获取对应的 BeanDefinitionParser 实例。实际上，其实就是获取在 NamespaceHandlerSupport 的 `#registerBeanDefinitionParser()` 方法里面注册的实例对象。代码如下：
+
+  ```JAVA
+    /**
+     * Locates the {@link BeanDefinitionParser} from the register implementations using
+     * the local name of the supplied {@link Element}.
+     */
+    @Nullable
+    private BeanDefinitionParser findParserForElement(Element element, ParserContext parserContext) {
+  // 获得元素名
+    	String localName = parserContext.getDelegate().getLocalName(element);
+    	// 获得 BeanDefinitionParser 对象
+    	BeanDefinitionParser parser = this.parsers.get(localName);
+    	if (parser == null) {
+    		parserContext.getReaderContext().fatal(
+    				"Cannot locate BeanDefinitionParser for element [" + localName + "]", element);
+    	}
+    	return parser;
+    }
+  ```
+
+  - 首先，获取 `localName`，在上面的例子中就是：`"user` 。
+  - 然后，从 Map 实例 `parsers` 中获取 BeanDefinitionParser 对象。在上面的例子中就是：UserBeanDefinitionParser 对象。
+
+- `<2>` 处，返回 BeanDefinitionParser 对象后，调用其 `#parse(Element element, ParserContext parserContext)` 方法。该方法在 AbstractBeanDefinitionParser 中实现，代码如下：
+
+  ```JAVA
+    // AbstractBeanDefinitionParser.java
+  
+    @Override
+    @Nullable
+    public final BeanDefinition parse(Element element, ParserContext parserContext) {
+  // <1> 内部解析，返回 AbstractBeanDefinition 对象
+    	AbstractBeanDefinition definition = parseInternal(element, parserContext);
+    	if (definition != null && !parserContext.isNested()) {
+    		try {
+    		    // 解析 id 属性
+    			String id = resolveId(element, definition, parserContext);
+    			if (!StringUtils.hasText(id)) {
+    				parserContext.getReaderContext().error(
+    						"Id is required for element '" + parserContext.getDelegate().getLocalName(element)
+    								+ "' when used as a top-level tag", element);
+    			}
+    			// 解析 aliases 属性
+    			String[] aliases = null;
+    			if (shouldParseNameAsAliases()) {
+    				String name = element.getAttribute(NAME_ATTRIBUTE);
+    				if (StringUtils.hasLength(name)) {
+    					aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
+    				}
+    			}
+    			// 创建 BeanDefinitionHolder 对象
+    			BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, id, aliases);
+    			// 注册 BeanDefinition
+    			registerBeanDefinition(holder, parserContext.getRegistry());
+    			// 触发事件
+    			if (shouldFireEvents()) {
+    				BeanComponentDefinition componentDefinition = new BeanComponentDefinition(holder);
+    				postProcessComponentDefinition(componentDefinition);
+    				parserContext.registerComponent(componentDefinition);
+    			}
+    		} catch (BeanDefinitionStoreException ex) {
+    			String msg = ex.getMessage();
+    			parserContext.getReaderContext().error((msg != null ? msg : ex.toString()), element);
+    			return null;
+    		}
+    	}
+    	return definition;
+    }
+  ```
+
+  - 核心在 `<1>` 处 `#parseInternal(Element element, ParserContext parserContext)` 方法。为什么这么说？因为该方法返回的是 AbstractBeanDefinition 对象。从前面**默认标签**的解析过程来看，我们就可以判断该方法就是将标签解析为 AbstractBeanDefinition ，且后续代码都是将 AbstractBeanDefinition 转换为 BeanDefinitionHolder 对象。所以真正的解析工作都交由 `#parseInternal(Element element, ParserContext parserContext)` 方法来实现。关于该方法，详细解析，见 [2.4.1 parseInternal](#2.4.1 parseInternal) 。
+  - 其它逻辑，例如 `#resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext)` 方法，都比较简单，感兴趣的胖友，可以自己去看。
+
+###### 2.4.1 parseInternal
+
+`#parseInternal(Element element, ParserContext parserContext)` 方法，解析 XML 元素为 AbstractBeanDefinition 对象。代码如下：
+
+```JAVA
+// AbstractSingleBeanDefinitionParser.java
+
+@Override
+protected final AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+    // 创建 BeanDefinitionBuilder 对象
+    BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
+    // 获取父类元素
+    String parentName = getParentName(element);
+    if (parentName != null) {
+        builder.getRawBeanDefinition().setParentName(parentName);
+    }
+    // 获取自定义标签中的 class，这个时候会去调用自定义解析中的 getBeanClass()
+    Class<?> beanClass = getBeanClass(element);
+    if (beanClass != null) {
+        builder.getRawBeanDefinition().setBeanClass(beanClass);
+    } else {
+        // beanClass 为 null，意味着子类并没有重写 getBeanClass() 方法，则尝试去判断是否重写了 getBeanClassName()
+        String beanClassName = getBeanClassName(element);
+        if (beanClassName != null) {
+            builder.getRawBeanDefinition().setBeanClassName(beanClassName);
+        }
+    }
+    // 设置 source 属性
+    builder.getRawBeanDefinition().setSource(parserContext.extractSource(element));
+    // 设置 scope 属性
+    BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
+    if (containingBd != null) {
+        // Inner bean definition must receive same scope as containing bean.
+        builder.setScope(containingBd.getScope());
+    }
+    // 设置 lazy-init 属性
+    if (parserContext.isDefaultLazyInit()) {
+        // Default-lazy-init applies to custom bean definitions as well.
+        builder.setLazyInit(true);
+    }
+    // 调用子类的 doParse() 进行解析
+    doParse(element, parserContext, builder);
+    return builder.getBeanDefinition();
+}
+```
+
+- 在该方法中我们主要关注两个方法：`#getBeanClass((Element element)` 、`#doParse(Element element, BeanDefinitionBuilder builder)`。
+- 对于 `getBeanClass()` 方法，AbstractSingleBeanDefinitionParser 类并没有提供具体实现，而是直接返回 `null` ，**意味着它希望子类能够重写该方法**。当然，如果没有重写该方法，这会去调用 `#getBeanClassName()` ，判断子类是否已经重写了该方法。
+- 对于 `#doParse(Element element, BeanDefinitionBuilder builder)` 方法，则是直接**空实现**。
+
+😈 所以对于 `#parseInternal(Element element, ParserContext parserContext)` 方法 而言，它总是期待它的子类能够实现 `#getBeanClass((Element element)` 、`#doParse(Element element, BeanDefinitionBuilder builder)` 方法。其中，`#doParse(Element element, BeanDefinitionBuilder builder)` **方法尤为重要**！如果，你不提供该方法的实现，怎么来解析自定义标签呢？此时，胖友可以回过头，再看一眼在 [1.3 定义 Parser 类](#1.3 定义 Parser 类) 的 UserDefinitionParser 实现类，是不是已经能够很好理解咧。
+
+#### 3. 小结
+
+至此，自定义标签的解析过程已经分析完成了。其实整个过程还是较为简单：
+
+- 首先，会加载 `spring.handlers` 文件，将其中内容进行一个解析，形成 `<namespaceUri, 类路径>` 这样的一个映射。
+- 然后，根据获取的 `namespaceUri` 就可以得到相应的类路径，对其进行初始化等到相应的 NamespaceHandler 对象。
+- 之后，调用该 NamespaceHandler 的 `#parse(...)` 方法，在该方法中根据标签的 `localName` 得到相应的 BeanDefinitionParser 实例对象。
+- 最后，调用该 BeanDefinitionParser 的 `#parse(...)` 方法。该方法定义在 AbstractBeanDefinitionParser 抽象类中，核心逻辑封装在其 `#parseInternal(...)` 方法中，该方法返回一个 AbstractBeanDefinition 实例对象，其主要是在 AbstractSingleBeanDefinitionParser 中实现。对于自定义的 Parser 类，其需要实现 `#getBeanClass()` 或者 `#getBeanClassName()` 任一方法，和 `#doParse(...)` 方法。
+
+整体流程如：
+
+![image-20221215174547466](../../_media/analysis/spring/image-20221215174547466.png)
+
+##  IoC 之注册解析的 BeanDefinitions
+
+DefaultBeanDefinitionDocumentReader 的 ﻿`#processBeanDefinition()` 方法，完成 Bean 标签解析的核心工作。代码如下：
+
+```JAVA
+// DefaultBeanDefinitionDocumentReader.java
+
+protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+    // 进行 bean 元素解析。
+    // 如果解析成功，则返回 BeanDefinitionHolder 对象。而 BeanDefinitionHolder 为 name 和 alias 的 BeanDefinition 对象
+    // 如果解析失败，则返回 null 。
+    BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
+    if (bdHolder != null) {
+        // 进行自定义标签处理
+        bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
+        try {
+            // 进行 BeanDefinition 的注册
+            // Register the final decorated instance.
+            BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
+        } catch (BeanDefinitionStoreException ex) {
+            getReaderContext().error("Failed to register bean definition with name '" +
+                    bdHolder.getBeanName() + "'", ele, ex);
+        }
+        // 发出响应事件，通知相关的监听器，已完成该 Bean 标签的解析。
+        // Send registration event.
+        getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+    }
+}
+```
+
+- 解析工作分为三步：
+  - 1、解析默认标签。
+  - 2、解析默认标签后下得自定义标签。
+  - 3、注册解析后的 BeanDefinition 。
+- 经过前面两个步骤的解析，这时的 BeanDefinition 已经可以满足后续的使用要求了，**那么接下来的工作就是将这些 BeanDefinition 进行注册，也就是完成第三步**。
+
+### 1. BeanDefinitionReaderUtils
+
+注册 BeanDefinition ，由 `BeanDefinitionReaderUtils.registerBeanDefinition()` 完成。代码如下：
+
+```JAVA
+// BeanDefinitionReaderUtils.java
+ 
+public static void registerBeanDefinition(
+        BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
+        throws BeanDefinitionStoreException {
+
+    // 注册 beanName
+    // Register bean definition under primary name.
+    String beanName = definitionHolder.getBeanName();
+    registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());
+
+    // 注册 alias
+    // Register aliases for bean name, if any.
+    String[] aliases = definitionHolder.getAliases();
+    if (aliases != null) {
+        for (String alias : aliases) {
+            registry.registerAlias(beanName, alias);
+        }
+    }
+}
+```
+
+- 首先，通过 `beanName` 注册 BeanDefinition 。详细解析，见 [2.1 通过 beanName 注册](#2.1 通过 beanName 注册) 。
+- 然后，再通过注册别名 `alias` 和 `beanName` 的映射。详细解析，见 [2.2 注册 alias 和 beanName 的映射](#2.2 注册 alias 和 beanName 的映射) 。
+
+### 2. BeanDefinitionRegistry
+
+BeanDefinition 的注册，由接口 `org.springframework.beans.factory.support.BeanDefinitionRegistry` 定义。
+
+#### 2.1 通过 beanName 注册
+
+调用 BeanDefinitionRegistry 的 `#registerBeanDefinition(String beanName, BeanDefinition beanDefinition)` 方法，实现通过 `beanName` 注册 BeanDefinition 。代码如下：
+
+```JAVA
+// DefaultListableBeanFactory.java
+
+/** Whether to allow re-registration of a different definition with the same name. */
+private boolean allowBeanDefinitionOverriding = true;
+
+/** Map of bean definition objects, keyed by bean name. */
+private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
+/** List of bean definition names, in registration order. */
+private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
+/** List of names of manually registered singletons, in registration order. */
+private volatile Set<String> manualSingletonNames = new LinkedHashSet<>(16);
+/** Cached array of bean definition names in case of frozen configuration. */
+@Nullable
+private volatile String[] frozenBeanDefinitionNames;
+
+@Override
+public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+        throws BeanDefinitionStoreException {
+
+    // 校验 beanName 与 beanDefinition 非空
+    Assert.hasText(beanName, "Bean name must not be empty");
+    Assert.notNull(beanDefinition, "BeanDefinition must not be null");
+
+    // <1> 校验 BeanDefinition 。
+    // 这是注册前的最后一次校验了，主要是对属性 methodOverrides 进行校验。
+    if (beanDefinition instanceof AbstractBeanDefinition) {
+        try {
+            ((AbstractBeanDefinition) beanDefinition).validate();
+        } catch (BeanDefinitionValidationException ex) {
+            throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
+                    "Validation of bean definition failed", ex);
+        }
+    }
+
+    // <2> 从缓存中获取指定 beanName 的 BeanDefinition
+    BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+    // <3> 如果已经存在
+    if (existingDefinition != null) {
+        // 如果存在但是不允许覆盖，抛出异常
+        if (!isAllowBeanDefinitionOverriding()) {
+            throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
+        // 覆盖 beanDefinition 大于 被覆盖的 beanDefinition 的 ROLE ，打印 info 日志
+        } else if (existingDefinition.getRole() < beanDefinition.getRole()) {
+            // e.g. was ROLE_APPLICATION, now overriding with ROLE_SUPPORT or ROLE_INFRASTRUCTURE
+            if (logger.isInfoEnabled()) {
+                logger.info("Overriding user-defined bean definition for bean '" + beanName +
+                        "' with a framework-generated bean definition: replacing [" +
+                        existingDefinition + "] with [" + beanDefinition + "]");
+            }
+        // 覆盖 beanDefinition 与 被覆盖的 beanDefinition 不相同，打印 debug 日志
+        } else if (!beanDefinition.equals(existingDefinition)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Overriding bean definition for bean '" + beanName +
+                        "' with a different definition: replacing [" + existingDefinition +
+                        "] with [" + beanDefinition + "]");
+            }
+        // 其它，打印 debug 日志
+        } else {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Overriding bean definition for bean '" + beanName +
+                        "' with an equivalent definition: replacing [" + existingDefinition +
+                        "] with [" + beanDefinition + "]");
+            }
+        }
+        // 允许覆盖，直接覆盖原有的 BeanDefinition 到 beanDefinitionMap 中。
+        this.beanDefinitionMap.put(beanName, beanDefinition);
+    // <4> 如果未存在
+    } else {
+        // 检测创建 Bean 阶段是否已经开启，如果开启了则需要对 beanDefinitionMap 进行并发控制
+        if (hasBeanCreationStarted()) {
+            // beanDefinitionMap 为全局变量，避免并发情况
+            // Cannot modify startup-time collection elements anymore (for stable iteration)
+            synchronized (this.beanDefinitionMap) {
+                // 添加到 BeanDefinition 到 beanDefinitionMap 中。
+                this.beanDefinitionMap.put(beanName, beanDefinition);
+                // 添加 beanName 到 beanDefinitionNames 中
+                List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
+                updatedDefinitions.addAll(this.beanDefinitionNames);
+                updatedDefinitions.add(beanName);
+                this.beanDefinitionNames = updatedDefinitions;
+                // 从 manualSingletonNames 移除 beanName
+                if (this.manualSingletonNames.contains(beanName)) {
+                    Set<String> updatedSingletons = new LinkedHashSet<>(this.manualSingletonNames);
+                    updatedSingletons.remove(beanName);
+                    this.manualSingletonNames = updatedSingletons;
+                }
+            }
+        } else {
+            // Still in startup registration phase
+            // 添加到 BeanDefinition 到 beanDefinitionMap 中。
+            this.beanDefinitionMap.put(beanName, beanDefinition);
+            // 添加 beanName 到 beanDefinitionNames 中
+            this.beanDefinitionNames.add(beanName);
+            // 从 manualSingletonNames 移除 beanName
+            this.manualSingletonNames.remove(beanName);
+        }
+        
+        this.frozenBeanDefinitionNames = null;
+    }
+
+    // <5> 重新设置 beanName 对应的缓存
+    if (existingDefinition != null || containsSingleton(beanName)) {
+        resetBeanDefinition(beanName);
+    }
+}
+```
+
+处理过程如下：
+
+- `<1>` 对 BeanDefinition 进行校验，该校验也是注册过程中的最后一次校验了，主要是对 AbstractBeanDefinition 的 `methodOverrides` 属性进行校验。
+- `<2>` 根据 `beanName` 从缓存中获取 BeanDefinition 对象。
+- `<3>` 如果缓存中存在，则根据 `allowBeanDefinitionOverriding` 标志来判断是否允许覆盖。如果允许则直接覆盖。否则，抛出 BeanDefinitionStoreException 异常。
+- <4>若缓存中没有指定beanName的 BeanDefinition，则判断当前阶段是否已经开始了 Bean 的创建阶段？如果是，则需要对 beanDefinitionMap 进行加锁控制并发问题，否则直接设置即可。
+  - 对于 `#hasBeanCreationStarted()` 方法，后续做详细介绍，这里不过多阐述。
+- `<5>` 若缓存中存在该 `beanName` 或者单例 bean 集合中存在该 `beanName` ，则调用 `#resetBeanDefinition(String beanName)` 方法，重置 BeanDefinition 缓存。
+
+😈 其实整段代码的核心就在于 `this.beanDefinitionMap.put(beanName, beanDefinition);` 代码块。而 BeanDefinition 的缓存也不是神奇的东西，就是定义一个 Map ：
+
+- `key` 为 `beanName` 。
+- `value` 为 BeanDefinition 对象。
+
+#### 2.2 注册 alias 和 beanName 的映射
+
+调用 BeanDefinitionRegistry 的 `#registerAlias(String name, String alias)` 方法，注册 `alias` 和 `beanName` 的映射关系。代码如下：
+
+```JAVA
+// SimpleAliasRegistry.java
+
+/** Map from alias to canonical name. */
+// key: alias
+// value: beanName
+private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
+
+@Override
+public void registerAlias(String name, String alias) {
+    // 校验 name 、 alias
+    Assert.hasText(name, "'name' must not be empty");
+    Assert.hasText(alias, "'alias' must not be empty");
+    synchronized (this.aliasMap) {
+        // name == alias 则去掉alias
+        if (alias.equals(name)) {
+            this.aliasMap.remove(alias);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Alias definition '" + alias + "' ignored since it points to same name");
+            }
+        } else {
+            // 获取 alias 已注册的 beanName
+            String registeredName = this.aliasMap.get(alias);
+            // 已存在
+            if (registeredName != null) {
+                // 相同，则 return ，无需重复注册
+                if (registeredName.equals(name)) {
+                    // An existing alias - no need to re-register
+                    return;
+                }
+                // 不允许覆盖，则抛出 IllegalStateException 异常
+                if (!allowAliasOverriding()) {
+                    throw new IllegalStateException("Cannot define alias '" + alias + "' for name '" +
+                            name + "': It is already registered for name '" + registeredName + "'.");
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Overriding alias '" + alias + "' definition for registered name '" +
+                            registeredName + "' with new target name '" + name + "'");
+                }
+            }
+            // 校验，是否存在循环指向
+            checkForAliasCircle(name, alias);
+            // 注册 alias
+            this.aliasMap.put(alias, name);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Alias definition '" + alias + "' registered for name '" + name + "'");
+            }
+        }
+    }
+}
+```
+
+- 注册 `alias` 和注册 BeanDefinition 的过程差不多。
+
+- 在最后，调用了 `#checkForAliasCircle()` 来对别名进行了**循环**检测。代码如下：
+
+  ```JAVA
+  protected void checkForAliasCircle(String name, String alias) {
+      if (hasAlias(alias, name)) {
+          throw new IllegalStateException("Cannot register alias '" + alias +
+                  "' for name '" + name + "': Circular reference - '" +
+                  name + "' is a direct or indirect alias for '" + alias + "' already");
+      }
+  }
+  public boolean hasAlias(String name, String alias) {
+      for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
+          String registeredName = entry.getValue();
+          if (registeredName.equals(name)) {
+              String registeredAlias = entry.getKey();
+              if (registeredAlias.equals(alias) || hasAlias(registeredAlias, alias)) {
+                  return true;
+              }
+          }
+      }
+      return false;
+  }
+  ```
+
+  - 如果 `name`、`alias` 分别为 1 和 3 ，则构成 `（1,3）` 的映射。加入，此时集合中存在`（A,1）`、`（3,A）` 的映射，意味着出现循环指向的情况，则抛出 IllegalStateException 异常。
+
+### 3. 小结
+
+到这里 BeanDefinition 基于 `beanName` 和 `alias` 的维度，都已经注入到缓存中，下一步则是等待初始化使用了。我们，后续的文章，继续搞起来。
+
+##  IoC 之装载 BeanDefinitions 总结
+
+前面 13 篇博文从源码层次，分析了 IoC BeanDefinition 装载的整个过程，这篇就这些内容做一个总结将其连贯起来。
+
+在前文提过，IoC 容器的初始化过程分为三步骤：Resource 定位、BeanDefinition 的载入和解析，BeanDefinition 注册。
+
+![image-20221215175153635](../../_media/analysis/spring/image-20221215175153635.png)
+
+整体步骤
+
+- **Resource 定位**。我们一般用外部资源来描述 Bean 对象，所以在初始化 IoC 容器的第一步就是需要定位这个外部资源。在上一篇博客（[IoC 之 Spring 统一资源加载策略](#IoC 之统一资源加载策略)）已经详细说明了资源加载的过程。
+
+- BeanDefinition 的装载和解析
+
+  。装载就是 BeanDefinition 的载入。BeanDefinitionReader 读取、解析 Resource 资源，也就是将用户定义的 Bean 表示成 IoC 容器的内部数据结构：BeanDefinition 。
+
+  - 在 IoC 容器内部维护着一个 BeanDefinition Map 的数据结构
+  - 在配置文件中每一个 `<bean>` 都对应着一个 BeanDefinition 对象。
+
+- BeanDefinition 注册
+
+  。向 IoC 容器注册在第二步解析好的 BeanDefinition，这个过程是通过 BeanDefinitionRegistry 接口来实现的。在 IoC 容器内部其实是将第二个过程解析得到的 BeanDefinition 注入到一个 HashMap 容器中，IoC 容器就是通过这个 HashMap 来维护这些 BeanDefinition 的。
+
+  - 在这里需要注意的一点是这个过程并没有完成依赖注入（Bean 创建），Bean 创建是发生在应用第一次调用 `#getBean(...)` 方法，向容器索要 Bean 时。
+  - 当然我们可以通过设置预处理，即对某个 Bean 设置 `lazyinit = false` 属性，那么这个 Bean 的依赖注入就会在容器初始化的时候完成。
+
+还记得在博客 [IoC 之加载 BeanDefinition](#IoC 之加载 BeanDefinition) 中提供的一段代码吗？这里我们同样也以这段代码作为我们研究 IoC 初始化过程的开端，如下：
+
+```JAVA
+ClassPathResource resource = new ClassPathResource("bean.xml");
+DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+reader.loadBeanDefinitions(resource);
+```
+
+刚刚开始的时候可能对上面这几行代码不知道什么意思，现在应该就一目了然了：
+
+- `ClassPathResource resource = new ClassPathResource("bean.xml");` ： 根据 Xml 配置文件创建 Resource 资源对象。ClassPathResource 是 Resource 接口的子类，`bean.xml` 文件中的内容是我们定义的 Bean 信息。
+- `DefaultListableBeanFactory factory = new DefaultListableBeanFactory();` ：创建一个 BeanFactory 。DefaultListableBeanFactory 是 BeanFactory 的一个子类，BeanFactory 作为一个接口，其实它本身是不具有独立使用的功能的，而 DefaultListableBeanFactory 则是真正可以独立使用的 IoC 容器，它是整个 Spring IoC 的始祖，在后续会有专门的文章来分析它。
+- `XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);` ：创建 XmlBeanDefinitionReader 读取器，用于载入 BeanDefinition 。
+- `reader.loadBeanDefinitions(resource);`：开始 BeanDefinition 的载入和注册进程，完成后的 BeanDefinition 放置在 IoC 容器中。
+
+### 1. Resource 定位
+
+Spring 为了解决资源定位的问题，提供了两个接口：Resource、ResourceLoader，其中：
+
+- Resource 接口是 Spring 统一资源的抽象接口
+- ResourceLoader 则是 Spring 资源加载的统一抽象。
+- 关于Resource、ResourceLoader 的更多知识请关注 [ IoC 之 Spring 统一资源加载策略](#IoC 之统一资源加载策略)
+
+Resource 资源的定位需要 Resource 和 ResourceLoader 两个接口互相配合，在上面那段代码中 `new ClassPathResource("bean.xml")` 为我们定义了资源，那么 ResourceLoader 则是在什么时候初始化的呢？看 XmlBeanDefinitionReader 构造方法：
+
+```JAVA
+// XmlBeanDefinitionReader.java
+public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
+	super(registry);
+}
+```
+
+- 直接调用父类 AbstractBeanDefinitionReader 构造方法，代码如下：
+
+  ```JAVA
+  // AbstractBeanDefinitionReader.java
+  
+  protected AbstractBeanDefinitionReader(BeanDefinitionRegistry registry) {
+  	Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
+  	this.registry = registry;
+  	// Determine ResourceLoader to use.
+  	if (this.registry instanceof ResourceLoader) {
+  		this.resourceLoader = (ResourceLoader) this.registry;
+  	}	else {
+  		this.resourceLoader = new PathMatchingResourcePatternResolver();
+  	}
+  
+  	// Inherit Environment if possible
+  	if (this.registry instanceof EnvironmentCapable) {
+  		this.environment = ((EnvironmentCapable) this.registry).getEnvironment();
+  	} else {
+  		this.environment = new StandardEnvironment();
+  	}
+  }
+  ```
+
+  - 核心在于设置 resourceLoader 这段，如果设置了 ResourceLoader 则用设置的，否则使用 PathMatchingResourcePatternResolver ，该类是一个集大成者的 ResourceLoader。
+
+### 2. BeanDefinition 的载入和解析
+
+`reader.loadBeanDefinitions(resource);` 代码段，开启 BeanDefinition 的解析过程。如下：
+
+```JAVA
+// XmlBeanDefinitionReader.java
+@Override
+public int loadBeanDefinitions(Resource resource) throws BeanDefinitionStoreException {
+	return loadBeanDefinitions(new EncodedResource(resource));
+}
+```
+
+- 在这个方法会将资源 resource 包装成一个 EncodedResource 实例对象，然后调用 `#loadBeanDefinitions(EncodedResource encodedResource)` 方法。而将 Resource 封装成 EncodedResource 主要是为了对 Resource 进行编码，保证内容读取的正确性。代码如下：
+
+  ```JAVA
+  // XmlBeanDefinitionReader.java
+  
+  public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
+  	// ... 省略一些代码
+  	try {
+  		// 将资源文件转为 InputStream 的 IO 流
+  		InputStream inputStream = encodedResource.getResource().getInputStream();
+  		try {
+  			// 从 InputStream 中得到 XML 的解析源
+  			InputSource inputSource = new InputSource(inputStream);
+  			if (encodedResource.getEncoding() != null) {
+  				inputSource.setEncoding(encodedResource.getEncoding());
+  			}
+  			// ... 具体的读取过程
+  			return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
+  		}
+  		finally {
+  			inputStream.close();
+  		}
+  	}
+  	// 省略一些代码
+  }
+  ```
+
+  - 从 `encodedResource` 源中获取 xml 的解析源，然后调用 `#doLoadBeanDefinitions(InputSource inputSource, Resource resource)` 方法，执行具体的解析过程。
+
+    ```JAVA
+    // XmlBeanDefinitionReader.java
+    
+    protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
+    			throws BeanDefinitionStoreException {
+    	try {
+    		// 获取 XML Document 实例
+    		Document doc = doLoadDocument(inputSource, resource);
+    		// 根据 Document 实例，注册 Bean 信息
+    		int count = registerBeanDefinitions(doc, resource);
+    		return count;
+    	}
+    	// ... 省略一堆配置
+    }
+    ```
+
+    - 在该方法中主要做两件事：
+    - 1、根据 xml 解析源获取相应的 Document 对象。详细解析，见 [「2.1 转换为 Document 对象」](http://svip.iocoder.cn/Spring/IoC-load-BeanDefinitions-summary/#) 。
+    - 2、调用 `#registerBeanDefinitions(Document doc, Resource resource)` 方法，开启 BeanDefinition 的解析注册过程。详细解析，见 [「2.2 注册 BeanDefinition」](http://svip.iocoder.cn/Spring/IoC-load-BeanDefinitions-summary/#) 。
+
+#### 2.1 转换为 Document 对象
+
+调用 `#doLoadDocument(InputSource inputSource, Resource resource)` 方法，会将 Bean 定义的资源转换为 Document 对象。代码如下：
+
+```JAVA
+// XmlBeanDefinitionReader.java
+
+protected Document doLoadDocument(InputSource inputSource, Resource resource) throws Exception {
+	return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,
+			getValidationModeForResource(resource), isNamespaceAware());
+}
+```
+
+该方法接受五个参数：
+
+- `inputSource` ：加载 Document 的 Resource 源。
+- entityResolver：解析文件的解析器。
+  - 【重要】详细解析，见 [《【死磕 Spring】—— IoC 之获取 Document 对象》](http://svip.iocoder.cn/Spring/IoC-load-Document) 。
+- `errorHandler` ：处理加载 Document 对象的过程的错误。
+- validationMode：验证模式。
+  - 【重要】详细解析，见 [《【死磕 Spring】—— IoC 之获取验证模型》](http://svip.iocoder.cn/Spring/IoC-Validation-Mode-For-Resource) 。
+- `namespaceAware` ：命名空间支持。如果要提供对 XML 名称空间的支持，则为 `true` 。
+
+------
+
+`#loadDocument(InputSource inputSource, EntityResolver entityResolver, ErrorHandler errorHandler, int validationMode, boolean namespaceAware)` 方法，在类 DefaultDocumentLoader 中提供了实现。代码如下：
+
+```JAVA
+// DefaultDocumentLoader.java
+
+@Override
+public Document loadDocument(InputSource inputSource, EntityResolver entityResolver,
+		ErrorHandler errorHandler, int validationMode, boolean namespaceAware) throws Exception {
+	// 创建 DocumentBuilderFactory
+	DocumentBuilderFactory factory = createDocumentBuilderFactory(validationMode, namespaceAware);
+	// 创建 DocumentBuilder
+	DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
+	// 解析 XML InputSource 返回 Document 对象
+	return builder.parse(inputSource);
+}
+```
+
+#### 2.2 注册 BeanDefinition 流程
+
+这到这里，就已经将定义的 Bean 资源文件，载入并转换为 Document 对象了。那么，下一步就是如何将其解析为 SpringIoC 管理的 BeanDefinition 对象，并将其注册到容器中。这个过程由方法 `#registerBeanDefinitions(Document doc, Resource resource)` 方法来实现。代码如下：
+
+```JAVA
+// XmlBeanDefinitionReader.java
+
+public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+	// 创建 BeanDefinitionDocumentReader 对象
+	BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+	// 获取已注册的 BeanDefinition 数量
+	int countBefore = getRegistry().getBeanDefinitionCount();
+	// 创建 XmlReaderContext 对象
+	// 注册 BeanDefinition
+	documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+	// 计算新注册的 BeanDefinition 数量
+	return getRegistry().getBeanDefinitionCount() - countBefore;
+}
+```
+
+- 首先，创建 BeanDefinition 的解析器 BeanDefinitionDocumentReader 。
+
+- 然后，调用该 BeanDefinitionDocumentReader 的 `#registerBeanDefinitions(Document doc, XmlReaderContext readerContext)` 方法，开启解析过程，这里使用的是委派模式，具体的实现由子类 DefaultBeanDefinitionDocumentReader 完成。代码如下：
+
+  ```JAVA
+  // DefaultBeanDefinitionDocumentReader.java
+  
+  @Override
+  public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
+      this.readerContext = readerContext;
+      // 获得 XML Document Root Element
+      // 执行注册 BeanDefinition
+      doRegisterBeanDefinitions(doc.getDocumentElement());
+  }
+  ```
+
+##### 2.2.1 对 Document 对象的解析
+
+从 Document 对象中获取根元素 root，然后调用 ``#doRegisterBeanDefinitions(Element root)` 方法，开启真正的解析过程。代码如下：
+
+```JAVA
+// DefaultBeanDefinitionDocumentReader.java
+
+protected void doRegisterBeanDefinitions(Element root) {
+    // ... 省略部分代码（非核心）
+    this.delegate = createDelegate(getReaderContext(), root, parent);
+
+    // 解析前处理
+    preProcessXml(root);
+    // 解析
+    parseBeanDefinitions(root, this.delegate);
+    // 解析后处理
+    postProcessXml(root);
+
+}
+```
+
+- `#preProcessXml(Element root)`、`#postProcessXml(Element root)` 为前置、后置增强处理，目前 Spring 中都是空实现。
+
+- `#parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate)` 是对根元素 root 的解析注册过程。代码如下：
+
+  ```JAVA
+  // DefaultBeanDefinitionDocumentReader.java
+  
+  protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+      // 如果根节点使用默认命名空间，执行默认解析
+      if (delegate.isDefaultNamespace(root)) {
+          // 遍历子节点
+          NodeList nl = root.getChildNodes();
+          for (int i = 0; i < nl.getLength(); i++) {
+              Node node = nl.item(i);
+              if (node instanceof Element) {
+                  Element ele = (Element) node;
+                  // 如果该节点使用默认命名空间，执行默认解析
+                  if (delegate.isDefaultNamespace(ele)) {
+                      parseDefaultElement(ele, delegate);
+                  // 如果该节点非默认命名空间，执行自定义解析
+                  } else {
+                      delegate.parseCustomElement(ele);
+                  }
+              }
+          }
+      // 如果根节点非默认命名空间，执行自定义解析
+      } else {
+          delegate.parseCustomElement(root);
+      }
+  }
+  ```
+
+  - 迭代 root 元素的所有子节点，对其进行判断：
+    - 若节点为默认命名空间，则调用 `#parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate)` 方法，开启默认标签的解析注册过程。详细解析，见 [「2.2.1.1 默认标签解析」](http://svip.iocoder.cn/Spring/IoC-load-BeanDefinitions-summary/#) 。
+    - 否则，调用 `BeanDefinitionParserDelegate#parseCustomElement(Element ele)` 方法，开启自定义标签的解析注册过程。详细解析，见 [「2.2.1.2 自定义标签解析」](http://svip.iocoder.cn/Spring/IoC-load-BeanDefinitions-summary/#) 。
+
+###### 2.2.1.1 默认标签解析
+
+若定义的元素节点使用的是 Spring 默认命名空间，则调用 `#parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate)` 方法，进行默认标签解析。代码如下：
+
+```JAVA
+// DefaultBeanDefinitionDocumentReader.java
+
+private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+	if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) { // import
+		importBeanDefinitionResource(ele);
+	} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) { // alias
+		processAliasRegistration(ele);
+	} else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) { // bean
+		processBeanDefinition(ele, delegate);
+	} else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) { // beans
+		// recurse
+		doRegisterBeanDefinitions(ele);
+	}
+}
+```
+
+对四大标签：`<import>`、`<alias>`、`<bean>`、`<beans>` 进行解析。**其中 `<bean>` 标签的解析为核心工作**。关于各个标签的解析过程，见如下文章：
+
+- [《【死磕 Spring】—— IoC 之解析 标签》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-for-import)
+- [《【死磕 Spring】—— IoC 之解析 标签：开启解析进程》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-in-processBeanDefinition)
+- [《【死磕 Spring】—— IoC 之解析 标签：BeanDefinition》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-for-BeanDefinition)
+- [《【死磕 Spring】—— IoC 之解析 标签：meta、lookup-method、replace-method》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-for-meta-and-look-method-and-replace-method)
+- [《【死磕 Spring】—— IoC 之解析 标签：constructor-arg、property、qualifier》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-for-constructor-arg-and-property-and-qualifier)
+- [《【死磕 Spring】—— IoC 之解析 标签：解析自定义标签》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-for-decorateBeanDefinitionIfRequired)
+
+###### 2.2.1.2 自定义标签解析
+
+对于默认标签则由 `parseCustomElement(Element ele)` 方法，负责解析。代码如下：
+
+```JAVA
+// BeanDefinitionParserDelegate.java
+
+@Nullable
+public BeanDefinition parseCustomElement(Element ele) {
+    return parseCustomElement(ele, null);
+}
+
+@Nullable
+public BeanDefinition parseCustomElement(Element ele, @Nullable BeanDefinition containingBd) {
+    // 获取 namespaceUri
+    String namespaceUri = getNamespaceURI(ele);
+    if (namespaceUri == null) {
+        return null;
+    }
+    // 根据 namespaceUri 获取相应的 Handler
+    NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
+    if (handler == null) {
+        error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", ele);
+        return null;
+    }
+    // 调用自定义的 Handler 处理
+    return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
+}
+```
+
+获取节点的 `namespaceUri`，然后根据该 `namespaceUri` 获取相对应的 NamespaceHandler，最后调用 NamespaceHandler 的 `#parse(Element element, ParserContext parserContext)` 方法，即完成自定义标签的解析和注入。
+
+想了解更多，可参考：[《【死磕 Spring】—— IoC 之解析自定义标签》](http://svip.iocoder.cn/Spring/IoC-parse-BeanDefinitions-in-parseCustomElement) 。
+
+##### 2.2.2 注册 BeanDefinition
+
+经过上面的解析，则将 Document 对象里面的 Bean 标签解析成了一个个的 BeanDefinition ，下一步则是将这些 BeanDefinition 注册到 IoC 容器中。动作的触发是在解析 Bean 标签完成后，代码如下：
+
+```JAVA
+// DefaultBeanDefinitionDocumentReader.java
+
+protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+    // 进行 bean 元素解析。
+    // 如果解析成功，则返回 BeanDefinitionHolder 对象。而 BeanDefinitionHolder 为 name 和 alias 的 BeanDefinition 对象
+    // 如果解析失败，则返回 null 。
+    BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
+    if (bdHolder != null) {
+        // 进行自定义标签处理
+        bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
+        try {
+            // 进行 BeanDefinition 的注册
+            // Register the final decorated instance.
+            BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
+        } catch (BeanDefinitionStoreException ex) {
+            getReaderContext().error("Failed to register bean definition with name '" +
+                    bdHolder.getBeanName() + "'", ele, ex);
+        }
+        // 发出响应事件，通知相关的监听器，已完成该 Bean 标签的解析。
+        // Send registration event.
+        getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+    }
+}
+```
+
+- 调用 `BeanDefinitionReaderUtils.registerBeanDefinition()` 方法，来注册。其实，这里面也是调用 BeanDefinitionRegistry 的 `#registerBeanDefinition(String beanName, BeanDefinition beanDefinition)` 方法，来注册 BeanDefinition 。不过，最终的实现是在 DefaultListableBeanFactory 中实现，代码如下：
+
+  ```JAVA
+  // DefaultListableBeanFactory.java
+  @Override
+  public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
+          throws BeanDefinitionStoreException {
+      // ...省略校验相关的代码
+      // 从缓存中获取指定 beanName 的 BeanDefinition
+      BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+      // 如果已经存在
+      if (existingDefinition != null) {
+          // 如果存在但是不允许覆盖，抛出异常
+          if (!isAllowBeanDefinitionOverriding()) {
+               throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
+          } else {
+             // ...省略 logger 打印日志相关的代码
+          }
+          // 【重点】允许覆盖，直接覆盖原有的 BeanDefinition 到 beanDefinitionMap 中。
+          this.beanDefinitionMap.put(beanName, beanDefinition);
+      // 如果未存在
+      } else {
+          // ... 省略非核心的代码
+          // 【重点】添加到 BeanDefinition 到 beanDefinitionMap 中。
+          this.beanDefinitionMap.put(beanName, beanDefinition);
+      }
+      // 重新设置 beanName 对应的缓存
+      if (existingDefinition != null || containsSingleton(beanName)) {
+          resetBeanDefinition(beanName);
+      }
+  }
+  ```
+
+  - 这段代码最核心的部分是这句 `this.beanDefinitionMap.put(beanName, beanDefinition)` 代码段。所以，注册过程也不是那么的高大上，就是利用一个 Map 的集合对象来存放：`key` 是 `beanName` ，`value` 是 BeanDefinition 对象。
+
+想了解更多，可参考：[《【死磕 Spring】—— IoC 之注册解析的 BeanDefinitions》](http://svip.iocoder.cn/Spring/IoC-register-BeanDefinitions-really) 。
+
+### 3. 小结
+
+至此，整个 IoC 的初始化过程就已经完成了，从 Bean 资源的定位，转换为 Document 对象，接着对其进行解析，最后注册到 IoC 容器中，都已经完美地完成了。现在 IoC 容器中已经建立了整个 Bean 的配置信息，这些 Bean 可以被检索、使用、维护，他们是控制反转的基础，是后面注入 Bean 的依赖。最后用一张流程图来结束这篇总结之文。
+
+![image-20221215175756519](../../_media/analysis/spring/image-20221215175756519.png)
+
+另外，艿艿推荐几篇不错的 Srping IoC 容器相关的博客：
+
+- JavaDoop [《Spring IOC 容器源码分析》](https://javadoop.com/post/spring-ioc)
+- Yikun [《Spring IOC 核心源码学习》](https://yikun.github.io/2015/05/29/Spring-IOC核心源码学习/)
+- DearBelinda [《Spring专题之 IOC 源码分析》](https://segmentfault.com/a/1190000016261917)

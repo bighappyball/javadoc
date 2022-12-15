@@ -1,3 +1,4 @@
+
 ### 相交链表
 
 思路:
@@ -45,6 +46,38 @@ B走路径b->c-a
 [ 21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists)
 
 [23. 合并K个排序链表](https://leetcode.cn/problems/merge-k-sorted-lists)
+
+### 排序
+
+思路:
+
+1. 快排需要懂，以防面试官提问（易超时） 
+
+​	2、最常规的递归版归并排序 
+
+​	3、迭代版归并排序
+
+```
+
+```
+
+<!-- tabs:start -->
+
+#### **English**
+
+Hello!
+
+#### **French**
+
+Bonjour!
+
+#### **Italian**
+
+Ciao!
+
+<!-- tabs:end -->
+
+[148. 排序链表](https://leetcode.cn/problems/sort-list)
 
 ### 快慢指针
 
