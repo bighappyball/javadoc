@@ -10,6 +10,8 @@ java知识文档
 
 ## mark文件编辑器Typora
 
+<!-- {docsify-ignore} -->
+
 ## Markdown 语法
 
 ### 图片

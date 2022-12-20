@@ -12,7 +12,7 @@ IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么
 > 4. 哪些方面反转了? 所依赖对象的获取被反转了。
 >
 
-### 注入形式
+### 1. 注入形式
 
 IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、stter方法注入、接口注入。接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
 
@@ -22,19 +22,19 @@ IoC Service Provider 为被注入对象提供被依赖对象也有如下几种�
 
 该图为 `ClassPathXmlApplicationContext` 的类继承体系结构，虽然只有一部分，但是它基本上包含了 IoC 体系中大部分的核心类和接口。
 
-### Resource 体系
+### 1. Resource 体系
 
 `org.springframework.core.io.Resource`，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、RLResource、FileSystemResource 等。
 
 ![alt Resource](../../_media/analysis/spring/企业微信截图_20221213163941.png)  
 
-### ResourceLoader 体系
+### 2. ResourceLoader 体系
 
 有了资源，就应该有资源加载，Spring 利用 org.springframework.core.io.ResourceLoader 来进行统一资源加载，类图如下：
 
 ![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213164138.png)  
 
-### BeanFactory 体系
+### 3. BeanFactory 体系
 
 org.springframework.beans.factory.BeanFactory，是一个非常纯粹的 bean 容器，它是 IoC 必备的数据结构，其中 BeanDefinition 是它的基本结构。BeanFactory 内部维护着一个BeanDefinition map ，并可根据 BeanDefinition 的描述进行 bean 的创建和管理。
 
@@ -43,19 +43,19 @@ DefaultListableBeanFactory 为最终默认实现，它实现了所有接口。
 
 ![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213164244.png)  
 
-### BeanDefinition 体系
+### 4. BeanDefinition 体系
 
 org.springframework.beans.factory.config.BeanDefinition ，用来描述 Spring 中的 Bean 对象。
 
 ![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213164357.png)  
 
-### BeanDefinitionReader 体系
+### 5. BeanDefinitionReader 体系
 
 org.springframework.beans.factory.support.BeanDefinitionReader 的作用是读取 Spring 的配置文件的内容，并将其转换成 Ioc 容器内部的数据结构 ：BeanDefinition 。
 
 ![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213164453.png)  
 
-### ApplicationContext 体系
+### 6. ApplicationContext 体系
 
 org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Spring 容器，它叫做应用上下文，与我们应用息息相关。它继承 BeanFactory ，所以它是 BeanFactory 的扩展升级版，如果BeanFactory 是屌丝的话，那么 ApplicationContext 则是名副其实的高富帅。由于 ApplicationContext 的结构就决定了它与 BeanFactory 的不同，其主要区别有：
 
@@ -75,11 +75,11 @@ org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Sp
 1. 职能划分清楚。资源的定义和资源的加载应该要有一个清晰的**界限**；
 2. 统一的抽象。统一的资源**定义**和资源加载**策略**。资源加载后要返回统一的抽象给客户端，客户端要对资源进行怎样的处理，应该由抽象资源接口来界定。
 
-### 统一资源 Resource
+### 1. 统一资源 Resource
 
 `org.springframework.core.io.Resource` 为 Spring 框架所有资源的抽象和访问接口，它继承 `org.springframework.core.io.InputStreamSource`接口。作为所有资源的统一抽象，Resource 定义了一些通用的方法，由子类 `AbstractResource` 提供统一的默认实现。
 
-#### 子类结构
+#### 1.1 子类结构
 
 ![image-20221214132812028](../../_media/analysis/spring/image-20221214132812028.png)
 
@@ -89,13 +89,13 @@ org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Sp
 - ClassPathResource ：class path 类型资源的实现。使用给定的 ClassLoader 或者给定的 Class 来加载资源。
 - InputStreamResource ：将给定的 InputStream 作为一种资源的 Resource 的实现类。
 
-#### AbstractResource
+#### 1.2 AbstractResource
 
 `org.springframework.core.io.AbstractResource` ，为 Resource 接口的默认**抽象**实现。它实现了 Resource 接口的**大部分的公共实现**，作为 Resource 接口中的重中之重
 
 如果我们想要实现自定义的 Resource ，记住不要实现 Resource 接口，而应该继承 AbstractResource 抽象类，然后根据当前的具体资源特性覆盖相应的方法即可。
 
-### 统一资源定位 ResourceLoader
+### 2. 统一资源定位 ResourceLoader
 
 `org.springframework.core.io.ResourceLoader` 为 Spring 资源加载的统一抽象，具体的资源加载则由相应的实现类来完成，所以我们可以将 ResourceLoader 称作为统一资源定位器。其定义如下：
 
@@ -124,15 +124,49 @@ public interface ResourceLoader {
 
 2.`getClassLoader()` 方法，返回 ClassLoader 实例，对于想要获取 ResourceLoader 使用的 ClassLoader 用户来说，可以直接调用该方法来获取。在分析 Resource 时，提到了一个类 ClassPathResource ，这个类是可以根据指定的 ClassLoader 来加载资源的。
 
-#### 子类结构
+#### 2.1 子类结构
 
 ![image-20221214133639178](../../_media/analysis/spring/image-20221214133639178.png)
 
-#### DefaultResourceLoader
+#### 2.1 DefaultResourceLoader
 
 与 AbstractResource 相似，`org.springframework.core.io.DefaultResourceLoader` 是 ResourceLoader 的默认实现。
 
-##### getResource 方法
+##### 2.1.1 构造函数
+
+它接收 ClassLoader 作为构造函数的参数，或者使用不带参数的构造函数。
+
+- 在使用**不带**参数的构造函数时，使用的 ClassLoader 为默认的 ClassLoader（一般 `Thread.currentThread()#getContextClassLoader()` ）。
+- 在使用**带**参数的构造函数时，可以通过 `ClassUtils#getDefaultClassLoader()`获取。
+
+代码如下：
+
+```java
+@Nullable
+private ClassLoader classLoader;
+
+public DefaultResourceLoader() { // 无参构造函数
+	this.classLoader = ClassUtils.getDefaultClassLoader();
+}
+
+public DefaultResourceLoader(@Nullable ClassLoader classLoader) { // 带 ClassLoader 参数的构造函数
+	this.classLoader = classLoader;
+}
+
+public void setClassLoader(@Nullable ClassLoader classLoader) {
+	this.classLoader = classLoader;
+}
+
+@Override
+@Nullable
+public ClassLoader getClassLoader() {
+	return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
+}
+```
+
+- 另外，也可以调用 `#setClassLoader()` 方法进行后续设置。
+
+##### 2.1.2 getResource 方法
 
 ResourceLoader 中最核心的方法为 `#getResource(String location)` ，它根据提供的 location 返回相应的 Resource 。而 DefaultResourceLoader 对该方法提供了**核心实现**（因为，它的两个子类都没有提供覆盖该方法，所以可以断定 ResourceLoader 的资源加载策略就封装在 DefaultResourceLoader 中)，代码如下：
 
@@ -177,7 +211,7 @@ public Resource getResource(String location) {
 - 然后，构造 URL ，尝试通过它进行资源定位，若没有抛出 MalformedURLException 异常，则判断是否为 FileURL , 如果是则构造 FileUrlResource 类型的资源，否则构造 UrlResource 类型的资源。
 - 最后，若在加载过程中抛出 MalformedURLException 异常，则委派 `getResourceByPath()` 方法，实现资源定位加载。😈 实际上，和【其次】相同落。
 
-##### ProtocolResolver
+##### 2.1.3 ProtocolResolver
 
 `org.springframework.core.io.ProtocolResolver` ，用户自定义协议资源解决策略，作为 DefaultResourceLoader 的 **SPI**：它允许用户自定义资源加载协议，而不需要继承 ResourceLoader 的子类。
 
@@ -186,6 +220,8 @@ public Resource getResource(String location) {
 ProtocolResolver 接口，仅有一个方法 `Resource resolve(String location, ResourceLoader resourceLoader)`
 
 在 Spring 中你会发现该接口并没有实现类，它需要用户自定义，自定义的 Resolver 如何加入 Spring 体系呢？调用 `DefaultResourceLoader.addProtocolResolver(ProtocolResolver)` 方法即可。
+
+##### 2.1.4 示例
 
 下面示例是演示 DefaultResourceLoader 加载资源的具体策略，代码如下:
 
@@ -217,16 +253,50 @@ urlResource1 is urlResource:true
 - 其实对于 `fileResource1` ，我们更加希望是 FileSystemResource 资源类型。但是，事与愿违，它是 ClassPathResource 类型。为什么呢？在 `DefaultResourceLoader.getResource()` 方法的资源加载策略中，我们知道 `"D:/Users/chenming673/Documents/spark.txt"` 地址，其实在该方法中没有相应的资源类型，那么它就会在抛出 MalformedURLException 异常时，通过 `DefaultResourceLoader.getResourceByPath(...)` 方法，构造一个 ClassPathResource 类型的资源。
 - 而 `urlResource1` 和 `urlResource2` ，指定有协议前缀的资源路径，则通过 URL 就可以定义，所以返回的都是 UrlResource 类型。
 
-##### FileSystemResourceLoader
+#### 2.2 FileSystemResourceLoader
 
 从上面的示例，我们看到，其实 DefaultResourceLoader 对`getResourceByPath(String)` 方法处理其实不是很恰当，这个时候我们可以使用 `org.springframework.core.io.FileSystemResourceLoader` 。它继承 DefaultResourceLoader ，且覆写了 `getResourceByPath(String)` 方法，使之从文件系统加载资源并以 FileSystemResource 类型返回，这样我们就可以得到想要的资源类型。
+
+```java
+@Override
+protected Resource getResourceByPath(String path) {
+	// 截取首 /
+	if (path.startsWith("/")) {
+		path = path.substring(1);
+	}
+	// 创建 FileSystemContextResource 类型的资源
+	return new FileSystemContextResource(path);
+}
+```
+
+###### 2.2.1 FileSystemContextResource
+
+FileSystemContextResource ，为 FileSystemResourceLoader 的内部类，它继承 FileSystemResource 类，实现 ContextResource 接口。代码如下：
+
+```java
+/**
+ * FileSystemResource that explicitly expresses a context-relative path
+ * through implementing the ContextResource interface.
+ */
+private static class FileSystemContextResource extends FileSystemResource implements ContextResource {
+
+	public FileSystemContextResource(String path) {
+		super(path);
+	}
+
+	@Override
+	public String getPathWithinContext() {
+		return getPath();
+	}
+}
+```
 
 - 在构造器中，也是调用 FileSystemResource 的构造函数来构造 FileSystemResource 的。
 - 为什么要有 FileSystemContextResource 类的原因是，实现 ContextResource 接口，并实现对应的 `getPathWithinContext()` 接口方法。
 
 > ContextResource   从外围加载资源的扩展接口 'context'，例如来自一个{@link javax.servlet. context。ServletContext} 从普通类路径路径或相对文件系统路径(指定没有显式前缀，因此相对于本地应用 {@link ResourceLoader}的上下文)。
 
-#### ClassRelativeResourceLoader
+#### 2.3 ClassRelativeResourceLoader
 
 `org.springframework.core.io.ClassRelativeResourceLoader` ，是 DefaultResourceLoader 的另一个子类的实现。和 FileSystemResourceLoader 类似，在实现代码的结构上类似，也是覆写 `getResourceByPath(String path)` 方法，并返回其对应的 ClassRelativeContextResource 的资源类型。
 
@@ -234,9 +304,19 @@ urlResource1 is urlResource:true
 >
 > ClassRelativeResourceLoader 扩展的功能是，可以根据给定的`class` 所在包或者所在包的子包下加载资源。
 
-#### ResourcePatternResolver
+#### 2.4 ResourcePatternResolver
 
 ResourceLoader 的 `Resource getResource(String location)` 方法，每次只能根据 location 返回**一个** Resource 。当需要加载多个资源时，我们除了多次调用 `#getResource(String location)` 方法外，别无他法。`org.springframework.core.io.support.ResourcePatternResolver` 是 ResourceLoader 的扩展，它支持根据指定的资源路径匹配模式每次返回**多个** Resource 实例
+
+```java
+public interface ResourcePatternResolver extends ResourceLoader {
+
+	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
+
+	Resource[] getResources(String locationPattern) throws IOException;
+
+}
+```
 
 - ResourcePatternResolver 在 ResourceLoader 的基础上增加了 `getResources(String locationPattern)` 方法，以支持根据路径匹配模式返回**多个** Resource 实例。
 
@@ -244,14 +324,59 @@ ResourceLoader 的 `Resource getResource(String location)` 方法，每次只能
 
   
 
-#### PathMatchingResourcePatternResolver
+#### 2.5 PathMatchingResourcePatternResolver
 
 `org.springframework.core.io.support.PathMatchingResourcePatternResolver` ，为 ResourcePatternResolver 最常用的子类，它除了支持 ResourceLoader 和 ResourcePatternResolver 新增的 `"classpath*:"` 前缀外，**还支持 Ant 风格的路径匹配模式**（类似于 `"**/*.xml"`）。
 
-- athMatchingResourcePatternResolver 在实例化的时候，可以指定一个 ResourceLoader，如果不指定的话，它会在内部构造一个 DefaultResourceLoader 。
+##### 2.5.1 构造函数
+
+PathMatchingResourcePatternResolver 提供了三个构造函数，如下：
+
+```
+/**
+ * 内置的 ResourceLoader 资源定位器
+ */
+private final ResourceLoader resourceLoader;
+/**
+ * Ant 路径匹配器
+ */
+private PathMatcher pathMatcher = new AntPathMatcher();
+
+public PathMatchingResourcePatternResolver() {
+	this.resourceLoader = new DefaultResourceLoader();
+}
+
+public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader) {
+	Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+	this.resourceLoader = resourceLoader;
+}
+
+public PathMatchingResourcePatternResolver(@Nullable ClassLoader classLoader) {
+	this.resourceLoader = new DefaultResourceLoader(classLoader);
+}
+```
+
+- PathMatchingResourcePatternResolver 在实例化的时候，可以指定一个 ResourceLoader，如果不指定的话，它会在内部构造一个 DefaultResourceLoader 。
 - `pathMatcher` 属性，默认为 AntPathMatcher 对象，用于支持 Ant 类型的路径匹配。
 
-##### getResources
+##### 2.5.2 getResource
+
+```
+@Override
+public Resource getResource(String location) {
+	return getResourceLoader().getResource(location);
+}
+
+public ResourceLoader getResourceLoader() {
+	return this.resourceLoader;
+}
+```
+
+该方法，直接委托给相应的 ResourceLoader 来实现。所以，如果我们在实例化的 PathMatchingResourcePatternResolver 的时候，如果未指定 ResourceLoader 参数的情况下，那么在加载资源时，其实就是 DefaultResourceLoader 的过程。
+
+其实在下面介绍的 `Resource[] getResources(String locationPattern)` 方法也相同，只不过返回的资源是**多个**而已。
+
+##### 2.5.2 getResources
 
 ```java
 @Override
@@ -291,7 +416,7 @@ public Resource[] getResources(String locationPattern) throws IOException {
 - **非** `"classpath*:"` 开头，且路径**不包含**通配符，直接委托给相应的 ResourceLoader 来实现。
 - 其他情况，调用 `#findAllClassPathResources(...)`、或 `#findPathMatchingResources(...)` 方法，返回多个 Resource 。下面，我们来详细分析。
 
-##### findAllClassPathResources
+##### 2.5.4 findAllClassPathResources
 
 当 `locationPattern` 以 `"classpath*:"` 开头但是不包含通配符，则调用 `#findAllClassPathResources(...)` 方法加载资源。该方法返回 classes 路径下和所有 jar 包中的所有相匹配的资源。
 
@@ -368,12 +493,9 @@ protected Resource convertClassLoaderURL(URL url) {
 
 通过上面的分析，我们知道 `#findAllClassPathResources(...)` 方法，其实就是利用 ClassLoader 来加载指定路径下的资源，不论它是在 class 路径下还是在 jar 包中。如果我们传入的路径为空或者 `/`，则会调用 `#addAllClassLoaderJarRoots(...)` 方法，加载所有的 jar 包。
 
-##### findPathMatchingResources
+##### 2.5.5 findPathMatchingResources
 
 当 `locationPattern` 中包含了**通配符**，则调用该方法进行资源加载。代码如下：
-
-1. 确定目录，获取该目录下得所有资源。
-2. 在所获得的所有资源后，进行迭代匹配获取我们想要的资源。
 
 ```java
 protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
@@ -415,9 +537,14 @@ protected Resource[] findPathMatchingResources(String locationPattern) throws IO
 
 ```
 
+方法有点儿长，但是思路还是很清晰的，主要分两步：
+
+1. 确定目录，获取该目录下得所有资源。
+2. 在所获得的所有资源后，进行迭代匹配获取我们想要的资源。
+
 在这个方法里面，我们要关注两个方法，一个是 `#determineRootDir(String location)` 方法，一个是 `#doFindPathMatchingXXXResources(...)` 等方法。
 
-###### determineRootDir
+###### 2.5.5.1 determineRootDir
 
 `determineRootDir(String location)` 方法，主要是用于确定根路径。代码如下：
 
@@ -449,7 +576,7 @@ protected String determineRootDir(String location) {
 | `classpath*:test/cc*/spring-*.xml` |  `classpath*:test/`   |
 | `classpath*:test/aa/spring-*.xml`  | `classpath*:test/aa/` |
 
-###### doFindPathMatchingXXXResources
+###### 2.5.5.2 doFindPathMatchingXXXResources
 
 `#doFindPathMatchingXXXResources(...)` 方法，是个泛指，一共对应三个方法：
 
@@ -461,7 +588,7 @@ protected String determineRootDir(String location) {
 - [深入 Spring IoC 源码之 ResourceLoader](http://www.blogjava.net/DLevin/archive/2012/12/01/392337.html) ，主要针对 `#doFindPathMatchingFileResources(rootDirResource, subPattern)` 方法。
 - [Spring 源码学习 —— 含有通配符路径解析（上）](http://www.coderli.com/spring-wildpath-parse/) 
 
-### 小结
+### 3.  小结
 
 至此 Spring 整个资源记载过程已经分析完毕。下面简要总结下：
 
