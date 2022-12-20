@@ -279,3 +279,191 @@ B走路径b->c-a
 
 ### 两两交换
 
+#### [ 24. 两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs)
+
+<!-- tabs:start -->
+
+##### **迭代**
+
+具体而言，交换之前的节点关系是 temp -> node1 -> node2，交换之后的节点关系要变成 temp -> node2 -> node1，因此需要进行如下操作。
+完成上述操作之后，节点关系即变成 temp -> node2 -> node1。再令 temp = node1，对链表中的其余节点进行两两交换，直到全部节点都被两两交换。
+
+```java
+ public ListNode swapPairs(ListNode head) {
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode newHead=new ListNode(0,head);
+        ListNode temp=newHead;
+        while(temp.next!=null&&temp.next.next!=null){
+            ListNode node1=temp.next;
+            ListNode node2=temp.next.next;
+            temp.next=node2;
+            node1.next=node2.next;
+            node2.next=node1;
+            temp=node1;
+        }
+        return newHead.next;
+        
+    }
+```
+
+##### **递归**
+
+```java
+    public ListNode swapPairs(ListNode head) {
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode newHead=head.next;
+        head.next=swapPairs(newHead.next);
+        newHead.next=head;
+        return newHead;
+    }
+```
+
+<!-- tabs:end -->
+
+#### [328. 奇偶链表](https://leetcode.cn/problems/odd-even-linked-list)
+
+```java
+  public ListNode oddEvenList(ListNode head) {
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode odd = head;
+        ListNode evenHead = head.next;
+        ListNode evenTail = evenHead;
+        while(odd.next!=null&&evenTail.next!=null){
+            odd.next=evenTail.next;
+            odd=odd.next;
+            evenTail.next=odd.next;
+            evenTail=evenTail.next;
+        }
+        odd.next=evenHead;
+        return head;
+    }
+```
+
+
+
+### 二叉搜索树与双向链表
+
+#### [114. 二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list)
+
+<!-- tabs:start-->
+
+##### **递归**
+
+```java
+  TreeNode pre = null;
+    public void flatten(TreeNode root) {
+        if(root==null){
+            return;
+        }
+        // 递归由后向前,因此由右向左
+        flatten(root.right);
+        flatten(root.left);
+        root.right=pre;
+        root.left=null;
+        pre = root;
+    }
+```
+
+**迭代**
+
+<!-- tabs:end -->
+
+#### 剑指 Offer 36. 二叉搜索树与双向链表
+
+```java
+Node pre, head;
+public Node treeToDoublyList(Node root) {
+    // 边界值
+    if(root == null) return null;
+    dfs(root);  // 题目要求头尾连接
+    head.left = pre;
+    pre.right = head;
+    // 返回头节点
+    return head;
+}
+void dfs(Node cur) {
+    // 递归结束条件
+    if(cur == null) return;
+    dfs(cur.left);
+    // 如果pre为空，就说明是第一个节点，头结点，然后用head保存头结点，用于之后的返回
+    if (pre == null) head = cur;
+    // 如果不为空，那就说明是中间的节点。并且pre保存的是上一个节点，
+    // 让上一个节点的右指针指向当前节点
+    else pre.right = cur;
+    // 再让当前节点的左指针指向父节点，也就连成了双向链表
+    cur.left = pre;
+    // 保存当前节点，用于下层递归创建
+    pre = cur;
+    dfs(cur.right);
+}
+```
+
+### 补充题
+
+#### 字节跳动高频题——排序奇升偶降链表
+
+给定一个奇数位升序，偶数位降序的链表，将其重新排序。
+
+```
+输入: 1->8->3->6->5->4->7->2->NULL
+输出: 1->2->3->4->5->6->7->8->NULL
+```
+
+题目分析 
+
+> \1. 按奇偶位置拆分链表，得1->3->5->7->NULL和8->6->4->2->NULL
+>
+> \2. 反转偶链表，得1->3->5->7->NULL和2->4->6->8->NULL
+>
+> \3. 合并两个有序链表，得1->2->3->4->5->6->7->8->NULL
+
+时间复杂度为O(N)，空间复杂度O(1)。
+
+思路很清晰，实现起来其实还是有些难度的，因为这里的每一步其实都可以单独抽出来作为一道题。
+
+第2步和第3步分别对应的力扣206. 反转链表和21. 合并两个有序链表，而第1步的解法与328. 奇偶链表差不多。如果搞懂这3道leetcode，那么本篇文章的这道题肯定不在话下了。
+
+### 旋转链表
+
+#### [61. 旋转链表](https://leetcode.cn/problems/rotate-list)
+
+```java
+ public ListNode rotateRight(ListNode head, int k) {
+        if(head==null||k==0||head.next==null){
+            return head;
+        }
+        ListNode temp = head;
+        int len=0;
+        while(temp!=null){
+            temp = temp.next;
+            len++;
+        }
+        k =len - k%len;
+        // 等于0返回原链表
+        if(k==len){
+            return head;
+        }
+        ListNode pre=null;
+        temp=head;
+        while(k>0){
+            pre = temp;
+            temp = temp.next;
+            k--;
+        }
+        pre.next=null;
+        ListNode newHead=temp;
+        while(temp.next!=null){
+            temp=temp.next;
+        }
+        temp.next=head;
+        return newHead;
+     
+    }
+```
+
