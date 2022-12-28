@@ -2,3 +2,4 @@
   * [排序](/algorithm/sort.md)
   * [动态规划](/algorithm/dynamic-programming.md)
   * [二叉树](/algorithm/binary-tree.md)
+  * [数组](/algorithm/num-list.md)

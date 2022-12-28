@@ -472,3 +472,33 @@ void dfs(Node cur) {
     }
 ```
 
+### 两数相加
+
+#### [2. 两数相加 - 力扣（Leetcode）](https://leetcode.cn/problems/add-two-numbers/submissions/391191673/)
+
+```java
+  public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+       ListNode res=new ListNode(0),cur=res;
+       int add=0;
+       while(l1!=null||l2!=null||add!=0){
+           int sum=add;
+           if(l1!=null&&l2!=null){
+                sum+=l1.val+l2.val;
+                l1=l1.next;
+                l2=l2.next;
+           }else if(l1!=null){
+                sum+=l1.val;
+                l1=l1.next;
+           }else if(l2!=null){
+                sum+=l2.val;
+                l2=l2.next;
+           }
+           add=sum/10;
+           sum=sum%10;
+           ListNode node=new ListNode(sum);
+           cur.next=node;
+           cur=node;
+       }
+       return res.next;
+    }
+```
