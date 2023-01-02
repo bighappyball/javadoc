@@ -172,3 +172,101 @@ public int minDistance(String word1, String word2) {
     }
 ```
 
+### 打家劫舍问题
+
+#### [198. 打家劫舍 - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber/submissions/392381996/)
+
+```java
+   public int rob(int[] nums) {
+        if(nums.length==1){
+            return nums[0];
+        }
+        int[] dp=new int[nums.length];
+        dp[0]=nums[0];
+        dp[1]=Math.max(nums[0],nums[1]);
+        for(int i=2;i<nums.length;i++){
+            dp[i]=Math.max(dp[i-2]+nums[i],dp[i-1]);
+        }
+        return dp[nums.length-1];
+    }
+```
+
+#### [213. 打家劫舍 II - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber-ii/submissions/392382785/)
+
+```java
+// 要么第一个不偷,要不最后一个不偷
+public int rob(int[] nums) {
+        if(nums.length==0)return 0;
+        if(nums.length==1) return nums[0];
+        int a=robOne(Arrays.copyOfRange(nums,0,nums.length-1));
+        int b=robOne(Arrays.copyOfRange(nums,1,nums.length));
+        return Math.max(a,b);
+}
+public int robOne(int[] nums) {
+    if(nums.length==1){
+        return nums[0];
+    }
+    int[] dp=new int[nums.length];
+    dp[0]=nums[0];
+    dp[1]=Math.max(nums[0],nums[1]);
+    for(int i=2;i<nums.length;i++){
+        dp[i]=Math.max(dp[i-2]+nums[i],dp[i-1]);
+    }
+    return dp[nums.length-1];
+}
+```
+
+#### [337. 打家劫舍 III - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber-iii/solutions/)
+
+<!-- tabs:start -->
+
+##### **动态规划**
+
+```java
+    
+// 思路:
+// 设置map: f代表选择当前节点 g代表不选择当前节点;
+// f的值为 当前节点的值+left g+right g;
+// g的值为 Math.max(leftf,leftg)+Math.max(rightg,rightf);
+Map<TreeNode,Integer> f=new HashMap();
+Map<TreeNode,Integer> g=new HashMap();
+
+    public int rob(TreeNode root) {
+        dfs(root);
+        return Math.max(f.getOrDefault(root,0),g.getOrDefault(root,0));
+    }
+
+    public void dfs(TreeNode root){
+        if(root==null){
+            return;
+        }
+        dfs(root.left);
+        dfs(root.right);
+        f.put(root,root.val+g.getOrDefault(root.left,0)+g.getOrDefault(root.right,0));
+        g.put(root,Math.max(f.getOrDefault(root.left,0),g.getOrDefault(root.left,0))            +Math.max(f.getOrDefault(root.right,0),g.getOrDefault(root.right,0)));
+    }
+```
+
+##### **优化**
+
+```java
+public int rob(TreeNode root) {
+    int[] rootStatus = dfs(root);
+    return Math.max(rootStatus[0], rootStatus[1]);
+}
+
+public int[] dfs(TreeNode node) {
+    if (node == null) {
+        return new int[]{0, 0};
+    }
+    int[] l = dfs(node.left);
+    int[] r = dfs(node.right);
+    int selected = node.val + l[1] + r[1];
+    int notSelected = Math.max(l[0], l[1]) + Math.max(r[0], r[1]);
+    return new int[]{selected, notSelected};
+}
+```
+
+
+
+<!-- tabs:end -->

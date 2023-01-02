@@ -19,7 +19,7 @@
     }
 ```
 
-[69. x 的平方根 - 力扣（Leetcode）](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
+### [69. x 的平方根 - 力扣（Leetcode）](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
 
 ```java
     public int mySqrt(int x) {
@@ -55,7 +55,22 @@
     }    
 ```
 
+### [153. 寻找旋转排序数组中的最小值 - 力扣（Leetcode）](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
 
+```java
+  public int findMin(int[] nums) {
+        int left=0,right=nums.length-1;
+        while(left<right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]<nums[right]){
+                right=mid;
+            }else {
+                left=mid+1;
+            }
+        }
+        return nums[left];
+    }
+```
 
 
 
@@ -213,7 +228,7 @@ class MyQueue {
     }
 ```
 
-## 字符串反转问题
+## 字符串问题
 
 ### [151. 翻转字符串里的单词](https://leetcode.cn/problems/reverse-words-in-a-string)
 
@@ -249,6 +264,48 @@ class MyQueue {
     }
 ```
 
+### [227. 基本计算器 II](https://leetcode.cn/problems/basic-calculator-ii)
+
+```java
+class Solution {
+    public int calculate(String s) {
+        Stack<Integer> stack=new Stack();
+        int num = 0;
+        char preSign='+';
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(Character.isDigit(c)){
+                num=num*10+(c-'0');
+            }
+            if(!Character.isDigit(c)&&c!=' ' || i==s.length()-1){
+                switch(preSign){
+                    case '+':
+                        stack.push(num);
+                        break;
+                    case '-':
+                        stack.push(-num);
+                        break;
+                    case '*':
+                        stack.push(stack.pop()*num);
+                        break;
+                    default:
+                        stack.push(stack.pop()/num);
+                }
+                preSign=c;
+                num=0;
+            }
+        }
+        int res=0;
+        while(!stack.isEmpty()){
+            res+=stack.pop();
+        }
+        return res;
+    }
+}
+```
+
+
+
 ## 子集问题
 
 ### [78. 子集 - 力扣（Leetcode）](https://leetcode.cn/problems/subsets/submissions/391590993/)
@@ -273,3 +330,20 @@ class MyQueue {
     }
 ```
 
+### [152. 乘积最大子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/maximum-product-subarray/description/)
+
+```java
+// a  记录以 nums[i-1] 结尾的乘积最小值，b 记录以 nums[i-1] 结尾的乘积最大值。
+    public int maxProduct(int[] nums) {
+        int a=1,b=1;
+        int max=Integer.MIN_VALUE;
+        for(int i=0;i<nums.length;i++){
+            int tempA=a*nums[i];
+            int tempB=b*nums[i];
+            a=Math.min(nums[i],Math.min(tempA,tempB));
+            b=Math.max(nums[i],Math.max(tempB,tempA));
+            max=Math.max(max,b);
+        }
+        return max;
+    }
+```

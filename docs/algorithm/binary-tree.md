@@ -72,6 +72,24 @@
 
 [111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
 
+### 路径和问题
+
+#### [112. 路径总和](https://leetcode.cn/problems/path-sum)
+
+```java
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if(root==null){
+            return false;
+        }
+        if(root.left==null&&root.right==null){
+            return targetSum==root.val;
+        }
+        return hasPathSum(root.left,targetSum-root.val)||hasPathSum(root.right,targetSum-root.val);
+    }
+```
+
+
+
 ### 回溯算法
 
 [二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
