@@ -694,3 +694,28 @@ public int subarraySum(int[] nums, int k) {
 **前缀和 + 二分查找**
 
 <!-- tabs:end -->
+## 游戏问题
+
+### [55. 跳跃游戏](https://leetcode.cn/problems/jump-game/submissions/392754854/)
+
+思路:
+
+想象你是那个在格子上行走的小人，格子里面的数字代表“能量”，你需要“能量”才能继续行走。每次走到一个格子的时候，你检查现在格子里面的“能量”和你自己拥有的“能量”哪个更大，取更大的“能量”！ 如果你有更多的能量，你就可以走的更远啦！~
+
+```java
+    public boolean canJump(int[] nums) {
+        int cur=nums[0];
+        int i=1;
+        for(;i<nums.length;i++){
+            if(cur>0){
+                if(--cur<nums[i]){
+                    cur=nums[i];
+                }
+            }else{
+                break;
+            }
+        }
+        return i==nums.length;
+    }
+```
+
