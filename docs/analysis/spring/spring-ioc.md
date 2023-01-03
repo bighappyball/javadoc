@@ -14,7 +14,7 @@ IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么
 
 ### 1. 注入形式
 
-IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、stter方法注入、接口注入。接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
+IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、setter方法注入、接口注入。接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
 
 ## IoC 之IoC各个组件
 
@@ -24,7 +24,7 @@ IoC Service Provider 为被注入对象提供被依赖对象也有如下几种�
 
 ### 1. Resource 体系
 
-`org.springframework.core.io.Resource`，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、RLResource、FileSystemResource 等。
+`org.springframework.core.io.Resource`，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、URLResource、FileSystemResource 等。
 
 ![alt Resource](../../_media/analysis/spring/企业微信截图_20221213163941.png)  
 
@@ -332,7 +332,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 
 PathMatchingResourcePatternResolver 提供了三个构造函数，如下：
 
-```
+```java
 /**
  * 内置的 ResourceLoader 资源定位器
  */
@@ -361,7 +361,7 @@ public PathMatchingResourcePatternResolver(@Nullable ClassLoader classLoader) {
 
 ##### 2.5.2 getResource
 
-```
+```java
 @Override
 public Resource getResource(String location) {
 	return getResourceLoader().getResource(location);
@@ -599,7 +599,7 @@ protected String determineRootDir(String location) {
 
 Resource 和 ResourceLoader 核心是在，`spring-core` 项目中。
 
-##  IoC 之加载 BeanDefinition
+##  IoC之加载 BeanDefinition
 
 ```java
 ClassPathResource resource = new ClassPathResource("bean.xml"); // <1>
@@ -629,7 +629,7 @@ reader.loadBeanDefinitions(resource); // <4>
 
 简单的说，上面步骤的结果是，XML Resource => XML Document => Bean Definition 。
 
-### loadBeanDefinitions
+### 1. loadBeanDefinitions
 
 资源定位在前面已经分析了，下面我们直接分析**加载**，上面看到的 `reader.loadBeanDefinitions(resource)` 代码，才是加载资源的真正实现，所以我们直接从该方法入手。代码如下：
 
@@ -696,7 +696,7 @@ public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefin
   - 也因此，在 `<3>` 处，当一个 EncodedResource 加载完成后，需要从缓存中剔除。
 - `<2>` 处理，从 `encodedResource` 获取封装的 Resource 资源，并从 Resource 中获取相应的 InputStream ，然后将 InputStream 封装为 InputSource ，最后调用 `#doLoadBeanDefinitions(InputSource inputSource, Resource resource)` 方法，执行加载 Bean Definition 的真正逻辑。
 
-### doLoadBeanDefinitions
+### 2. doLoadBeanDefinitions
 
 ```java
 /**
@@ -743,7 +743,7 @@ protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 - 在 `<1>` 处，调用 `#doLoadDocument(InputSource inputSource, Resource resource)` 方法，根据 xml 文件，获取 Document 实例。
 - 在 `<2>` 处，调用 `#registerBeanDefinitions(Document doc, Resource resource)` 方法，根据获取的 Document 实例，注册 Bean 信息。
 
-#### doLoadDocument
+#### 2.1 doLoadDocument
 
 ```java
 /**
@@ -763,22 +763,22 @@ protected Document doLoadDocument(InputSource inputSource, Resource resource) th
 }
 ```
 
-1. 调用 `#getValidationModeForResource(Resource resource)` 方法，获取指定资源（xml）的**验证模式**。详细解析，见 [IoC 之获取验证模型](#IoC 之获取验证模型)。
-2. 调用 `DocumentLoader#loadDocument(InputSource inputSource, EntityResolver entityResolver, ErrorHandler errorHandler, int validationMode, boolean namespaceAware)` 方法，获取 XML Document 实例。详细解析，见 [获取 Document 对象](#获取 Document 对象)
+1. 调用 `#getValidationModeForResource(Resource resource)` 方法，获取指定资源（xml）的**验证模式**。详细解析，见 [IoC 之获取验证模型](#IoC之获取验证模型)。
+2. 调用 `DocumentLoader#loadDocument(InputSource inputSource, EntityResolver entityResolver, ErrorHandler errorHandler, int validationMode, boolean namespaceAware)` 方法，获取 XML Document 实例。详细解析，见 [获取Document 对象](#获取Document 对象)
 
-#### registerBeanDefinitions
+#### 2.2 registerBeanDefinitions
 
-[注册 BeanDefinition](#注册 BeanDefinition)
+[IoC 之注册BeanDefinition](#IoC 之注册BeanDefinition)
 
-## IoC 之获取验证模型
+## IoC之获取验证模型
 
 为什么需要获取验证模式呢？原因如下：
 
 > XML 文件的验证模式保证了 XML 文件的正确性。
 
-### DTD 与 XSD 的区别
+### 1.DTD 与 XSD 的区别
 
-#### DTD
+#### 1.1.DTD
 
 DTD(Document Type Definition)，即文档类型定义，为 XML 文件的验证机制，属于 XML 文件中组成的一部分。DTD 是一种保证 XML 文档格式正确的有效验证方式，它定义了相关 XML 文档的元素、属性、排列方式、元素的内容类型以及元素的层次结构。其实 DTD 就相当于 XML 中的 “词汇”和“语法”，我们可以通过比较 XML 文件和 DTD 文件 来看文档是否符合规范，元素和标签使用是否正确。
 
@@ -796,7 +796,7 @@ DTD 在一定的阶段推动了 XML 的发展，但是它本身存在着一些**
 3. DTD 扩展能力较差。
 4. 基于正则表达式的 DTD 文档的描述能力有限。
 
-#### XSD
+#### 1.2.XSD
 
 针对 DTD 的缺陷，W3C 在 2001 年推出 XSD。XSD（XML Schemas Definition）即 XML Schema 语言。XML Schema 本身就是一个 XML文档，使用的是 XML 语法，因此可以很方便的解析 XSD 文档。相对于 DTD，XSD 具有如下**优势**：
 
@@ -807,9 +807,9 @@ DTD 在一定的阶段推动了 XML 的发展，但是它本身存在着一些**
 5. XML Schema 支持综合命名空间。
 6. XML Schema 支持属性组。
 
-### getValidationModeForResource
+### 2.getValidationModeForResource
 
-```Java
+```java
 // XmlBeanDefinitionReader.java
 
 // 禁用验证模式
@@ -901,7 +901,7 @@ protected int getValidationModeForResource(Resource resource) {
 
 - `<3>` 处，使用 `VALIDATION_XSD` 做为默认。
 
-### XmlValidationModeDetector
+### 3.XmlValidationModeDetector
 
 `org.springframework.util.xml.XmlValidationModeDetector` ，XML 验证模式探测器。
 

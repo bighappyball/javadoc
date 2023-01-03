@@ -1,6 +1,6 @@
 脉络
 
-![alt 脉络](/docs/_media/analysis/spring/spring.png)  
+![alt 脉络](../../_media/analysis/spring/spring.png)  
 
 目录
 
