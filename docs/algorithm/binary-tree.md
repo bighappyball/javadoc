@@ -96,6 +96,30 @@
 
 [二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
 
+[路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
+
+```java
+  List<List<Integer>> res=new ArrayList();
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        pathSum(root,targetSum,new ArrayList());
+        return res;
+    }
+
+    public void pathSum(TreeNode root,int targetSum,List<Integer> list){
+        if(root==null){
+           return;
+        }
+        list.add(root.val);
+        targetSum-=root.val;
+        if(root.left==null&&root.right==null&&targetSum==0){
+            res.add(new ArrayList(list));
+        }
+        pathSum(root.left,targetSum,list);
+        pathSum(root.right,targetSum,list);
+        list.remove(list.size()-1); 
+    }
+```
+
 ### 构造二叉树
 
 [思路:](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
