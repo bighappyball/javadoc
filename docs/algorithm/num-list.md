@@ -74,7 +74,7 @@
 
 
 
-## 螺旋矩阵
+## 矩阵问题
 
 ### [54. 螺旋矩阵](https://leetcode.cn/problems/spiral-matrix/description/)
 
@@ -133,6 +133,51 @@
     }
 ```
 
+### [498. 对角线遍历 - 力扣（Leetcode）](https://leetcode.cn/problems/diagonal-traverse/solutions/1597961/dui-jiao-xian-bian-li-by-leetcode-soluti-plz7/)
+
+思路与算法
+
+根据题目要求，矩阵按照对角线进行遍历。设矩阵的行数为 m, 矩阵的列数为 n, 我们仔细观察对角线遍历的规律可以得到如下信息:
+
+- 一共有 m+n−1条对角线，相邻的对角线的遍历方向不同，当前遍历方向为从左下到右上，则紧挨着的下一条对角线遍历方向为从右上到左下；
+
+- 设对角线从上到下的编号为 i∈[0,m+n−2];
+
+  - 当 i 为偶数时，则第 iii 条对角线的走向是从下往上遍历；
+  - 当 i 为奇数时，则第 iii 条对角线的走向是从上往下遍历；
+- 当第 i 条对角线从下往上遍历时，每次行索引减 1，列索引加 1，直到矩阵的边缘为止：
+  - 当 i<m时，则此时对角线遍历的起点位置为 (i,0)；
+  - 当 i≥m 时，则此时对角线遍历的起点位置为 (m−1,i−m+1)；
+- 当第 i 条对角线从上往下遍历时，每次行索引加 1，列索引减 1，直到矩阵的边缘为止：
+  - 当 i<n时，则此时对角线遍历的起点位置为 (0,i)；
+  - 当 i≥n时，则此时对角线遍历的起点位置为 (i−n+1,n−1)；
+
+```java
+    public int[] findDiagonalOrder(int[][] mat) {
+        int m=mat.length,n=mat[0].length;
+        int[] res=new int[m*n];
+        int pos=0;
+        for (int i = 0; i < m + n - 1; i++) {
+            if(i%2==1){
+                int x=i<n?0:i-n+1;
+                int y=i<n?i:n-1;
+                while(x<m&&y>=0){
+                    res[pos++]=mat[x++][y--];
+                }
+            }else{
+                int x = i<m?i:m-1;
+                int y = i<m?0:i-m+1;
+                while(x>=0&&y<n){
+                    res[pos++]=mat[x--][y++];
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
+
 ## 栈或队列
 
 ### [232. 用栈实现队列 - 力扣（Leetcode）](https://leetcode.cn/problems/implement-queue-using-stacks/)
@@ -175,6 +220,25 @@ class MyQueue {
     }
 }
 ```
+
+### [739. 每日温度 - 力扣（Leetcode）](https://leetcode.cn/problems/daily-temperatures/submissions/392617724/)
+
+```java
+        // 存当前的位置索引
+        Stack<Integer> stack=new Stack();
+        int[] res=new int[temperatures.length];
+        for(int i=0;i<temperatures.length;i++){
+            while(!stack.isEmpty()&&temperatures[i]>temperatures[stack.peek()]){
+                int pre=stack.pop();
+                res[pre]=i-pre;
+            }
+            stack.push(i);
+        }
+        return res;
+    }
+```
+
+
 
 ## 括号问题
 
@@ -264,6 +328,47 @@ class MyQueue {
     }
 ```
 
+### [224. 基本计算器 - 力扣（Leetcode）](https://leetcode.cn/problems/basic-calculator/submissions/392609823/)
+
+```java
+   public int calculate(String s) {
+        // 符号栈 +存1,-存-1
+        Deque<Integer> queue=new ArrayDeque();
+        queue.push(1);
+        int sign=1;
+        int sum=0;
+        int i=0;
+        while(i<s.length()){
+            char c=s.charAt(i);
+            if(Character.isDigit(c)){
+                long num = 0;
+                while (i < s.length() && Character.isDigit(s.charAt(i))) {
+                    num = num * 10 + (s.charAt(i) - '0');
+                    i++;
+                }
+                sum += sign * num;
+            }else if(c=='+'){
+                sign = queue.peek();
+                i++;
+            }else if(c=='-'){
+                sign=-queue.peek();
+                i++;
+            }else if(c=='('){
+                queue.push(sign);
+                i++;
+            }else if(c==')'){
+                queue.pop();
+                i++;
+            }else{
+                i++;
+            }
+        }
+        return sum;
+    }
+```
+
+
+
 ### [227. 基本计算器 II](https://leetcode.cn/problems/basic-calculator-ii)
 
 ```java
@@ -300,6 +405,56 @@ class Solution {
             res+=stack.pop();
         }
         return res;
+    }
+}
+```
+
+### [468. 验证IP地址 - 力扣（Leetcode）](https://leetcode.cn/problems/validate-ip-address/)
+
+```java
+class Solution {
+    public String validIPAddress(String queryIP) {
+        return isIpv4(queryIP)==true?"IPv4":isIpv6(queryIP)?"IPv6":"Neither";
+    }
+
+    public boolean isIpv4(String queryIP){
+        // 若干最后n位都是切割符，split(" “)不会继续切分，split(” ", -1)会继续切分
+        String[] ips=queryIP.split("\\.",-1);
+        if(ips.length!=4){
+            return false;
+        }
+        for(String ip:ips){
+            if(ip.length()==0||ip.length()>3)return false;
+            int sum=0;
+            for(int i=0;i<ip.length();i++){
+                char c = ip.charAt(i);
+                if(!Character.isDigit(c)){
+                    return false;
+                }
+                sum=sum*10+(c-'0');
+            }
+            // String.value(sum).equals(ip)) 可能存在数字前置0
+            if(sum>255||!String.valueOf(sum).equals(ip))return false;
+        }
+        return true;
+    }
+
+    public boolean isIpv6(String queryIP){
+        String[] ips=queryIP.split(":",-1);
+        if(ips.length!=8){
+            return false;
+        }
+        for(String ip:ips){
+            ip=ip.toLowerCase();
+            if(ip.length()==0||ip.length()>4)return false;
+            for(int i=0;i<ip.length();i++){
+                char c=ip.charAt(i);
+                if(!Character.isDigit(c)&&!(c>='a'&&c<='f')){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
 ```
@@ -347,3 +502,195 @@ class Solution {
         return max;
     }
 ```
+
+## 前缀和问题
+
+### [1. 两数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/two-sum/)
+
+```java
+    public int[] twoSum(int[] nums, int target) {
+        int[] res=new int[2];
+        Map<Integer,Integer> map=new HashMap();
+        for(int i=0;i<nums.length;i++){
+            int other=target-nums[i];
+            if(map.containsKey(other)){
+                res[0]=i;
+                res[1]=map.get(other);
+                return res;
+            }
+            map.put(nums[i],i);
+        }
+        return res;
+    }
+```
+
+
+
+### [454. 四数相加 II - 力扣（Leetcode）](https://leetcode.cn/problems/4sum-ii/description/)
+
+思路：
+
+1. 一采用分为两组，HashMap 存一组，另一组和 HashMap 进行比对。  
+2. 这样的话情况就可以分为三种：
+   1. HashMap 存一个数组，如 A。然后计算三个数组之和，如 BCD。时间复杂度为：O(n)+O(n^3)，得到 O(n^3).
+   2. HashMap 存三个数组之和，如 ABC。然后计算一个数组，如 D。时间复杂度为：O(n^3)+O(n)，得到 O(n^3).
+   3. HashMap存两个数组之和，如AB。然后计算两个数组之和，如 CD。时间复杂度为：O(n^2)+O(n^2)，得到 O(n^2).
+3. 根据第二点我们可以得出要存两个数组算两个数组。
+4. 我们以存 AB 两数组之和为例。首先求出 A 和 B 任意两数之和 sumAB，以 sumAB 为 key，sumAB 出现的次数为 value，存入 hashmap 中。 然后计算 C 和 D 中任意两数之和的相反数 sumCD，在 hashmap 中查找是否存在 key 为 sumCD。 算法时间复杂度为 O(n2)。
+
+```java
+  public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer,Integer> map1=new HashMap();
+        for(int i=0;i<nums1.length;i++){
+            for(int j=0;j<nums2.length;j++){
+                int sum=nums1[i]+nums2[j];
+                map1.put(sum,map1.getOrDefault(sum,0)+1);
+            }
+        }
+        Map<Integer,Integer> map2=new HashMap();
+        for(int i=0;i<nums3.length;i++){
+            for(int j=0;j<nums4.length;j++){
+                int sum=nums3[i]+nums4[j];
+                map2.put(sum,map2.getOrDefault(sum,0)+1);
+            }
+        }
+        int res=0;
+        for(int key:map1.keySet()){
+            int sum1=map1.get(key);
+            int sum2=map2.getOrDefault(-key,0);
+            res+=sum1*sum2;
+        }
+        return res;
+    }
+```
+
+
+
+
+
+### [560. 和为 K 的子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/subarray-sum-equals-k/)
+
+<!-- tabs:start -->
+
+**暴力**
+
+```java
+    public int subarraySum(int[] nums, int k) {
+        int count=0;
+        for(int i=0;i<nums.length;i++){
+            int sum=0;
+            for(int j=i;j<nums.length;j++){
+                sum+=nums[j];
+                if (sum == k) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+```
+
+**前缀和**
+
+```java
+// 构建前缀和数组，以快速计算区间和；
+// 注意在计算区间和的时候，下标有偏移。 
+public int subarraySum(int[] nums, int k) {
+        int len=nums.length;
+        // len+1目的是会出现第一个数刚好符合的情况
+        int[] preSum =new int[len+1];
+        for(int i=0;i<len;i++){
+            preSum[i+1] = preSum[i] + nums[i]; 
+        }
+        int count = 0;
+        for(int i = 0;i<len;i++){
+            for(int j = i;j<len;j++){
+                if(preSum[j+1] - preSum[i] == k){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+```
+
+**前缀和+哈希表优化**
+
+```java
+    public int subarraySum(int[] nums, int k) {
+        int len=nums.length;
+        // len+1目的是会出现第一个数刚好符合的情况
+        int[] preSum =new int[len+1];
+        for(int i=0;i<len;i++){
+            preSum[i+1] = preSum[i] + nums[i]; 
+        }
+        int count = 0;
+        // key 为前缀和，value为前缀和为key的个数，问题转化为和为k的问题
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0;i<len+1;i++){
+            // 如果有与当前prefixSum[i]的差为k的，则加上它的个数
+            count+=map.getOrDefault(preSum[i]-k,0);
+            // 统计前缀和的个数
+            map.put(preSum[i],map.getOrDefault(preSum[i],0)+1);
+        }
+        return count;
+    }
+```
+
+
+
+<!-- tabs:end -->
+
+## 滑动窗口问题
+### [209. 长度最小的子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/minimum-size-subarray-sum/solutions/305704/chang-du-zui-xiao-de-zi-shu-zu-by-leetcode-solutio/)
+
+<!-- tabs:start -->
+
+#### **暴力法**
+
+```java
+   public int minSubArrayLen(int s, int[] nums) {
+        int n = nums.length;
+        if (n == 0) {
+            return 0;
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j];
+                if (sum >= s) {
+                    ans = Math.min(ans, j - i + 1);
+                    break;
+                }
+            }
+        }
+        return ans == Integer.MAX_VALUE ? 0 : ans;
+    }
+```
+
+#### **滑动窗口**
+
+思路:
+
+```java
+  public int minSubArrayLen(int target, int[] nums) {
+        int left=0,right=0,len=nums.length;
+        int sum=0,max=Integer.MAX_VALUE;
+        while(right<len){
+            sum+=nums[right];
+            while(sum>=target){
+                max=Math.min(max,right-left+1);
+                sum-=nums[left++];
+            }
+            right++;
+        }
+        return max==Integer.MAX_VALUE?0:max;
+    }
+```
+
+
+
+**前缀和 + 二分查找**
+
+<!-- tabs:end -->
