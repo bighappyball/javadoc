@@ -474,7 +474,7 @@ void dfs(Node cur) {
 
 ### 两数相加
 
-#### [2. 两数相加 - 力扣（Leetcode）](https://leetcode.cn/problems/add-two-numbers/submissions/391191673/)
+#### [2. 两数相加 ](https://leetcode.cn/problems/add-two-numbers/submissions/391191673/)
 
 ```java
   public ListNode addTwoNumbers(ListNode l1, ListNode l2) {

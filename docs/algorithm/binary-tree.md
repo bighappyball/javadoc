@@ -86,6 +86,7 @@ class Solution {
 }
 ```
 
+#### [230. 二叉搜索树中第K小的元素 - 力扣（Leetcode）](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/submissions/392807490/)
 
 ### 最大/最小问题
 

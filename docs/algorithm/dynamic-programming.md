@@ -17,7 +17,7 @@ https://leetcode.cn/circle/article/qiAgHn/
 
 [【Leetcode每日打卡】接雨水问题的超完全手册 (qq.com)](https://mp.weixin.qq.com/s/f9ebzbwymR8jQeUDxjeCDA)
 
-#### [42. 接雨水 - 力扣（Leetcode）](https://leetcode.cn/problems/trapping-rain-water/)
+#### [42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)
 
 <!-- tabs:start -->
 
@@ -174,7 +174,7 @@ public int minDistance(String word1, String word2) {
 
 ### 打家劫舍问题
 
-#### [198. 打家劫舍 - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber/submissions/392381996/)
+#### [198. 打家劫舍 ](https://leetcode.cn/problems/house-robber/submissions/392381996/)
 
 ```java
    public int rob(int[] nums) {
@@ -191,7 +191,7 @@ public int minDistance(String word1, String word2) {
     }
 ```
 
-#### [213. 打家劫舍 II - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber-ii/submissions/392382785/)
+#### [213. 打家劫舍 II ](https://leetcode.cn/problems/house-robber-ii/submissions/392382785/)
 
 ```java
 // 要么第一个不偷,要不最后一个不偷
@@ -216,7 +216,7 @@ public int robOne(int[] nums) {
 }
 ```
 
-#### [337. 打家劫舍 III - 力扣（Leetcode）](https://leetcode.cn/problems/house-robber-iii/solutions/)
+#### [337. 打家劫舍 III ](https://leetcode.cn/problems/house-robber-iii/solutions/)
 
 <!-- tabs:start -->
 

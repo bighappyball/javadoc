@@ -1,6 +1,57 @@
+## 数组
+
+### [剑指 Offer 42. 连续子数组的最大和 - 力扣（Leetcode）](https://leetcode.cn/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/submissions/392798185/)
+
+思路: 记录当前sum和,如果sum小于0 则丢弃
+
+```java
+  public int maxSubArray(int[] nums) {
+        int max=Integer.MIN_VALUE;
+        int sum=0;
+        for(int i=0;i<nums.length;i++){
+            if(sum<0){
+                sum=nums[i];
+            }else{
+                sum+=nums[i];
+            }
+            max=Math.max(sum,max);
+        }
+        return max;
+    }
+```
+
+### [7. 整数反转 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-integer/submissions/392803677/)
+
+```java
+  public int reverse(int x) {
+        int res=0;
+        //由于存在负数,因此判断条件不等于0
+      	while(x!=0){
+            //每次取末尾数字
+            int tmp = x%10;
+             //判断是否 大于 最大32位整数
+            int max = tmp>0?(Integer.MAX_VALUE-tmp)/10:Integer.MAX_VALUE/10;
+            if (res>max) {
+                return 0;
+            }
+            //判断是否 小于 最小32位整数
+            int min = tmp<0?(Integer.MIN_VALUE-tmp)/10:Integer.MIN_VALUE/10;
+            System.out.println(min);
+            if (res<min) {
+                return 0;
+            }
+            res=res*10+tmp;
+            x=x/10;
+        }
+        return res;
+    }
+```
+
+
+
 ## 二分查找
 
-### [704. 二分查找 - 力扣（Leetcode）](https://leetcode.cn/problems/binary-search/)
+### [704. 二分查找 ](https://leetcode.cn/problems/binary-search/)
 
 ```java
  public int search(int[] nums, int target) {
@@ -19,7 +70,7 @@
     }
 ```
 
-### [69. x 的平方根 - 力扣（Leetcode）](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
+### [69. x 的平方根 ](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
 
 ```java
     public int mySqrt(int x) {
@@ -55,7 +106,7 @@
     }    
 ```
 
-### [153. 寻找旋转排序数组中的最小值 - 力扣（Leetcode）](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
+### [153. 寻找旋转排序数组中的最小值 ](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
 
 ```java
   public int findMin(int[] nums) {
@@ -71,6 +122,90 @@
         return nums[left];
     }
 ```
+
+### [74. 搜索二维矩阵 - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix/submissions/392791330/)
+
+```java
+   public boolean searchMatrix(int[][] matrix, int target) {
+        int index=searchColumn(matrix,target);
+        System.out.println(index);
+        if(index<0){
+            return false;
+        }
+        return searchRow(matrix,target,index);
+    }
+
+    public int searchColumn(int[][] matrix,int target){
+        int low = 0, high = matrix.length - 1;
+        while (low < high) {
+            // 关键
+            int mid = (high - low + 1) / 2 + low;
+            if (matrix[mid][0] <= target) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return low;
+    }
+    public boolean searchRow(int[][] matrix,int target,int index){
+        int left=0,right=matrix[0].length-1;
+        while(left <= right){
+            int mid=left+(right-left)/2;
+            if(matrix[index][mid]==target){
+                return true;
+            }else if(matrix[index][mid]<target){
+                left=mid+1;
+            }else{
+                right=mid-1;
+            }
+        }
+        return false;
+    }
+```
+
+## 原地算法
+
+### [26. 删除有序数组中的重复项 - 力扣（Leetcode）](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/description/)
+
+```java
+  public int removeDuplicates(int[] nums) {
+        int index=1;
+        int pre=nums[0];
+        for(int i=1;i<nums.length;i++){
+            if(nums[i]!=pre){
+                nums[index++]=nums[i];
+                pre=nums[i];
+            }
+        }
+        return index;
+    }
+```
+
+### [剑指 Offer 21. 调整数组顺序使奇数位于偶数前面 - 力扣（Leetcode）](https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/submissions/392805233/)
+
+```java
+   public int[] exchange(int[] nums) {
+        int left=0,right=nums.length-1;
+        while(left<right){
+            if(nums[left]%2==0){
+                swap(nums,left,right);
+                right--;
+            }else{
+                left++;
+            }
+        }
+        return nums;
+    }
+
+    public void swap(int[] nums,int a,int b){
+        int temp=nums[a];
+        nums[a]=nums[b];
+        nums[b]=temp;
+    }
+```
+
+
 
 
 
@@ -104,7 +239,7 @@
  }
 ```
 
-### [59. 螺旋矩阵 II - 力扣（Leetcode）](https://leetcode.cn/problems/spiral-matrix-ii/description/)
+### [59. 螺旋矩阵 II ](https://leetcode.cn/problems/spiral-matrix-ii/description/)
 
 ```java
   public int[][] generateMatrix(int n) {
@@ -133,7 +268,7 @@
     }
 ```
 
-### [498. 对角线遍历 - 力扣（Leetcode）](https://leetcode.cn/problems/diagonal-traverse/solutions/1597961/dui-jiao-xian-bian-li-by-leetcode-soluti-plz7/)
+### [498. 对角线遍历 ](https://leetcode.cn/problems/diagonal-traverse/solutions/1597961/dui-jiao-xian-bian-li-by-leetcode-soluti-plz7/)
 
 思路与算法
 
@@ -180,7 +315,7 @@
 
 ## 栈或队列
 
-### [232. 用栈实现队列 - 力扣（Leetcode）](https://leetcode.cn/problems/implement-queue-using-stacks/)
+### [232. 用栈实现队列 ](https://leetcode.cn/problems/implement-queue-using-stacks/)
 
 ```java
 class MyQueue {
@@ -221,7 +356,7 @@ class MyQueue {
 }
 ```
 
-### [739. 每日温度 - 力扣（Leetcode）](https://leetcode.cn/problems/daily-temperatures/submissions/392617724/)
+### [739. 每日温度 ](https://leetcode.cn/problems/daily-temperatures/submissions/392617724/)
 
 ```java
         // 存当前的位置索引
@@ -242,7 +377,7 @@ class MyQueue {
 
 ## 括号问题
 
-### [22. 括号生成 - 力扣（Leetcode）](https://leetcode.cn/problems/generate-parentheses/submissions/391200454/)
+### [22. 括号生成 ](https://leetcode.cn/problems/generate-parentheses/submissions/391200454/)
 
 ```java
     // DFS+少量的剪枝，剪枝的条件为：左括号的数目一旦小于右括号的数目，以及，左括号的数目和右括号数目均小于n
@@ -267,7 +402,7 @@ class MyQueue {
 
 ## 两数相加问题
 
-### [415. 字符串相加 - 力扣（Leetcode）](https://leetcode.cn/problems/add-strings/submissions/391523596/?languageTags=java)
+### [415. 字符串相加 ](https://leetcode.cn/problems/add-strings/submissions/391523596/?languageTags=java)
 
 ```java
   public String addStrings(String num1, String num2) {
@@ -328,7 +463,7 @@ class MyQueue {
     }
 ```
 
-### [224. 基本计算器 - 力扣（Leetcode）](https://leetcode.cn/problems/basic-calculator/submissions/392609823/)
+### [224. 基本计算器 ](https://leetcode.cn/problems/basic-calculator/submissions/392609823/)
 
 ```java
    public int calculate(String s) {
@@ -409,7 +544,30 @@ class Solution {
 }
 ```
 
-### [468. 验证IP地址 - 力扣（Leetcode）](https://leetcode.cn/problems/validate-ip-address/)
+### [50. Pow(x, n) - 力扣（Leetcode）](https://leetcode.cn/problems/powx-n/submissions/392787475/)
+
+思路:
+快速幂 + 递归:「快速幂算法」的本质是分治算法。举个例子，如果我们要计算 x64
+ ，我们可以按照：*x*→*x*2→*x*4→*x*9→*x*19→*x*38→*x*77
+
+```java
+  public double myPow(double x, int n) {
+        return n>=0?dfs(x,n):1/dfs(x,n);
+    }
+
+    public double dfs(double x,int n){
+        if(n==0){
+            return 1.0;
+        }
+        double y = dfs(x,n/2) ;
+        return n%2==0?y*y:y*y*x;
+
+    }
+```
+
+
+
+### [468. 验证IP地址 ](https://leetcode.cn/problems/validate-ip-address/)
 
 ```java
 class Solution {
@@ -463,7 +621,7 @@ class Solution {
 
 ## 子集问题
 
-### [78. 子集 - 力扣（Leetcode）](https://leetcode.cn/problems/subsets/submissions/391590993/)
+### [78. 子集 ](https://leetcode.cn/problems/subsets/submissions/391590993/)
 
 ```java
    List<List<Integer>>  res=new ArrayList();
@@ -485,7 +643,7 @@ class Solution {
     }
 ```
 
-### [152. 乘积最大子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/maximum-product-subarray/description/)
+### [152. 乘积最大子数组 ](https://leetcode.cn/problems/maximum-product-subarray/description/)
 
 ```java
 // a  记录以 nums[i-1] 结尾的乘积最小值，b 记录以 nums[i-1] 结尾的乘积最大值。
@@ -505,7 +663,7 @@ class Solution {
 
 ## 前缀和问题
 
-### [1. 两数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/two-sum/)
+### [1. 两数之和 ](https://leetcode.cn/problems/two-sum/)
 
 ```java
     public int[] twoSum(int[] nums, int target) {
@@ -526,7 +684,7 @@ class Solution {
 
 
 
-### [454. 四数相加 II - 力扣（Leetcode）](https://leetcode.cn/problems/4sum-ii/description/)
+### [454. 四数相加 II ](https://leetcode.cn/problems/4sum-ii/description/)
 
 思路：
 
@@ -568,7 +726,7 @@ class Solution {
 
 
 
-### [560. 和为 K 的子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/subarray-sum-equals-k/)
+### [560. 和为 K 的子数组 ](https://leetcode.cn/problems/subarray-sum-equals-k/)
 
 <!-- tabs:start -->
 
@@ -642,7 +800,7 @@ public int subarraySum(int[] nums, int k) {
 <!-- tabs:end -->
 
 ## 滑动窗口问题
-### [209. 长度最小的子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/minimum-size-subarray-sum/solutions/305704/chang-du-zui-xiao-de-zi-shu-zu-by-leetcode-solutio/)
+### [209. 长度最小的子数组 ](https://leetcode.cn/problems/minimum-size-subarray-sum/solutions/305704/chang-du-zui-xiao-de-zi-shu-zu-by-leetcode-solutio/)
 
 <!-- tabs:start -->
 

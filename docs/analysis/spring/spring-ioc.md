@@ -1067,7 +1067,7 @@ public int detectValidationMode(InputStream inputStream) throws IOException {
 - 调用#getValidationModeForResource(Resource resource)方法，获取指定资源（xml）的验证模式
 - 调用 `DocumentLoader#loadDocument(InputSource inputSource, EntityResolver entityResolver, ErrorHandler errorHandler, int validationMode, boolean namespaceAware)` 方法，获取 XML Document 实例。
 
-### DocumentLoader
+### 1.DocumentLoader
 
 取 Document 的策略，由接口 `org.springframework.beans.factory.xml.DocumentLoader` 定义。代码如下：
 
@@ -1093,7 +1093,7 @@ public interface DocumentLoader {
 
 
 
-####  DefaultDocumentLoader
+####  1.1.DefaultDocumentLoader
 
 该方法由 DocumentLoader 的默认实现类 `org.springframework.beans.factory.xml.DefaultDocumentLoader` 实现。代码如下：
 
@@ -1180,7 +1180,7 @@ public Document loadDocument(InputSource inputSource, EntityResolver entityResol
 
 - 最后，调用 `DocumentBuilder#parse(InputSource)` 方法，解析 InputSource ，返回 Document 对象。
 
-### EntityResolver
+### 2.EntityResolver
 
 通过 `DocumentLoader#loadDocument(...)` 方法来获取 Document 对象时，有一个方法参数 `entityResolver` 。该参数是通过 `XmlBeanDefinitionReader#getEntityResolver()` 方法来获取的。代码如下：
 
@@ -1212,7 +1212,7 @@ protected EntityResolver getEntityResolver() {
 - 如果 ResourceLoader 不为 `null`，则根据指定的 ResourceLoader 创建一个 ResourceEntityResolver 对象。
 - 如果 ResourceLoader 为 `null` ，则创建 一个 DelegatingEntityResolver 对象。该 Resolver 委托给默认的 BeansDtdResolver 和 PluggableSchemaResolver 。
 
-#### 子类
+#### 2.1.子类
 
 上面的方法，一共涉及**四个** EntityResolver 的子类：
 
@@ -1287,7 +1287,7 @@ protected EntityResolver getEntityResolver() {
   }
   ```
 
-####  作用
+####  2.2.作用
 
 > EntityResolver 的作用就是，通过实现它，应用可以自定义如何**寻找**【验证文件】的逻辑。
 
@@ -1326,7 +1326,7 @@ public interface EntityResolver {
   - systemId：http://www.springframework.org/dtd/spring-beans.dtd
   - [![DTD 验证模式](http://static.iocoder.cn/8f77d23019c10f4ac026968ce19067ef)](http://static.iocoder.cn/8f77d23019c10f4ac026968ce19067ef)DTD 验证模式
 
-#### DelegatingEntityResolver
+#### 2.3.DelegatingEntityResolver
 
 我们知道在 Spring 中使用 DelegatingEntityResolver 为 EntityResolver 的实现类。`#resolveEntity(String publicId, String systemId)` 方法，实现如下：
 
@@ -1350,7 +1350,7 @@ public InputSource resolveEntity(String publicId, @Nullable String systemId) thr
 - 如果是 DTD 验证模式，则使用 BeansDtdResolver 来进行解析
 - 如果是 XSD 验证模式，则使用 PluggableSchemaResolver 来进行解析。
 
-#### BeansDtdResolver
+#### 2.4.BeansDtdResolver
 
 BeansDtdResolver 的解析过程，代码如下：
 
@@ -1410,7 +1410,7 @@ public InputSource resolveEntity(String publicId, @Nullable String systemId) thr
 
 从上面的代码中，我们可以看到，加载 DTD 类型的 `BeansDtdResolver#resolveEntity(...)` 过程，只是对 `systemId` 进行了简单的校验（从最后一个 / 开始，内容中是否包含 `spring-beans`），然后构造一个 InputSource 对象，并设置 `publicId`、`systemId` 属性，然后返回。
 
-#### PluggableSchemaResolver
+#### 2.5.PluggableSchemaResolver
 
 PluggableSchemaResolver 的解析过程，代码如下:
 
@@ -1502,7 +1502,7 @@ public InputSource resolveEntity(String publicId, @Nullable String systemId) thr
 
 - 最后，根据 `resourceLocation` ，构造 InputSource 对象。
 
-#### ResourceEntityResolver
+#### 2.6.ResourceEntityResolver
 
 ResourceEntityResolver 的解析过程，代码如下:
 
@@ -1558,7 +1558,7 @@ public InputSource resolveEntity(String publicId, @Nullable String systemId) thr
 - 首先，调用**父类**的方法，进行解析。
 - 如果失败，使用 `resourceLoader` ，尝试读取 `systemId` 对应的 Resource 资源。
 
-#### 自定义 EntityResolver
+#### 2.7.自定义 EntityResolver
 
 `#getEntityResolver()` 方法返回 EntityResolver 对象。那么怎么进行自定义 EntityResolver 呢?
 
