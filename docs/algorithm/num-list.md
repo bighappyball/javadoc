@@ -47,6 +47,23 @@
     }
 ```
 
+### [剑指 Offer 62. 圆圈中最后剩下的数字 - 力扣（Leetcode）](https://leetcode.cn/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/solutions/)
+
+其实是约瑟夫环问题,数学解决思路: (当前index + m) % 上一轮剩余数字的个数
+
+[详解](https://leetcode.cn/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/solutions/177639/javajie-jue-yue-se-fu-huan-wen-ti-gao-su-ni-wei-sh/)
+
+```java
+  public int lastRemaining(int n, int m) {
+        int ans = 0;
+        // 最后一轮剩下2个人，所以从2开始反推
+        for (int i = 2; i <= n; i++) {
+            ans = (ans + m) % i;
+        }
+        return ans;
+    }
+```
+
 
 
 ## 二分查找
@@ -355,6 +372,46 @@ class MyQueue {
     }
 }
 ```
+
+### [225. 用队列实现栈 - 力扣（Leetcode）](https://leetcode.cn/problems/implement-stack-using-queues/solutions/)
+
+一个队列为主队列，一个为辅助队列，当入栈操作时，我们先将主队列内容导入辅助队列，然后将入栈元素放入主队列队头位置，再将辅助队列内容，依次添加进主队列即可。
+
+```java
+class MyStack {
+
+    Deque<Integer> deque=new ArrayDeque();
+    Deque<Integer> deque1=new ArrayDeque();
+
+    public MyStack() {
+
+    }
+    
+    public void push(int x) {
+        while(!deque.isEmpty()){
+            deque1.add(deque.poll());
+        }
+        deque.add(x);
+        while(!deque1.isEmpty()){
+            deque.add(deque1.poll());
+        }
+    }
+    
+    public int pop() {
+       return deque.poll();
+    }
+    
+    public int top() {
+        return deque.peek();
+    }
+    
+    public boolean empty() {
+        return deque.isEmpty();
+    }
+}
+```
+
+
 
 ### [739. 每日温度 ](https://leetcode.cn/problems/daily-temperatures/submissions/392617724/)
 

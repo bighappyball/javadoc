@@ -3,9 +3,9 @@
 
 ### 层序遍历
 
-[102.二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/) 
+#### [102.二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/) 
 
-[199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+#### [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
 
 ### 前中后序遍历
 
@@ -14,11 +14,38 @@
 2. 中序遍历的方式是：首先访问左子树，接着访问根结点，最后访问右子树。
 3. 后序遍历的方式是：首先访问左子树，接着访问右子树，最后访问根结点。
 
-[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
+#### [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
 
 ### 二叉树翻转
 
-[27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
+#### [27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
+
+### 二叉树相同问题
+
+#### [572. 另一棵树的子树 - 力扣（Leetcode）](https://leetcode.cn/problems/subtree-of-another-tree/submissions/393152860/)
+
+```java
+public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        // 我s都遍历完了。你居然还没匹配上。那就返回false
+        if(root==null){
+            return false;
+        }
+        return isSameTree(root,subRoot)||isSubtree(root.left,subRoot)||isSubtree(root.right,subRoot);
+    }
+
+    public boolean isSameTree(TreeNode root,TreeNode subRoot){
+        if(root==null&&subRoot==null){
+            return true;
+        }
+        if(root==null || subRoot==null){
+            return false;
+        }
+        if(root.val!=subRoot.val){
+            return false;
+        }
+        return isSameTree(root.left,subRoot.left)&&isSameTree(root.right,subRoot.right);
+    }
+```
 
 
 
@@ -31,7 +58,9 @@
 
 一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
 
-[110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)  用递归方法和后序遍历写
+#### [110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)  
+
+用递归方法和后序遍历写
 
 ### 完全二叉树
 
@@ -88,11 +117,46 @@ class Solution {
 
 #### [230. 二叉搜索树中第K小的元素 - 力扣（Leetcode）](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/submissions/392807490/)
 
+#### [450. 删除二叉搜索树中的节点 - 力扣（Leetcode）](https://leetcode.cn/problems/delete-node-in-a-bst/submissions/393132436/)
+
+```java
+  public TreeNode deleteNode(TreeNode root, int key) {
+        if(root==null){
+            return null;
+        }
+        if(root.val>key){
+            root.left = deleteNode(root.left,key);
+            return root;
+        }
+        if(root.val<key){
+            root.right=deleteNode(root.right,key);
+            return root;
+        }
+        if(root.val==key){
+            if(root.left!=null&&root.right!=null){
+                TreeNode temp = root.right;
+                while(temp.left!=null){
+                    temp=temp.left;
+                }
+                root.right = deleteNode(root.right,temp.val);
+                temp.right=root.right;
+                temp.left=root.left;
+                return temp;
+            }else{
+                return root.left!=null?root.left:root.right;
+            }
+        }
+        return root;
+    }
+```
+
+
+
 ### 最大/最小问题
 
-[124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
+#### [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 
-[111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
+#### [111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
 
 ### 路径和问题
 
@@ -114,11 +178,11 @@ class Solution {
 
 ### 回溯算法
 
-[二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
+#### [二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
 
-[二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
+#### [二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
 
-[路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
+#### [路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
 
 ```java
   List<List<Integer>> res=new ArrayList();
@@ -144,7 +208,7 @@ class Solution {
 
 ### 构造二叉树
 
-[思路:](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
+#### [思路](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
 
 解法一、递归  
 先序遍历的顺序是根节点，左子树，右子树。中序遍历的顺序是左子树，根节点，右子树。
@@ -247,7 +311,7 @@ class Solution {
     }
 ```
 
-[105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
+#### [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
 
 ###  最近的共同祖先
 
@@ -270,5 +334,5 @@ class Solution {
     1. p,q其中一个在 root 的 右子树 中，此时 right 指向 p（假设为 p ）； p,q两节点都在 root的 右子树 中，此时的 right指向 最近公共祖先节点 ；
     2. 当 left 不为空 ， right为空 ：与情况 3. 同理；
 
-[236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
+#### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
 
