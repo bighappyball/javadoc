@@ -181,6 +181,40 @@
     }
 ```
 
+#### [400. 第 N 位数字 - 力扣（Leetcode）](https://leetcode.cn/problems/nth-digit/solutions/1128000/di-n-wei-shu-zi-by-leetcode-solution-mdl2/)
+
+##### 二分查找
+
+##### 直接计算
+
+思路:由于任何整数都至少是一位数，因此 d 的最小值是 1。对于 d 的上界，可以通过找规律的方式确定。
+
+1 位数的范围是 1 到 9，共有 9 个数，所有 1 位数的位数之和是 1×9=9。
+2 位数的取值范围是 10 到 99，共有 90 个数，所有 2 位数的位数之和是 2×90=180。
+3 位数的取值范围是 100到 999，共有 900 个数，所有 3 位数的位数之和是 3×900=2700。
+……
+
+```java
+  public int findNthDigit(int n) {
+        // 先确定数为几位;
+        // d位数,conut 是d位数一共有多少位
+        int d=1, count=9;
+        while(n>(long)d*count){
+            n-=d*count;
+            d++;
+            count*=10;
+        }
+             //定位到数字
+        long num=(long)Math.pow(10,d-1)+(n-1)/d;
+        //定位到具体某个字符
+        char c=String.valueOf(num).charAt((n-1)%d);
+        return (int)(c-'0');
+
+    }
+```
+
+
+
 ## 原地算法
 
 ### [26. 删除有序数组中的重复项 - 力扣（Leetcode）](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/description/)
@@ -931,6 +965,61 @@ public int subarraySum(int[] nums, int k) {
             }
         }
         return i==nums.length;
+    }
+```
+
+### [面试题61. 扑克牌中的顺子 - 力扣（Leetcode）](https://leetcode.cn/problems/bu-ke-pai-zhong-de-shun-zi-lcof/description/)
+
+思路: 根据题意，此 5 张牌是顺子的 充分条件 如下：
+
+1. 除大小王外，所有牌 无重复 ；
+2. 设此 5张牌中最大的牌为 max ，最小的牌为 min （大小王除外），则需满足：
+   max−min<5 
+
+```java
+    public boolean isStraight(int[] nums) {
+        Arrays.sort(nums);
+        // 大小王数,通过它可以获取最小值索引
+        int count=0;
+        for(int i=0;i<nums.length-1;i++){
+            if(nums[i]==0)count++;
+            else if(nums[i]==nums[i+1])return false;
+        }
+        return nums[nums.length-1]-nums[count]<5;
+    }
+```
+
+
+
+## 双指针问题
+
+### [349. 两个数组的交集 - 力扣（Leetcode）](https://leetcode.cn/problems/intersection-of-two-arrays/description/)
+
+排序+双指针
+
+```java
+  public int[] intersection(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int index1=0,index2=0;
+        Set<Integer> set=new HashSet();
+        while(index1<nums1.length&&index2<nums2.length){
+            int num1=nums1[index1],num2=nums2[index2];
+            if(num1==num2){
+
+                
+            }else if(num1<num2){
+                index1++;
+            }else{
+                index2++;
+            }
+        }
+        List<Integer> list= new ArrayList(set);
+        int[] res= new int[list.size()];
+        for(int i=0;i<list.size();i++){
+            res[i]=list.get(i);
+        }
+        return res;
     }
 ```
 

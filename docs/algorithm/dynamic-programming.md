@@ -267,6 +267,58 @@ public int[] dfs(TreeNode node) {
 }
 ```
 
-
-
 <!-- tabs:end -->
+
+### 最小/最大路径和
+
+#### [120. 三角形最小路径和 - 力扣（Leetcode）](https://leetcode.cn/problems/triangle/)
+
+<!-- tabs:start -->
+
+##### **动态规划**
+
+```java
+    // 我们用 dp[i][j]表示从三角形顶部走到位置 (i,j)的最小路径和
+    // 状态转移方程 由于每一步只能移动到下一行「相邻的节点」上，因此要想走到位置 (i,j)，上一步就只能在位置 (i−1,j−1)或者位置 (i−1,j)
+    // 状态转移方程的边界条件 dp[0][0]=triangle[0][0]
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n= triangle.size();
+        int[][] dp=new int[n][n];
+        dp[0][0]=triangle.get(0).get(0);
+        for(int i=1;i<n;i++){
+            dp[i][0]=dp[i-1][0]+triangle.get(i).get(0);
+            for(int j=1;j<i;j++){
+                dp[i][j]=Math.min(dp[i-1][j],dp[i-1][j-1])+triangle.get(i).get(j);
+            }
+            dp[i][i]=dp[i-1][i-1]+triangle.get(i).get(i);
+        }
+
+        // 从最后一行取最小值
+        int min=Integer.MAX_VALUE;
+        for(int i=0;i<n;i++){
+            System.out.println(dp[n-1][i]);
+            min=Math.min(min,dp[n-1][i]);
+        }
+        return min;
+
+
+    }
+```
+
+##### **空间优化**
+
+```java
+从最后一层开始算最小路径，然后当前数为最后一层到此的最小路径
+ public int minimumTotal(List<List<Integer>> triangle) {
+        int n=triangle.size();
+        for(int i=n-2;i>=0;i--){
+            List<Integer> list=triangle.get(i);
+            List<Integer> list1=triangle.get(i+1);
+            for(int j=0;j<list.size();j++){
+                list.set(j,Math.min(list1.get(j),list1.get(j+1))+list.get(j));
+            }
+        }
+        return triangle.get(0).get(0);
+    }
+```
+

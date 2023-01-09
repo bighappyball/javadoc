@@ -20,6 +20,55 @@
 
 #### [27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
 
+### 二叉树转链表
+
+#### [114. 二叉树展开为链表 - 力扣（Leetcode）](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
+
+[思路](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
+
+<!-- tabs:start -->
+
+##### **迭代**
+
+```java
+   public void flatten(TreeNode root) {
+        while(root!=null){
+             //左子树为 null，直接考虑下一个节点
+            if(root.left==null){
+                root=root.right;
+            }else{
+                // 找左子树最右边的节点
+                TreeNode pre=root.left;
+                while(pre.right!=null){
+                    pre=pre.right;
+                }
+                //将原来的右子树接到左子树的最右边节点
+                pre.right=root.right;
+                root.right=root.left;
+                root.left=null;
+                 // 考虑下一个节点
+                root=root.right;
+            }
+        }
+    }
+```
+
+##### **递归**
+
+```java
+    TreeNode pre=null;
+    public void flatten(TreeNode root) {
+        if(root==null) return ;
+        flatten(root.right);
+        flatten(root.left);
+        root.right=pre;
+        root.left=null;
+        pre=root;
+    }
+```
+
+<!-- tabs:end -->
+
 ### 二叉树相同问题
 
 #### [572. 另一棵树的子树 - 力扣（Leetcode）](https://leetcode.cn/problems/subtree-of-another-tree/submissions/393152860/)
