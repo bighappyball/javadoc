@@ -385,3 +385,53 @@ class Solution {
 
 #### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
 
+### 前缀树
+
+#### [208. 实现 Trie (前缀树) - 力扣（Leetcode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+
+```java
+class Trie {
+
+    class TrieNode {
+        boolean val;
+        TrieNode[] children=new TrieNode[26];
+    }
+
+    TrieNode root;
+
+    public Trie() {
+        root=new TrieNode();
+    }
+    
+    public void insert(String word) {
+        TrieNode p=root;
+        for(char c:word.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) p.children[i]=new TrieNode();
+            p=p.children[i];
+        }
+        p.val=true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode p=root;
+        for(char c:word.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) return false;
+            p=p.children[i];
+        }
+        return p.val;
+    }
+    
+    public boolean startsWith(String prefix) {
+        TrieNode p=root;
+        for(char c:prefix.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) return false;
+            p=p.children[i];
+        }
+        return true;
+    }
+}
+```
+

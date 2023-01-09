@@ -141,6 +141,38 @@
 ```
 
 ### [74. 搜索二维矩阵 - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix/submissions/392791330/)
+### [16. 最接近的三数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/3sum-closest/submissions/393761930/)
+
+```java
+// 思路 : 排序加二分查找  
+public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int closestNum = nums[0] + nums[1] + nums[2];
+        for(int i=0;i<nums.length-2;i++){
+            int left=i+1,right=nums.length-1;
+            while(left<right){
+                int sum=nums[i]+nums[left]+nums[right];
+                if (Math.abs(sum - target) < Math.abs(closestNum - target)) {
+                    closestNum = sum;
+                }
+                if(sum>target){
+                    right--;
+                }else if(sum<target){
+                    left++;
+                }else{
+                    return sum;
+                }
+            }
+        }
+        return closestNum;
+
+    }
+```
+
+
+
+
+
 
 ```java
    public boolean searchMatrix(int[][] matrix, int target) {
