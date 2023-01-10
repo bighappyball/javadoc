@@ -1817,7 +1817,7 @@ protected abstract Object createBean(String beanName, RootBeanDefinition mbd, @N
 
 该抽象方法的默认实现是在类 AbstractAutowireCapableBeanFactory 中实现，代码如下：
 
-```
+```java
 // AbstractAutowireCapableBeanFactory.java
 
 @Override

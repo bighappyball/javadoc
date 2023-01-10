@@ -64,6 +64,57 @@
     }
 ```
 
+### [剑指 Offer 39. 数组中出现次数超过一半的数字 - 力扣（Leetcode）](https://leetcode.cn/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/submissions/394284187/)
+
+#### **哈希表**
+
+#### **排序**
+
+如果将数组 nums 中的所有元素按照单调递增或单调递减的顺序排序，那么下标为 ⌊n/2]
+
+```java
+public int majorityElement(int[] nums) {
+        Arrays.sort(nums);
+        return nums[nums.length / 2];
+    }
+```
+
+#### **摩尔投票**
+
+思路
+
+如果我们把众数记为 +1，把其他数记为 −1，将它们全部加起来，显然和大于 0，从结果本身我们可以看出众数比其他数多。
+
+算法
+
+Boyer-Moore 算法的本质和方法四中的分治十分类似。我们首先给出 Boyer-Moore 算法的详细步骤：
+
+我们维护一个候选众数 candidate 和它出现的次数 count。初始时 candidate 可以为任意值，count 为 0；
+
+我们遍历数组 nums 中的所有元素，对于每个元素 x，在判断 x 之前，如果 count 的值为 0，我们先将 x 的值赋予 candidate，随后我们判断 x：
+
+如果 x 与 candidate 相等，那么计数器 count 的值增加 1；
+
+如果 x 与 candidate 不等，那么计数器 count 的值减少 1。
+
+在遍历完成后，candidate 即为整个数组的众数。
+
+```java
+  public int majorityElement(int[] nums) {
+        int res=0;
+        int count=0;
+        for(int num:nums){
+            if(count==0){
+                res=num;
+            }
+            count+=num==res?1:-1;
+        }
+        return res;
+    }
+```
+
+
+
 
 
 ## 二分查找
@@ -213,7 +264,7 @@ public int threeSumClosest(int[] nums, int target) {
     }
 ```
 
-#### [400. 第 N 位数字 - 力扣（Leetcode）](https://leetcode.cn/problems/nth-digit/solutions/1128000/di-n-wei-shu-zi-by-leetcode-solution-mdl2/)
+### [400. 第 N 位数字 - 力扣（Leetcode）](https://leetcode.cn/problems/nth-digit/solutions/1128000/di-n-wei-shu-zi-by-leetcode-solution-mdl2/)
 
 ##### 二分查找
 
@@ -244,6 +295,36 @@ public int threeSumClosest(int[] nums, int target) {
 
     }
 ```
+
+### [611. 有效三角形的个数 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-triangle-number/submissions/394272779/)
+
+思路: 排序+二分查找
+
+```java
+ public int triangleNumber(int[] nums) {
+        int res=0,n=nums.length;
+        Arrays.sort(nums);
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                int left=j,right=n-1,k=j;
+                while(left<=right){
+                    int mid=left+(right-left)/2;
+                    if(nums[i]+nums[j]>nums[mid]){
+                        k=mid;
+                        left=mid+1;
+                    }else{
+                        right=mid-1;
+                    }
+                }
+                // k是最后一个符合的数字,所以结果是res+(k-j)个;
+                res+=k-j;
+            }
+        }
+        return res;
+    }
+```
+
+
 
 
 
@@ -496,6 +577,33 @@ class MyStack {
     }
 ```
 
+### [678. 有效的括号字符串 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-parenthesis-string/submissions/394276440/)
+
+```java
+ public boolean checkValidString(String s) {
+        Stack<Integer> stack=new Stack();
+        Stack<Integer> stack1=new Stack();
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(c=='('){
+                stack.push(i);
+            }else if(c=='*'){
+                stack1.push(i);
+            }else{
+                if(stack.isEmpty()&&stack1.isEmpty())return false;
+                if(stack.isEmpty())stack1.pop();
+                else stack.pop();
+            }
+        }
+        while(!stack.isEmpty()&&!stack1.isEmpty()){
+            if(stack.peek()>stack1.peek())return false;
+            stack.pop();
+            stack1.pop();
+        }
+        return stack.isEmpty();
+    }
+```
+
 
 
 ## 括号问题
@@ -549,6 +657,25 @@ class MyStack {
         return res.reverse().toString();
     }
 ```
+
+## 进制转换问题
+
+### [168. Excel表列名称 - 力扣（Leetcode）](https://leetcode.cn/problems/excel-sheet-column-title/submissions/394341831/)
+
+```java
+public String convertToTitle(int columnNumber) {
+        StringBuffer sb=new StringBuffer();
+        while(columnNumber>0){
+            columnNumber--;
+            int s=columnNumber%26;
+            sb.append((char)('A'+s));
+            columnNumber/=26;
+        }
+        return sb.reverse().toString();
+    }
+```
+
+
 
 ## 字符串问题
 
