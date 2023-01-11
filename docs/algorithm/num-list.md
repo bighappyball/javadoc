@@ -369,6 +369,23 @@ public int threeSumClosest(int[] nums, int target) {
     }
 ```
 
+### [344. 反转字符串 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-string/submissions/394527384/)
+
+```java
+  public void reverseString(char[] s) {
+        int mid=s.length/2;
+        for(int i=0;i<mid;i++){
+            swap(s,i,s.length-i-1);
+        }
+    }
+
+    public void swap(char[] s,int i,int j){
+        char temp=s[i];
+        s[i]=s[j];
+        s[j]=temp;
+    }
+```
+
 
 
 
@@ -601,6 +618,27 @@ class MyStack {
             stack1.pop();
         }
         return stack.isEmpty();
+    }
+```
+
+### [1047. 删除字符串中的所有相邻重复项 - 力扣（Leetcode）](https://leetcode.cn/problems/remove-all-adjacent-duplicates-in-string/submissions/394485411/)
+
+```java
+  public String removeDuplicates(String s) {
+        Stack<Character> stack=new Stack();
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(stack.isEmpty()||stack.peek()!=c){
+                stack.push(c);
+            }else{
+                stack.pop();      
+            }
+        }
+        StringBuilder sb=new StringBuilder();
+        while(!stack.isEmpty()){
+            sb.append(stack.pop());
+        }
+        return sb.reverse().toString();
     }
 ```
 
@@ -1179,6 +1217,92 @@ public int subarraySum(int[] nums, int k) {
             res[i]=list.get(i);
         }
         return res;
+    }
+```
+
+### [1004. 最大连续1的个数 III - 力扣（Leetcode）](https://leetcode.cn/problems/max-consecutive-ones-iii/solutions/609055/fen-xiang-hua-dong-chuang-kou-mo-ban-mia-f76z/)
+
+思路: 
+
+- 使用 left 和 right 两个指针，分别指向滑动窗口的左右边界。
+
+- right 主动右移：right 指针每次移动一步。当 A[right] 为 0，说明滑动窗口内增加了一个 0；
+- left被动右移：判断此时窗口内 0 的个数，如果超过了 K，则 left 指针被迫右移，直至窗口内的 0 的个数小于等于 K 为止。
+- 滑动窗口长度的最大值就是所求。
+
+```java
+  public int longestOnes(int[] nums, int k) {
+        int n=nums.length;
+        int left=0,right=0;
+        int zeros=0;
+        int max=0;
+        while(right<n){
+            if(nums[right]==0){
+                zeros++;
+            }
+            while(zeros>k){
+                if(nums[left++]==0){
+                    zeros--;
+                }
+            }
+            max=Math.max(max,right-left+1);
+            right++;
+        }
+        return max;
+    }
+```
+
+
+
+## 哈希问题
+
+### [442. 数组中重复的数据 - 力扣（Leetcode）](https://leetcode.cn/problems/find-all-duplicates-in-an-array/)
+
+思路: 所有数字都在[1,n]，每个数字只出现1次或2次，时间O(n)空间O(1)。 =>据此可以锁定“原地哈希”。
+
+#### **将元素交换到对应的位置**
+
+```java
+ public List<Integer> findDuplicates(int[] nums) {
+        List<Integer> res=new ArrayList();
+        // 将数组里的数字num 放到正确的索引上 即num要再索引num-1上
+        for(int i=0;i<nums.length;i++){
+            while(nums[nums[i]-1]!=nums[i]){
+                swap(nums,nums[i]-1,i);
+            }
+        }
+        // 经过上面整理,如果一个数出现过两次,则总会有一个是不在正确索引上的,找出这个即是多次出现的数
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]-1!=i){
+                res.add(nums[i]);
+            }
+        }
+        return res;
+
+    }
+
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[j];
+        nums[j]=nums[i];
+        nums[i]=temp;
+    }
+```
+
+#### **使用正负号作为标记**
+
+```java
+  public List<Integer> findDuplicates(int[] nums) {
+        int n = nums.length;
+        List<Integer> ans = new ArrayList<Integer>();
+        for (int i = 0; i < n; ++i) {
+            int x = Math.abs(nums[i]);
+            if (nums[x - 1] > 0) {
+                nums[x - 1] = -nums[x - 1];
+            } else {
+                ans.add(x);
+            }
+        }
+        return ans;
     }
 ```
 
