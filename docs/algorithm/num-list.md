@@ -386,6 +386,39 @@ public int threeSumClosest(int[] nums, int target) {
     }
 ```
 
+[557. 反转字符串中的单词 III - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-words-in-a-string-iii/submissions/)
+
+```java
+  public String reverseWords(String s) {
+        char[] chars=s.toCharArray();
+        int left=0,right=0;
+         for(int i=1;i<chars.length;i++){
+            char c=chars[i];
+            if(c==' '||i==chars.length-1){
+                // 最后一位时 right还是再i-1的位置
+                if(i==chars.length-1){
+                    right++;
+                }
+                while(left<right){
+                    swap(chars,left++,right--);
+                }
+                left=i+1;
+            }else{
+                right=i;
+            }
+         }
+         String res=String.valueOf(chars);
+         return res;
+
+    }
+
+    public void swap(char[] chars,int left,int right){
+        char temp=chars[left];
+        chars[left]=chars[right];
+        chars[right]=temp;
+    }
+```
+
 
 
 
@@ -1251,6 +1284,35 @@ public int subarraySum(int[] nums, int k) {
         return max;
     }
 ```
+
+### [443. 压缩字符串 - 力扣（Leetcode）](https://leetcode.cn/problems/string-compression/solutions/1609059/by-cheless-w-fd24/)
+
+#### **三指针**
+
+```java
+ public int compress(char[] chars) {
+        //l: 当前填写字符或数字的位置, r: 下一个字符的第一个位置, cur: 当前字符的第一个位置
+        int l=0,r=0,cur=0;
+        while(r<chars.length){
+            // 填写字符
+            chars[l++]=chars[cur];
+            while(r<chars.length&&chars[cur]==chars[r]){
+                r++;
+            }
+            int len=r-cur;
+            if(len>1){
+                String lenStr=String.valueOf(len);
+                for(int i=0;i<lenStr.length();i++){
+                    chars[l++]=lenStr.charAt(i);
+                }
+            }
+            cur=r;
+        }
+        return l;
+    }
+```
+
+
 
 
 
