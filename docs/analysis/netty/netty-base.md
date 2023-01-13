@@ -183,13 +183,11 @@ public abstract class Buffer {
   - **写**模式下，代表最大能写入的数据上限位置，这个时候 `limit` 等于 `capacity` 。
   - **读**模式下，在 Buffer 完成所有数据写入后，通过调用 `#flip()` 方法，切换到**读**模式。此时，`limit` 等于 Buffer 中实际的数据大小。因为 Buffer 不一定被写满，所以不能使用 `capacity` 作为实际的数据大小。
 
-- `mark`属性，标记，通过`#mark()`方法，记录当前`position`；通过`reset()`
-
-  方法，恢复`position`为标记。
+- `mark`属性，标记，通过`#mark()`方法，记录当前`position`；通过`reset()`方法，恢复`position`为标记。
 
   - **写**模式下，标记上一次写位置。
   - **读**模式下，标记上一次读位置。
-
+  
 - 从代码注释上，我们可以看到，四个属性总是遵循如下大小关系：
 
   `mark <= position <= limit <= capacity`
@@ -277,13 +275,13 @@ public ByteBuffer put(byte[] src, int offset, int length) {...}
 
 对于 Buffer 来说，有一个非常重要的操作就是，我们要讲来自 Channel 的数据写入到 Buffer 中。在系统层面上，这个操作我们称为**读操作**，因为数据是从外部( 文件或者网络等 )读取到内存中。示例如下：
 
-```
+```java
 int num = channel.read(buffer);
 ```
 
 - 上述方法会返回从 Channel 中写入到 Buffer 的数据大小。对应方法的代码如下：
 
-  ```
+  ```java
   public interface ReadableByteChannel extends Channel {
   
       public int read(ByteBuffer dst) throws IOException;
@@ -297,7 +295,7 @@ int num = channel.read(buffer);
 
 每个 Buffer 实现类，都提供了 `#get(...)` 方法，从 Buffer 读取数据。以 ByteBuffer 举例子，代码如下：
 
-```
+```java
 // 读取 byte
 public abstract byte get();
 public abstract byte get(int index);
@@ -309,13 +307,13 @@ public ByteBuffer get(byte[] dst) {...}
 
 对于 Buffer 来说，还有一个非常重要的操作就是，我们要讲来向 Channel 的写入 Buffer 中的数据。在系统层面上，这个操作我们称为**写操作**，因为数据是从内存中写入到外部( 文件或者网络等 )。示例如下：
 
-```
+```java
 int num = channel.write(buffer);
 ```
 
 - 上述方法会返回向 Channel 中写入 Buffer 的数据大小。对应方法的代码如下：
 
-  ```
+  ```java
   public interface WritableByteChannel extends Channel {
   
       public int write(ByteBuffer src) throws IOException;
@@ -642,7 +640,7 @@ channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 
 通过调用 `#interestOps()` 方法，返回感兴趣的事件集合。示例代码如下：
 
-```
+```java
 int interestSet = selectionKey.interestOps();
 
 // 判断对哪些事件感兴趣
@@ -654,7 +652,7 @@ boolean isInterestedInWrite   = interestSet & SelectionKey.OP_WRITE != 0;
 
 - 其中每个事件 Key 在 SelectionKey 中枚举，通过位( bit ) 表示。代码如下：
 
-  ```
+  ```java
   //  SelectionKey.java
   
   public static final int OP_READ = 1 << 0;
@@ -669,7 +667,7 @@ boolean isInterestedInWrite   = interestSet & SelectionKey.OP_WRITE != 0;
 
 通过调用 `#readyOps()` 方法，返回就绪的事件集合。示例代码如下：
 
-```
+```java
 int readySet = selectionKey.readyOps();
 
 // 判断哪些事件已就绪
@@ -681,7 +679,7 @@ selectionKey.isWritable();
 
 - 相比 interest set 来说，ready set 已经内置了判断事件的方法。代码如下：
 
-  ```
+  ```java
   // SelectionKey.java
   public final boolean isReadable() {
       return (readyOps() & OP_READ) != 0;
@@ -701,7 +699,7 @@ selectionKey.isWritable();
 
 通过调用 `#attach(Object ob)` 方法，可以向 SelectionKey 添加附加对象；通过调用 `#attachment()` 方法，可以获得 SelectionKey 获得附加对象。示例代码如下：
 
-```
+```java
 selectionKey.attach(theObject);
 Object attachedObj = selectionKey.attachment();
 ```
@@ -735,7 +733,7 @@ public abstract int selectNow() throws IOException;
 
 一旦调用了 select 方法，并且返回值表明有一个或更多个 Channel 就绪了，然后可以通过调用Selector 的 `#selectedKeys()` 方法，访问“已选择键集( selected key set )”中的**就绪** Channel 。示例代码所示：
 
-```
+```java
 Set selectedKeys = selector.selectedKeys();
 ```
 
@@ -1346,308 +1344,4 @@ while (true) {
 - 第 133 行：创建一个 NioClient 对象。
 - 第 134 至 137 行：每秒发送一次请求。考虑到代码没有处理拆包的逻辑，所以增加了间隔 1 秒的 sleep 。
 
-## Netty 简介（一）之项目结构
-
-### 1. 概述
-
-本文主要分享 **Netty 的项目结构**。
-希望通过本文能让胖友对 Netty 的整体项目有个简单的了解。
-
-在拉取 Netty 项目后，我们会发现拆分了**好多** Maven 项目。是不是内心一紧，产生了恐惧感？不要方，我们就是继续怼。
-
-![image-20221219205926991](../../_media/analysis/netty/image-20221219205926991.png)
-
-### 2. 代码统计
-
-这里先分享一个小技巧。笔者在开始源码学习时，会首先了解项目的代码量。
-
-**第一种方式**，使用 [IDEA Statistic](https://plugins.jetbrains.com/plugin/4509-statistic) 插件，统计整体代码量。
-
-![image-20221219210042829](../../_media/analysis/netty/image-20221219210042829.png)
-
-我们可以粗略的看到，总的代码量在 251365 行。这其中还包括单元测试，示例等等代码。
-所以，不慌。
-
-**第二种方式**，使用 [Shell 脚本命令逐个 Maven 模块统计](http://blog.csdn.net/yhhwatl/article/details/52623879) 。
-
-一般情况下，笔者使用 `find . -name "*.java"|xargs cat|grep -v -e ^$ -e ^\s*\/\/.*$|wc -l` 。这个命令只过滤了**部分注释**，所以相比 [IDEA Statistic](https://plugins.jetbrains.com/plugin/4509-statistic) 会**偏多**。
-
-当然，考虑到准确性，胖友需要手动 `cd` 到每个 Maven 项目的 `src/main/java` 目录下，以达到排除单元测试的代码量。
-
-![image-20221219210101759](../../_media/analysis/netty/image-20221219210101759.png)
-
-- 😈 偷懒了下，暂时只统计**核心**模块，未统计**拓展**模块。
-
-### 3. 架构图
-
-在看具体每个 Netty 的 Maven 项目之前，我们还是先来看看 Netty 的整体架构图。
-
-![image-20221219210146849](../../_media/analysis/netty/image-20221219210146849.png)
-
-- Core：核心部分，是底层的网络通用抽象和部分实现。
-  - Extensible Event Model ：可拓展的事件模型。Netty 是基于事件模型的网络应用框架。
-  - Universal Communication API ：通用的通信 API 层。Netty 定义了一套抽象的通用通信层的 API 。
-  - Zero-Copy-Capable Rich Byte Buffer ：支持零拷贝特性的 Byte Buffer 实现。
-- Transport Services：传输( 通信 )服务，具体的网络传输的定义与实现。
-  - Socket & Datagram ：TCP 和 UDP 的传输实现。
-  - HTTP Tunnel ：HTTP 通道的传输实现。
-  - In-VM Piple ：JVM 内部的传输实现。😈 理解起来有点怪，后续看具体代码，会易懂。
-- **Protocol Support** ：协议支持。Netty 对于一些通用协议的编解码实现。例如：HTTP、Redis、DNS 等等。
-
-### 4. 项目依赖图
-
-Netty 的 Maven 项目之间**主要依赖**如下图：
-
-![image-20221219210307016](../../_media/analysis/netty/image-20221219210307016.png)
-
-- 本图省略**非主要依赖**。例如，`handler-proxy` 对 `codec` 有依赖，但是并未画出。
-- 本图省略**非主要的项目**。例如，`resolver`、`testsuite`、`example` 等等。
-
-下面，我们来详细介绍每个项目。
-
-### 5. common
-
-`common` 项目，该项目是一个通用的工具类项目，几乎被所有的其它项目依赖使用，它提供了一些数据类型处理工具类，并发编程以及多线程的扩展，计数器等等通用的工具类。
-
-![image-20221219210352894](../../_media/analysis/netty/image-20221219210352894.png)
-
-### 6. buffer
-
-> 该项目实现了 Netty 架构图中的 Zero-Copy-Capable Rich Byte Buffer 。
-
-`buffer` 项目，该项目下是 Netty 自行实现的一个 Byte Buffer 字节缓冲区。该包的实现相对于 JDK 自带的 ByteBuffer 有很多**优点**：无论是 API 的功能，使用体验，性能都要更加优秀。它提供了**一系列( 多种 )**的抽象定义以及实现，以满足不同场景下的需要。
-
-![image-20221219210435092](../../_media/analysis/netty/image-20221219210435092.png)
-
-### 7. transport
-
-> 该项是核心项目，实现了 Netty 架构图中 Transport Services、Universal Communication API 和 Extensible Event Model 等多部分内容。
-
-`transport` 项目，该项目是网络传输通道的抽象和实现。它定义通信的统一通信 API ，统一了 JDK 的 OIO、NIO ( 不包括 AIO )等多种编程接口。
-
-![image-20221219210513822](../../_media/analysis/netty/image-20221219210513822.png)
-
-另外，它提供了多个子项目，实现不同的传输类型。例如：`transport-native-epoll`、`transport-native-kqueue`、`transport-rxtx`、`transport-udt` 和 `transport-sctp` 等等。
-
-### 8. codec
-
-> 该项目实现了Netty 架构图中的 Protocol Support 。
-
-`codec` 项目，该项目是协议编解码的抽象与**部分**实现：JSON、Google Protocol、Base64、XML 等等。
-
-![image-20221219210542793](../../_media/analysis/netty/image-20221219210542793.png)
-
-另外，它提供了多个子项目，实现不同协议的编解码。例如：`codec-dns`、`codec-haproxy`、`codec-http`、`codec-http2`、`codec-mqtt`、`codec-redis`、`codec-memcached`、`codec-smtp`、`codec-socks`、`codec-stomp`、`codec-xml` 等等。
-
-### 9. handler
-
-`handler` 项目，该项目是提供**内置的**连接通道处理器( ChannelHandler )实现类。例如：SSL 处理器、日志处理器等等。
-
-![image-20221219210609438](../../_media/analysis/netty/image-20221219210609438.png)
-
-另外，它提供了一个子项目 `handler-proxy` ，实现对 HTTP、Socks 4、Socks 5 的代理转发。
-
-### 10. example
-
-`example` 项目，该项目是提供各种 Netty 使用示例，良心开源项目。
-
-![image-20221219210654741](../../_media/analysis/netty/image-20221219210654741.png)
-
-### 11. 其它项目
-
-Netty 中还有其它项目，考虑到不是本系列的重点，就暂时进行省略。
-
-- `all` ：All In One 的 `pom` 声明。
-
-- `bom` ：Netty Bill Of Materials 的缩写，不了解的胖友，可以看看 [《Maven 与Spring BOM( Bill Of Materials )简化 Spring 版本控制》](https://blog.csdn.net/fanxiaobin577328725/article/details/66974896) 。
-
-- `microbench` ：微基准测试。
-
-- `resolver` ：终端( Endpoint ) 的地址解析器。
-
-- `resolver-dns`
-
-- `tarball` ：All In One 打包工具。
-
-- `testsuite` ：测试集。
-
-  > 测试集( TestSuite ) ：测试集是把多个相关测试归入一个组的表达方式。在 Junit 中，如果我们没有明确的定义一个测试集，那么 Juint 会自动的提供一个测试集。一个测试集一般将同一个包的测试类归入一组。
-
-- `testsuite-autobahhn`
-
-- `testsuite-http2`
-
-- `testsuite-osgi`
-
-## Netty 简介（二）之核心组件
-
-### 1. 概述
-
-什么是 Netty ？
-
-> Netty 是一款提供异步的、事件驱动的网络应用程序框架和工具，用以快速开发高性能、高可靠性的网络服务器和客户端程序。
->
-> 也就是说，Netty 是一个基于 NIO 的客户、服务器端编程框架。使用 Netty 可以确保你快速和简单地开发出一个网络应用，例如实现了某种协议的客户，服务端应用。Netty 相当简化和流线化了网络应用的编程开发过程，例如，TCP 和 UDP 的 socket 服务开发。
-
-Netty 具有如下特性:
-
-| 分类     | Netty的特性                                                  |
-| :------- | :----------------------------------------------------------- |
-| 设计     | 1. 统一的 API ，支持多种传输类型( 阻塞和非阻塞的 ) 2. 简单而强大的线程模型 3. 真正的无连接数据报套接字( UDP )支持 4. 连接逻辑组件( ChannelHander 中顺序处理消息 )以及组件复用( 一个 ChannelHandel 可以被多个ChannelPipeLine 复用 ) |
-| 易于使用 | 1. 详实的 Javadoc 和大量的示例集 2. 不需要超过 JDK 1.6+ 的依赖 |
-| 性能     | 拥有比 Java 的核心 API 更高的吞吐量以及更低的延迟( 得益于池化和复用 )，更低的资源消耗以及最少的内存复制 |
-| 健壮性   | 1. 不会因为慢速、快速或者超载的连接而导致 OutOfMemoryError 2. 消除在高速网络中 NIO 应用程序常见的不公平读 / 写比率 |
-| 安全性   | 完整的 SSL/TLS 以及 StartTLs 支持，可用于受限环境下，如 Applet 和 OSGI |
-| 社区驱动 | 发布快速而且频繁                                             |
-
-### 2. Netty 核心组件
-
-为了后期更好地理解和进一步深入 Netty，有必要总体认识一下 Netty 所用到的核心组件以及他们在整个 Netty 架构中是如何协调工作的。
-
-Netty 有如下几个核心组件：
-
-- Bootstrap & ServerBootstrap
-- Channel
-- ChannelFuture
-- EventLoop & EventLoopGroup
-- ChannelHandler
-- ChannelPipeline
-
-核心组件的高层类图如下：
-
-![image-20221219211433104](../../_media/analysis/netty/image-20221219211433104.png)
-
-#### 2.1 Bootstrap & ServerBootstrap
-
-这 2 个类都继承了AbstractBootstrap，因此它们有很多相同的方法和职责。它们都是**启动器**，能够帮助 Netty 使用者更加方便地组装和配置 Netty ，也可以更方便地启动 Netty 应用程序。相比使用者自己从头去将 Netty 的各部分组装起来要方便得多，降低了使用者的学习和使用成本。它们是我们使用 Netty 的入口和最重要的 API ，可以通过它来连接到一个主机和端口上，也可以通过它来绑定到一个本地的端口上。总的来说，**它们两者之间相同之处要大于不同**。
-
-> Bootstrap & ServerBootstrap 对于 Netty ，就相当于 Spring Boot 是 Spring 的启动器。
-
-它们和其它组件之间的关系是它们将 Netty 的其它组件进行组装和配置，所以它们会组合和直接或间接依赖其它的类。
-
-Bootstrap 用于启动一个 Netty TCP 客户端，或者 UDP 的一端。
-
-- 通常使用 `#connet(...)` 方法连接到远程的主机和端口，作为一个 Netty TCP 客户端。
-- 也可以通过 `#bind(...)` 方法绑定本地的一个端口，作为 UDP 的一端。
-- 仅仅需要使用**一个** EventLoopGroup 。
-
-ServerBootstrap 往往是用于启动一个 Netty 服务端。
-
-- 通常使用 `#connet(...)` 方法连接到远程的主机和端口，作为一个 Netty TCP 客户端。
-- 也可以通过 `#bind(...)` 方法绑定本地的一个端口，作为 UDP 的一端。
-- 仅仅需要使用**一个** EventLoopGroup 。
-
-ServerBootstrap 往往是用于启动一个 Netty 服务端。
-
-Channel 是 Netty 网络操作抽象类，它除了包括基本的 I/O 操作，如 bind、connect、read、write 之外，还包括了 Netty 框架相关的一些功能，如获取该 Channel 的 EventLoop 。
-
-在传统的网络编程中，作为核心类的 Socket ，它对程序员来说并不是那么友好，直接使用其成本还是稍微高了点。而 Netty 的 Channel 则提供的一系列的 API ，它大大降低了直接与 Socket 进行操作的复杂性。而相对于原生 NIO 的 Channel，Netty 的 Channel 具有如下优势( 摘自《Netty权威指南( 第二版 )》) ：
-
-- 在 Channel 接口层，采用 Facade 模式进行统一封装，将网络 I/O 操作、网络 I/O 相关联的其他操作封装起来，统一对外提供。
-- Channel 接口的定义尽量大而全，为 SocketChannel 和 ServerSocketChannel 提供统一的视图，由不同子类实现不同的功能，公共功能在抽象父类中实现，最大程度地实现功能和接口的重用。
-- 具体实现采用聚合而非包含的方式，将相关的功能类聚合在 Channel 中，由 Channel 统一负责和调度，功能实现更加灵活。
-
-#### 2.2 EventLoop && EventLoopGroup
-
-Netty 基于**事件驱动模型**，使用不同的事件来通知我们状态的改变或者操作状态的改变。它定义了在整个连接的生命周期里当有事件发生的时候处理的核心抽象。
-
-Channel 为Netty 网络操作抽象类，EventLoop 负责处理注册到其上的 Channel 处理 I/O 操作，两者配合参与 I/O 操作。
-
-EventLoopGroup 是一个 EventLoop 的分组，它可以获取到一个或者多个 EventLoop 对象，因此它提供了迭代出 EventLoop 对象的方法。
-
-下图是 Channel、EventLoop、Thread、EventLoopGroup 之间的关系( 摘自《Netty In Action》) ：
-
-![image-20221219211832275](../../_media/analysis/netty/image-20221219211832275.png)
-
-- 一个 EventLoopGroup 包含一个或多个 EventLoop ，即 EventLoopGroup : EventLoop = `1 : n` 。
-- 一个 EventLoop 在它的生命周期内，只能与一个 Thread 绑定，即 EventLoop : Thread = `1 : 1` 。
-- 所有有 EventLoop 处理的 I/O 事件都将在它**专有**的 Thread 上被处理，从而保证线程安全，即 Thread : EventLoop = `1 : 1`。
-- 一个 Channel 在它的生命周期内只能注册到一个 EventLoop 上，即 Channel : EventLoop = `n : 1` 。
-- 一个 EventLoop 可被分配至一个或多个 Channel ，即 EventLoop : Channel = `1 : n` 。
-
-当一个连接到达时，Netty 就会创建一个 Channel，然后从 EventLoopGroup 中分配一个 EventLoop 来给这个 Channel 绑定上，在该 Channel 的整个生命周期中都是有这个绑定的 EventLoop 来服务的。
-
-#### 2.4 ChannelFuture
-
-Netty 为异步非阻塞，即所有的 I/O 操作都为异步的，因此，我们不能立刻得知消息是否已经被处理了。Netty 提供了 ChannelFuture 接口，通过该接口的 `#addListener(...)` 方法，注册一个 ChannelFutureListener，当操作执行成功或者失败时，监听就会自动触发返回结果。
-
-#### 2.5 ChannelHandler
-
-ChannelHandler ，连接通道处理器，我们使用 Netty 中中**最常用**的组件。ChannelHandler 主要用来处理各种事件，这里的事件很广泛，比如可以是连接、数据接收、异常、数据转换等。
-
-ChannelHandler 有两个核心子类 ChannelInboundHandler 和 ChannelOutboundHandler，其中 ChannelInboundHandler 用于接收、处理入站( Inbound )的数据和事件，而 ChannelOutboundHandler 则相反，用于接收、处理出站( Outbound )的数据和事件。
-
-- ChannelInboundHandler 的实现类还包括一系列的 **Decoder** 类，对输入字节流进行解码。
-- ChannelOutboundHandler 的实现类还包括一系列的 **Encoder** 类，对输入字节流进行编码。
-
-ChannelDuplexHandler 可以**同时**用于接收、处理入站和出站的数据和时间。
-
-ChannelHandler 还有其它的一系列的抽象实现 Adapter ，以及一些用于编解码具体协议的 ChannelHandler 实现类。
-
-#### 2.6 ChannelPipeline
-
-ChannelPipeline 为 ChannelHandler 的**链**，提供了一个容器并定义了用于沿着链传播入站和出站事件流的 API 。一个数据或者事件可能会被多个 Handler 处理，在这个过程中，数据或者事件经流 ChannelPipeline ，由 ChannelHandler 处理。在这个处理过程中，一个 ChannelHandler 接收数据后处理完成后交给下一个 ChannelHandler，或者什么都不做直接交给下一个 ChannelHandler。
-
-![image-20221219212106763](../../_media/analysis/netty/image-20221219212106763.png)
-
-- 当一个数据流进入 ChannelPipeline 时，它会从 ChannelPipeline 头部开始，传给第一个 ChannelInboundHandler 。当第一个处理完后再传给下一个，一直传递到管道的尾部。
-- 与之相对应的是，当数据被写出时，它会从管道的尾部开始，先经过管道尾部的“最后”一个ChannelOutboundHandler ，当它处理完成后会传递给前一个 ChannelOutboundHandler 。
-
-上图更详细的，可以是如下过程：
-
-```java
-*                                                 I/O Request
-*                                            via {@link Channel} or
-*                                        {@link ChannelHandlerContext}
-*                                                      |
-*  +---------------------------------------------------+---------------+
-*  |                           ChannelPipeline         |               |
-*  |                                                  \|/              |
-*  |    +---------------------+            +-----------+----------+    |
-*  |    | Inbound Handler  N  |            | Outbound Handler  1  |    |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |              /|\                                  |               |
-*  |               |                                  \|/              |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |    | Inbound Handler N-1 |            | Outbound Handler  2  |    |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |              /|\                                  .               |
-*  |               .                                   .               |
-*  | ChannelHandlerContext.fireIN_EVT() ChannelHandlerContext.OUT_EVT()|
-*  |        [ method call]                       [method call]         |
-*  |               .                                   .               |
-*  |               .                                  \|/              |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |    | Inbound Handler  2  |            | Outbound Handler M-1 |    |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |              /|\                                  |               |
-*  |               |                                  \|/              |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |    | Inbound Handler  1  |            | Outbound Handler  M  |    |
-*  |    +----------+----------+            +-----------+----------+    |
-*  |              /|\                                  |               |
-*  +---------------+-----------------------------------+---------------+
-*                  |                                  \|/
-*  +---------------+-----------------------------------+---------------+
-*  |               |                                   |               |
-*  |       [ Socket.read() ]                    [ Socket.write() ]     |
-*  |                                                                   |
-*  |  Netty Internal I/O Threads (Transport Implementation)            |
-*  +-------------------------------------------------------------------+
-```
-
-------
-
-当 ChannelHandler 被添加到 ChannelPipeline 时，它将会被分配一个
-
-**ChannelHandlerContext** ，它代表了 ChannelHandler 和 ChannelPipeline 之间的绑定。其中 ChannelHandler 添加到 ChannelPipeline 中，通过 ChannelInitializer 来实现，过程如下：
-
-1. 一个 ChannelInitializer 的实现对象，被设置到了 BootStrap 或 ServerBootStrap 中。
-2. 当 `ChannelInitializer#initChannel()` 方法被调用时，ChannelInitializer 将在 ChannelPipeline 中创建**一组**自定义的 ChannelHandler 对象。
-3. ChannelInitializer 将它自己从 ChannelPipeline 中移除。
-
-> ChannelInitializer 是一个特殊的 ChannelInboundHandlerAdapter 抽象类。
-
-- 小明哥 [《【死磕 Netty 】—— Netty的核心组件》](https://cloud.tencent.com/developer/article/1110061)
-- 杨武兵 [《Netty 源码分析系列 —— 概述》](https://my.oschina.net/ywbrj042/blog/856596)
-- 乒乓狂魔 [《Netty 源码分析（一）概览》](https://my.oschina.net/pingpangkuangmo/blog/734051)
+- https://my.oschina.net/pingpangkuangmo/blog/734051)

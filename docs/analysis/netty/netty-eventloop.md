@@ -4947,7 +4947,7 @@ public class BatchFlushHandler extends ChannelOutboundHandlerAdapter {
 
 #### 2.1 静态属性
 
-```
+```java
 /**
  * 任务序号生成器，通过 AtomicLong 实现递增发号
  */
@@ -4977,7 +4977,7 @@ private static final long START_TIME = System.nanoTime();
 
 `#nanoTime()` **静态**方法，获得当前时间，这个是相对 `START_TIME` 来算的。代码如下：
 
-```
+```java
 static long nanoTime() {
     return System.nanoTime() - START_TIME;
 }
@@ -4989,7 +4989,7 @@ static long nanoTime() {
 
 `#deadlineNanos(long delay)` **静态**方法，获得任务执行时间，这个也是相对 `START_TIME` 来算的。代码如下：
 
-```
+```java
 /**
  * @param delay 延迟时长，单位：纳秒
  * @return 获得任务执行时间，也是相对 {@link #START_TIME} 来算的。
@@ -5004,7 +5004,7 @@ static long deadlineNanos(long delay) {
 
 #### 2.4 构造方法
 
-```
+```java
 /**
  * 任务编号
  */
@@ -5061,7 +5061,7 @@ ScheduledFutureTask(
 
 `#delayNanos(...)` 方法，获得距离指定时间，还要多久可执行。代码如下：
 
-```
+```java
 /**
  * @return 距离当前时间，还要多久可执行。若为负数，直接返回 0
  */
@@ -5087,7 +5087,7 @@ public long getDelay(TimeUnit unit) {
 
 `#run()` 方法，执行定时任务。代码如下：
 
-```
+```java
  1: @Override
  2: public void run() {
  3:     assert executor().inEventLoop();
@@ -5166,7 +5166,7 @@ public long getDelay(TimeUnit unit) {
 
 有两个方法，可以取消定时任务。代码如下：
 
-```
+```java
 @Override
 public boolean cancel(boolean mayInterruptIfRunning) {
     boolean canceled = super.cancel(mayInterruptIfRunning);
@@ -5189,7 +5189,7 @@ boolean cancelWithoutRemove(boolean mayInterruptIfRunning) {
 
 `#compareTo(Delayed o)` 方法，用于队列( ScheduledFutureTask 使用 PriorityQueue 作为**优先级队列** )排序。代码如下：
 
-```
+```java
 @Override
 public int compareTo(Delayed o) {
     if (this == o) {
@@ -5218,7 +5218,7 @@ public int compareTo(Delayed o) {
 
 `#priorityQueueIndex(...)` 方法，获得或设置 `queueIndex` 属性。代码如下：
 
-```
+```java
 @Override
 public int priorityQueueIndex(DefaultPriorityQueue<?> queue) { // 获得
     return queueIndex;
@@ -5238,7 +5238,7 @@ public void priorityQueueIndex(DefaultPriorityQueue<?> queue, int i) { // 设置
 
 #### 3.1 构造方法
 
-```
+```java
 /**
  * 定时任务队列
  */
@@ -5258,7 +5258,7 @@ protected AbstractScheduledEventExecutor(EventExecutorGroup parent) {
 
 `#scheduledTaskQueue()` 方法，获得定时任务队列。若未初始化，则进行创建。代码如下：
 
-```
+```java
 /**
  * 定时任务排序器
  */
@@ -5288,7 +5288,7 @@ PriorityQueue<ScheduledFutureTask<?>> scheduledTaskQueue() {
 
 `#nanoTime()` **静态**方法，获得当前时间。代码如下：
 
-```
+```java
 protected static long nanoTime() {
     return ScheduledFutureTask.nanoTime();
 }
@@ -5300,7 +5300,7 @@ protected static long nanoTime() {
 
 `#schedule(final ScheduledFutureTask<V> task)` 方法，提交定时任务。代码如下：
 
-```
+```java
 <V> ScheduledFuture<V> schedule(final ScheduledFutureTask<V> task) {
     if (inEventLoop()) {
         // 添加到定时任务队列
@@ -5322,7 +5322,7 @@ protected static long nanoTime() {
 
 在 ScheduledFutureTask 中，有四个方法，会调用 `#schedule(final ScheduledFutureTask<V> task)` 方法，分别创建 **3** 种不同类型的定时任务。代码如下：
 
-```
+```java
 @Override
 public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
     ObjectUtil.checkNotNull(callable, "callable");
@@ -5386,7 +5386,7 @@ public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialD
 
 `#removeScheduled(final ScheduledFutureTask<?> task)` 方法，移除出定时任务队列。代码如下：
 
-```
+```java
 final void removeScheduled(final ScheduledFutureTask<?> task) {
     if (inEventLoop()) {
         // 移除出定时任务队列
@@ -5409,7 +5409,7 @@ final void removeScheduled(final ScheduledFutureTask<?> task) {
 
 `#hasScheduledTasks()` 方法，判断是否有可执行的定时任务。代码如下：
 
-```
+```java
 /**
  * Returns {@code true} if a scheduled task is ready for processing.
  */
@@ -5428,7 +5428,7 @@ protected final boolean hasScheduledTasks() {
 
 `#peekScheduledTask()` 方法，获得队列首个定时任务。不会从队列中，移除该任务。代码如下：
 
-```
+```java
 final ScheduledFutureTask<?> peekScheduledTask() {
     Queue<ScheduledFutureTask<?>> scheduledTaskQueue = this.scheduledTaskQueue;
     if (scheduledTaskQueue == null) {
@@ -5447,7 +5447,7 @@ final ScheduledFutureTask<?> peekScheduledTask() {
 
 代码如下：
 
-```
+```java
 /**
  * Return the nanoseconds when the next scheduled task is ready to be run or {@code -1} if no task is scheduled.
  */
@@ -5469,7 +5469,7 @@ protected final long nextScheduledTaskNano() {
 
 `#pollScheduledTask(...)` 方法，获得指定时间内，定时任务队列**首个**可执行的任务，并且从队列中移除。代码如下：
 
-```
+```java
 /**
  * @see #pollScheduledTask(long)
  */
@@ -5505,7 +5505,7 @@ protected final Runnable pollScheduledTask(long nanoTime) {
 
 `#cancelScheduledTasks()` 方法，取消定时任务队列的所有任务。代码如下：
 
-```
+```java
 /**
  * Cancel all scheduled tasks.
  * <p>
@@ -5540,7 +5540,7 @@ private static boolean isNullOrEmpty(Queue<ScheduledFutureTask<?>> queue) {
 
 在 [《精尽 Netty 源码解析 —— EventLoop（六）之 EventLoop 处理普通任务》](http://svip.iocoder.cn/Netty/EventLoop-6-EventLoop-handle-normal-task?self) 中，有个 `#fetchFromScheduledTaskQueue()` 方法，将定时任务队列 `scheduledTaskQueue` 到达可执行的任务，添加到任务队列 `taskQueue` 中。代码如下：
 
-```
+```java
 private boolean fetchFromScheduledTaskQueue() {
     // 获得当前时间
     long nanoTime = AbstractScheduledEventExecutor.nanoTime();
@@ -5588,7 +5588,7 @@ bossGroup.shutdownGracefully();
 
 那么它是如何工作的呢？由于bossGroup是一个线程池，线程池的关闭要求其中的每一个线程关闭。而线程的实现是在SingleThreadEventExecutor类，所以我们将再次回到这个类，首先看其中的shutdownGracefully()方法，其中的参数quietPeriod为静默时间，timeout为截止时间，此外还有一个相关参数gracefulShutdownStartTime即优雅关闭开始时间，代码如下：
 
-```
+```java
 @Override
 public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
     if (isShuttingDown()) {
@@ -5639,7 +5639,7 @@ public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit uni
 
 这段代码真是为多线程同时调用关闭的情况操碎了心，我们抓住其中的关键点：该方法只是将线程状态修改为ST_SHUTTING_DOWN并不执行具体的关闭操作（类似的shutdown方法将线程状态修改为ST_SHUTDOWN）。for()循环是为了保证修改state的线程（原生线程或者外部线程）有且只有一个。如果你还没有理解这句话，请查阅compareAndSet()方法的说明然后再看一遍。39-44行代码之所以这样处理，是因为子类的实现中run()方法是一个EventLoop即一个循环。40行代码启动线程可以完整走一遍正常流程并且可以处理添加到队列中的任务以及IO事件。43行唤醒阻塞在阻塞点上的线程，使其从阻塞状态退出。要从一个EventLoop循环中退出，有什么好方法吗？可能你会想到这样处理：设置一个标记，每次循环都检测这个标记，如果标记为真就退出。Netty正是使用这种方法，NioEventLoop的run()方法的循环部分有这样一段代码：
 
-```
+```java
 if (isShuttingDown()) { // 检测线程状态
     closeAll(); // 关闭注册的channel
     if (confirmShutdown()) {
@@ -5650,7 +5650,7 @@ if (isShuttingDown()) { // 检测线程状态
 
 查询线程状态的方法有三个，实现简单，一并列出：
 
-```
+```java
 public boolean isShuttingDown() {
     return STATE_UPDATER.get(this) >= ST_SHUTTING_DOWN;
 }
@@ -5666,7 +5666,7 @@ public boolean isTerminated() {
 
 需要注意的是调用shutdownGracefully()方法后线程状态为ST_SHUTTING_DOWN，调用shutdown()方法后线程状态为ST_SHUTDOWN。isShuttingDown()可以一并判断这两种调用方法。closeAll()方法关闭注册到NioEventLoop的所有Channel，代码不再列出。confirmShutdown()方法在SingleThreadEventExecutor类，确定是否可以关闭或者说是否可以从EventLoop循环中跳出。代码如下：
 
-```
+```java
 protected boolean confirmShutdown() {
     if (!isShuttingDown()) {
         return false;   // 没有调用shutdown相关的方法直接返回
@@ -5723,7 +5723,7 @@ protected boolean confirmShutdown() {
 (4).优雅关闭截止时间已到
 注意上面所列的条件之间是**或**的关系，也就是说满足任意一条就会从EventLoop循环中跳出。我们可以将静默时间看为一段观察期，在此期间如果没有任务执行，说明可以跳出循环；如果此期间有任务执行，执行完后立即进入下一个观察期继续观察；如果连续多个观察期一直有任务执行，那么截止时间到则跳出循环。我们看一下shutdownGracefully()的默认参数：
 
-```
+```java
 public Future<?> shutdownGracefully() {
     return shutdownGracefully(2, 15, TimeUnit.SECONDS);
 }
@@ -5731,7 +5731,7 @@ public Future<?> shutdownGracefully() {
 
 可知，Netty默认的shutdownGracefully()机制为：在2秒的静默时间内如果没有任务，则关闭；否则15秒截止时间到达时关闭。换句话说，在15秒时间段内，如果有超过2秒的时间段没有任务则关闭。至此，我们明白了从EvnetLoop循环中跳出的机制，最后，我们抵达终点站：线程结束机制。这一部分的代码实现在线程工厂的生成方法中：
 
-```
+```java
 thread = threadFactory.newThread(new Runnable() {
         @Override
         public void run() {
@@ -5783,7 +5783,7 @@ thread = threadFactory.newThread(new Runnable() {
 
 20-22行代码说明子类在实现模板方法run()时，须调用confirmShutdown()方法，不调用的话会有错误日志。25-31行的for()循环主要是对异常情况的处理，但同时也兼顾了正常调用关闭方法的情况。可以将抛出异常的情况视为静默时间为0的shutdownGracefully()方法，这样便于理解循环跳出条件。34行代码cleanup()的默认实现什么也不做，NioEventLoop覆盖了基类，实现关闭NioEventLoop持有的selector：
 
-```
+```java
 protected void cleanup() {
     try {
         selector.close();
@@ -5795,7 +5795,7 @@ protected void cleanup() {
 
 关于Netty优雅关闭的机制，还有最后一点细节，那就是runShutdownHooks()方法：
 
-```
+```java
 private boolean runShutdownHooks() {
     boolean ran = false;
     while (!shutdownHooks.isEmpty()) {
