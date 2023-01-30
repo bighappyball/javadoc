@@ -234,6 +234,20 @@ B走路径b->c-a
     }
 ```
 
+#### [876. 链表的中间结点 - 力扣（Leetcode）](https://leetcode.cn/problems/middle-of-the-linked-list/description/)
+
+```java
+    public ListNode middleNode(ListNode head) {
+        ListNode slow=head;
+        ListNode fast=head;
+        while(fast!=null&&fast.next!=null){
+            fast=fast.next.next;
+            slow=slow.next;
+        }
+        return slow;
+    }
+```
+
 
 
 ### 删除重复节点

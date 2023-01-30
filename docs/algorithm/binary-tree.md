@@ -115,6 +115,51 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
 在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2h 节点之间的最后一级 h 。
 
+#### [222. 完全二叉树的节点个数 - 力扣（Leetcode）](https://leetcode.cn/problems/count-complete-tree-nodes/description/)
+
+##### 二分查找 + 位运算
+
+```java
+ public int countNodes(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int level = 0;
+        TreeNode node = root;
+        while (node.left != null) {
+            level++;
+            node = node.left;
+        }
+        int low=1<<level,high=(1<<(level+1))-1;
+        while(low<high){
+            int mid=low+(high-low+1)/2;
+            if(exists(root,level,mid)){
+                low=mid;
+            }else{
+                high=mid-1;
+            }
+        }
+        return low;
+
+    }
+
+  public boolean exists(TreeNode root, int level, int k) {
+        int bits = 1 << (level - 1);
+        TreeNode node = root;
+        while (node != null && bits > 0) {
+            if ((bits & k) == 0) {
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+            bits >>= 1;
+        }
+        return node != null;
+    }
+```
+
+
+
 ### 二叉搜索树
 
 **有效** 二叉搜索树定义如下：
@@ -254,6 +299,56 @@ class Solution {
         list.remove(list.size()-1); 
     }
 ```
+
+#### [863. 二叉树中所有距离为 K 的结点 - 力扣（Leetcode）](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/description/)
+
+```java
+ Map<Integer, TreeNode> parents = new HashMap<Integer, TreeNode>();
+    List<Integer> ans = new ArrayList<Integer>();
+
+    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
+                // 从 root 出发 DFS，记录每个结点的父结点
+        findParents(root);
+
+        // 从 target 出发 DFS，寻找所有深度为 k 的结点
+        findAns(target, null, 0, k);
+
+        return ans;
+
+    }
+
+    public void findParents(TreeNode node) {
+        if(node.left!=null){
+            parents.put(node.left.val,node);
+            findParents(node.left);
+        }
+        if(node.right!=null){
+            parents.put(node.right.val,node);
+            findParents(node.right);
+        }
+    }
+
+     public void findAns(TreeNode node, TreeNode from, int depth, int k) {
+         if(node==null){
+             return;
+         }
+         if(depth==k){
+             ans.add(node.val);
+             return;
+         }
+         if(node.left!=from){
+             findAns(node.left,node,depth+1,k);
+         }
+         if(node.right!=from){
+             findAns(node.right,node,depth+1,k);
+         }
+         if(parents.get(node.val)!=from){
+             findAns(parents.get(node.val),node,depth+1,k);
+         }
+     }
+```
+
+
 
 ### 构造二叉树
 

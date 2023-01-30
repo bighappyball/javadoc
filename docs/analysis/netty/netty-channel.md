@@ -25,7 +25,7 @@
 
 ## 2.1 基础查询
 
-```
+```java
 /**
  * Returns the globally unique identifier of this {@link Channel}.
  *
@@ -114,7 +114,7 @@ SocketAddress remoteAddress();
 
 ## 2.2 状态查询
 
-```
+```java
 /**
  * Returns {@code true} if the {@link Channel} is open and may get active later
  *
@@ -176,21 +176,17 @@ long bytesBeforeWritable();
 
 - 服务端用于绑定( bind )的 Channel 、或者客户端发起连接( connect )的 Channel 。
 
-  ```
-  REGISTERED -> CONNECT/BIND -> ACTIVE -> CLOSE -> INACTIVE -> UNREGISTERED
-  ```
-
+  `REGISTERED -> CONNECT/BIND -> ACTIVE -> CLOSE -> INACTIVE -> UNREGISTERED`
+  
 - 服务端接受( accept )客户端的 Channel 。
 
-  ```
-  REGISTERED -> ACTIVE -> CLOSE -> INACTIVE -> UNREGISTERED
-  ```
+  `REGISTERED -> ACTIVE -> CLOSE -> INACTIVE -> UNREGISTERED`
 
 一个**异常关闭**的 Channel 状态转移不符合上面的。
 
 ## 2.3 IO 操作
 
-```
+```java
 @Override
 Channel read();
 
@@ -200,7 +196,7 @@ Channel flush();
 
 - 这两个方法，继承自 ChannelOutboundInvoker 接口。实际还有如下几个：
 
-  ```
+  ```java
   ChannelFuture bind(SocketAddress localAddress);
   ChannelFuture connect(SocketAddress remoteAddress);
   ChannelFuture connect(SocketAddress remoteAddress, SocketAddress localAddress);
@@ -227,7 +223,7 @@ Channel flush();
 
 ## 2.4 异步结果 Future
 
-```
+```java
 /**
  * Returns the {@link ChannelFuture} which will be notified when this
  * channel is closed.  This method always returns the same future instance.
@@ -239,7 +235,7 @@ ChannelFuture closeFuture();
 
 - 除了自定义的 `#closeFuture()` 方法，也从 ChannelOutboundInvoker 接口继承了几个接口方法：
 
-  ```
+  ```java
   ChannelPromise newPromise();
   ChannelProgressivePromise newProgressivePromise();
   
@@ -266,7 +262,7 @@ Unsafe **接口**，定义在在 `io.netty.channel.Channel` 内部，和 Channel
 
 Unsafe 直译中文为“不安全”，就是告诉我们，**无需**且**不必要**在我们使用 Netty 的代码中，**不能直接**调用 Unsafe 相关的方法。Netty 注释说明如下：
 
-```
+```java
 /**
  * <em>Unsafe</em> operations that should <em>never</em> be called from user-code. 
  * 
@@ -287,7 +283,7 @@ Unsafe 直译中文为“不安全”，就是告诉我们，**无需**且**不�
 
 ## 3.1 基础查询
 
-```
+```java
 /**
  * Return the assigned {@link RecvByteBufAllocator.Handle} which will be used to allocate {@link ByteBuf}'s when
  * receiving data.
@@ -319,7 +315,7 @@ SocketAddress remoteAddress();
 
 ## 3.3 IO 操作
 
-```
+```java
 void register(EventLoop eventLoop, ChannelPromise promise);
 void bind(SocketAddress localAddress, ChannelPromise promise);
 void connect(SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise);
@@ -339,7 +335,7 @@ ChannelOutboundBuffer outboundBuffer();
 
 ## 3.4 异步结果 Future
 
-```
+```java
 /**
  * Return a special ChannelPromise which can be reused and passed to the operations in {@link Unsafe}.
  * It will never be notified of a success or error and so is only a placeholder for operations
@@ -361,7 +357,7 @@ Unsafe 的子接口和实现类如下图：
 
 `io.netty.channel.ChannelId` 实现 Serializable、Comparable 接口，Channel 编号接口。代码如下：
 
-```
+```java
 public interface ChannelId extends Serializable, Comparable<ChannelId> {
 
     /**
@@ -386,7 +382,7 @@ public interface ChannelId extends Serializable, Comparable<ChannelId> {
 
 ChanelId 的**默认**实现类为 `io.netty.channel.DefaultChannelId` ，我们主要看看它是如何生成 Channel 的**两种**编号的。代码如下：
 
-```
+```java
 @Override
 public String asShortText() {
     String shortValue = this.shortValue;
@@ -410,7 +406,7 @@ public String asLongText() {
 
 - 对于 `#asLongText()` 方法，通过调用 `#newLongValue()` 方法生成。代码如下：
 
-  ```
+  ```java
   private String newLongValue() {
       StringBuilder buf = new StringBuilder(2 * data.length + 5); // + 5 的原因是有 5 个 '-'
       int i = 0;
@@ -437,7 +433,7 @@ public String asLongText() {
 
 `io.netty.channel.ChannelConfig` ，Channel 配置接口。代码如下：
 
-```
+```java
 Map<ChannelOption<?>, Object> getOptions();
 <T> T getOption(ChannelOption<T> option);
 boolean setOptions(Map<ChannelOption<?>, ?> options);
@@ -481,7 +477,7 @@ ChannelConfig setWriteBufferWaterMark(WriteBufferWaterMark writeBufferWaterMark)
 
 - 调用 `#setOption(ChannelOption<T> option, T value)` 方法时，会调用相应的 `#setXXX(...)` 方法。代码如下：
 
-  ```
+  ```java
   // DefaultChannelConfig.java
   
   @Override
@@ -562,7 +558,7 @@ ChannelConfig 的子接口和实现类如下图：
 
 在 NioEventLoop 的 `#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 方法中，我们会看到这样一段代码：
 
-```
+```java
 // SelectionKey.OP_READ 或 SelectionKey.OP_ACCEPT 就绪
 // readyOps == 0 是对 JDK Bug 的处理，防止空的死循环
 // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
@@ -579,7 +575,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
 `NioMessageUnsafe#read()` 方法，代码如下：
 
-```
+```java
  1: private final class NioMessageUnsafe extends AbstractNioUnsafe {
  2: 
  3:     /**
@@ -677,7 +673,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 第 17 行：调用 `DefaultMaxMessagesRecvByteBufAllocator.MaxMessageHandle#reset(ChannelConfig)` 方法，重置 RecvByteBufAllocator.Handle 对象。代码如下：
 
-    ```
+    ```java
     @Override
     public void reset(ChannelConfig config) {
         this.config = config; // 重置 ChannelConfig 对象
@@ -698,7 +694,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 第 37 行：调用 `AdaptiveRecvByteBufAllocator.HandleImpl#incMessagesRead(int amt)` 方法，读取消息( 客户端 )数量 + `localRead` 。代码如下：
 
-    ```
+    ```java
     @Override
     public final void incMessagesRead(int amt) {
         totalMessages += amt;
@@ -709,7 +705,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 第 38 行：调用 `AdaptiveRecvByteBufAllocator.HandleImpl#incMessagesRead(int amt)#continueReading()` 方法，判断是否循环是否继续，读取( 接受 )新的客户端连接。代码如下：
 
-    ```
+    ```java
     // AdaptiveRecvByteBufAllocator.HandleImpl.java
     @Override
     public boolean continueReading() {
@@ -730,35 +726,15 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 第 39 至 42 行：读取过程中发生异常，记录该异常到 `exception` 中，同时结束循环。
 
-- 第 44 至 51 行：循环
-
-   
-
-  ```
-  readBuf
-  ```
-
-   
-
-  数组，触发 Channel read 事件到 pipeline 中。
+- 第 44 至 51 行：循环`readBuf`数组，触发 Channel read 事件到 pipeline 中。
 
   - 第 48 行：TODO 芋艿 细节
 
-  - 第 50 行：调用
-
-     
-
-    ```
-    ChannelPipeline#fireChannelRead(Object msg)
-    ```
-
-     
-
-    方法，触发 Channel read 事件到 pipeline 中。
-
+  - 第 50 行：调用`ChannelPipeline#fireChannelRead(Object msg)`方法，触发 Channel read 事件到 pipeline 中。
+  
     - **注意**，传入的方法参数是新接受的客户端 NioSocketChannel 连接。
-    - 在内部，会通过 ServerBootstrapAcceptor ，将客户端的 Netty NioSocketChannel 注册到 EventLoop 上。详细解析，胖友先跳到 [「4. ServerBootstrapAcceptor」](http://svip.iocoder.cn/Netty/Channel-2-accept/#) 中，看完记得回到此处。
-
+  - 在内部，会通过 ServerBootstrapAcceptor ，将客户端的 Netty NioSocketChannel 注册到 EventLoop 上。详细解析，胖友先跳到 [「4. ServerBootstrapAcceptor」](http://svip.iocoder.cn/Netty/Channel-2-accept/#) 中，看完记得回到此处。
+  
 - 第 53 行：清空 `readBuf` 数组。
 
 - 第 55 行：调用 `RecvByteBufAllocator.Handle#readComplete()` 方法，读取完成。暂无重要的逻辑，不详细解析。
@@ -769,7 +745,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 如果没有自定义 ChannelHandler 进行处理，最终会被 pipeline 中的尾节点 TailContext 所处理。代码如下：
 
-    ```
+    ```java
     // TailContext.java
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -783,33 +759,15 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
     - 具体的调用是**空方法**。
 
-- 第 60 至 66 行：
-
-  ```
-  exception
-  ```
-
-   
-
-  非空，说明在接受连接过程中发生异常。
+- 第 60 至 66 行：`exception`非空，说明在接受连接过程中发生异常。
 
   - 第 62 行：TODO 芋艿 细节
-
-  - 第 65 行： 调用
-
-     
-
-    ```
-    ChannelPipeline#fireExceptionCaught(Throwable)
-    ```
-
-     
-
-    方法，触发 exceptionCaught 事件到 pipeline 中。
+  
+  - 第 65 行： 调用`ChannelPipeline#fireExceptionCaught(Throwable)`方法，触发 exceptionCaught 事件到 pipeline 中。
 
     - 默认情况下，会使用 ServerBootstrapAcceptor 处理该事件。详细解析，见 [「4.3 exceptionCaught」](http://svip.iocoder.cn/Netty/Channel-2-accept/#) 。
-    - *如果有需要，胖友可以自定义处理器，处理该事件。一般情况下，不需要*。
-
+  - *如果有需要，胖友可以自定义处理器，处理该事件。一般情况下，不需要*。
+  
 - 第 68 至 75 行：TODO 芋艿 细节
 
 - 第 76 至 87 行：TODO 芋艿 细节
@@ -818,7 +776,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
 `doReadMessages(List<Object> buf)` **抽象**方法，读取客户端的连接到方法参数 `buf` 中。它是一个**抽象**方法，定义在 AbstractNioMessageChannel 抽象类中。代码如下：
 
-```
+```java
 /**
  * Read messages into the given array and return the amount which was read.
  */
@@ -829,7 +787,7 @@ protected abstract int doReadMessages(List<Object> buf) throws Exception;
 
 NioServerSocketChannel 对该方法的实现代码如下：
 
-```
+```java
   1: @Override
   2: protected int doReadMessages(List<Object> buf) throws Exception {
   3:     // 接受客户端连接
@@ -862,7 +820,7 @@ protected ServerSocketChannel javaChannel() {
 
 - 第 4 行：调用 `SocketUtils#accept(ServerSocketChannel serverSocketChannel)` 方法，接受客户端连接。代码如下：
 
-  ```
+  ```java
   public static SocketChannel accept(final ServerSocketChannel serverSocketChannel) throws IOException {
       try {
           return AccessController.doPrivileged(new PrivilegedExceptionAction<SocketChannel>() {
@@ -879,29 +837,11 @@ protected ServerSocketChannel javaChannel() {
 
   - 重点是看 `<1>` 处，调用 `ServerSocketChannel#accept()` 方法，接受客户端连接。
 
-- 第 9 行：基于客户端的 NIO ServerSocket ，创建 Netty NioSocketChannel 对象。整个过程，就是
-
-   
-
-  《精尽 Netty 源码分析 —— 启动（二）之客户端》
-
-   
-
-  的
-
-   
-
-  「3.7.1 创建 Channel 对象」
-
-   
-
-  小节。
+- 第 9 行：基于客户端的 NIO ServerSocket ，创建 Netty NioSocketChannel 对象。整个过程，就是《精尽 Netty 源码分析 —— 启动（二）之客户端》的「3.7.1 创建 Channel 对象」小节。
 
   - 第 10 行：返回 1 ，表示成功接受了 1 个新的客户端连接。
 
-- 第 12 至 20 行：发生异常，关闭客户端的 SocketChannel 连接，并打印
-
-  告警
+- 第 12 至 20 行：发生异常，关闭客户端的 SocketChannel 连接，并打印告警
 
   日志。
 
@@ -917,7 +857,7 @@ ServerBootstrapAcceptor ，继承 ChannelInboundHandlerAdapter 类，服务器�
 
 在服务端的启动过程中，我们看到 ServerBootstrapAcceptor 注册到服务端的 NioServerSocketChannel 的 pipeline 的尾部，代码如下：
 
-```
+```java
 // 记录当前的属性
 final EventLoopGroup currentChildGroup = childGroup;
 final ChannelHandler currentChildHandler = childHandler;
@@ -959,7 +899,7 @@ p.addLast(new ChannelInitializer<Channel>() {
 
 - 即 `<1>` 处。也是在此处，创建了 ServerBootstrapAcceptor 对象。代码如下：
 
-  ```
+  ```java
   private final EventLoopGroup childGroup;
   private final ChannelHandler childHandler;
   private final Entry<ChannelOption<?>, Object>[] childOptions;
@@ -997,7 +937,7 @@ p.addLast(new ChannelInitializer<Channel>() {
 
 `#channelRead(ChannelHandlerContext ctx, Object msg)` 方法，将接受的客户端的 NioSocketChannel 注册到 EventLoop 中。代码如下：
 
-```
+```java
  1: @Override
  2: public void channelRead(ChannelHandlerContext ctx, Object msg) {
  3:     // 老艿艿：如下的注释，先暂时认为是接受的客户端的 NioSocketChannel
@@ -1048,7 +988,7 @@ p.addLast(new ChannelInitializer<Channel>() {
 
   - 第 18 至 28 行：添加监听器，如果注册失败，则调用 `#forceClose(Channel child, Throwable t)` 方法，强制关闭客户端的 NioSocketChannel 连接。代码如下：
 
-    ```
+    ```java
     private static void forceClose(Channel child, Throwable t) {
         child.unsafe().closeForcibly();
         logger.warn("Failed to register an accepted channel: {}", child, t);
@@ -1063,7 +1003,7 @@ p.addLast(new ChannelInitializer<Channel>() {
 
 `#exceptionCaught(ChannelHandlerContext ctx, Throwable cause)` 方法，当捕获到异常时，**暂停 1 秒**，不再接受新的客户端连接；而后，再恢复接受新的客户端连接。代码如下：
 
-```
+```java
  1: @Override
  2: public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
  3:     final ChannelConfig config = ctx.channel().config();
@@ -1085,7 +1025,7 @@ p.addLast(new ChannelInitializer<Channel>() {
 
 - 第 8 行：调用 `ChannelConfig#setAutoRead(false)` 方法，关闭接受新的客户端连接。代码如下：
 
-  ```
+  ```java
   // DefaultChannelConfig.java
   /**
    * {@link #autoRead} 的原子更新器
@@ -1115,24 +1055,8 @@ p.addLast(new ChannelInitializer<Channel>() {
   }
   ```
 
-  - ```
-    autoRead
-    ```
-
-     
-
-    字段，是否开启自动读取的开关。😈 笔者原本以为是个
-
-     
-
-    ```
-    boolean
-    ```
-
-     
-
-    类型，是不是胖友也是。其中，1 表示开启，0 表示关闭。
-
+  - `autoRead`字段，是否开启自动读取的开关。😈 笔者原本以为是个`boolean`类型，是不是胖友也是。其中，1 表示开启，0 表示关闭。
+    
     - `AUTOREAD_UPDATER` 静态变量，对 `autoRead` 字段的原子更新器。
 
   - `<1>` 处，使用 `AUTOREAD_UPDATER` 更新 `autoRead` 字段，并获得更新前的值。为什么需要获取更新前的值呢？在后续的 `<2.1>` 和 `<2.2>` 中，当 `autoRead` 有变化时候，才进行后续的逻辑。
@@ -1142,8 +1066,8 @@ p.addLast(new ChannelInitializer<Channel>() {
   - `<2.1>` 处，`autoRead && !oldAutoRead` 返回 `true` ，意味着恢复重启开启接受新的客户端连接。所以调用 `NioServerSocketChannel#read()` 方法，后续的逻辑，就是 [《精尽 Netty 源码分析 —— 启动（一）之服务端》](http://svip.iocoder.cn/Netty/bootstrap-1-server/) 的 [「3.13.3 beginRead」](http://svip.iocoder.cn/Netty/Channel-2-accept/#) 的逻辑。
 
   - `<2.2>` 处，`!autoRead && oldAutoRead` 返回 `false` ，意味着关闭接受新的客户端连接。所以调用 `#autoReadCleared()` 方法，移除对 `SelectionKey.OP_ACCEPT` 事件的感兴趣。
-
-    ```
+  
+    ```java
     // NioServerSocketChannel.java
     
     @Override
@@ -1151,10 +1075,10 @@ p.addLast(new ChannelInitializer<Channel>() {
         clearReadPending();
     }
     ```
-
+  
     - 在方法内部，会调用 `#clearReadPending()` 方法，代码如下：
-
-      ```
+  
+      ```java
       protected final void clearReadPending() {
           if (isRegistered()) {
               EventLoop eventLoop = eventLoop();
@@ -1185,10 +1109,10 @@ p.addLast(new ChannelInitializer<Channel>() {
           ((AbstractNioUnsafe) unsafe()).removeReadOp();
       }
       ```
-
+  
       - 最终的结果，是在 EventLoop 的线程中，调用 `AbstractNioUnsafe#clearReadPending0()` 方法，移除对“**读**”事件的感兴趣( 对于 NioServerSocketChannel 的 “**读**“事件就是 `SelectionKey.OP_ACCEPT` )。代码如下：
-
-        ```
+  
+        ```java
         // AbstractNioUnsafe.java
         
         protected final void removeReadOp() {
@@ -1208,10 +1132,10 @@ p.addLast(new ChannelInitializer<Channel>() {
             }
         }
         ```
-
+  
         - 通过取反求并，后调用 `SelectionKey#interestOps(interestOps)` 方法，**仅**移除对“读”事件的感兴趣。
         - 😈 整个过程的调用链，有丢丢长，胖友可以回看，或者多多调试。
-
+  
 - 第 10 行：调用 `EventLoop#schedule(Runnable command, long delay, TimeUnit unit)` 方法，发起 1 秒的延迟任务，恢复重启开启接受新的客户端连接。该定时任务会调用 `ChannelConfig#setAutoRead(true)` 方法，即对应 `<2.1>` 情况。
 
 - 第 16 行：调用 `ChannelHandlerContext#fireExceptionCaught(cause)` 方法，继续传播 exceptionCaught 给下一个节点。具体的原因，可看英文注释。
@@ -1250,7 +1174,7 @@ NioSocketChannel 读取( **read** )对端的数据的过程，简单来说：
 
 NioByteUnsafe ，实现 AbstractNioUnsafe 抽象类，AbstractNioByteChannel 的 Unsafe 实现类。代码如下：
 
-```
+```java
 protected class NioByteUnsafe extends AbstractNioUnsafe {
 
     public final void read() { /** 省略内部实现 **/ }
@@ -1268,7 +1192,7 @@ protected class NioByteUnsafe extends AbstractNioUnsafe {
 
 在 NioEventLoop 的 `#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 方法中，我们会看到这样一段代码：
 
-```
+```java
 // SelectionKey.OP_READ 或 SelectionKey.OP_ACCEPT 就绪
 // readyOps == 0 是对 JDK Bug 的处理，防止空的死循环
 // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
@@ -1285,7 +1209,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
 `NioByteUnsafe#read()` 方法，读取新的写入数据。代码如下：
 
-```
+```java
  1: @Override
  2: @SuppressWarnings("Duplicates")
  3: public final void read() {
@@ -1379,7 +1303,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 第 25 行：调用 `RecvByteBufAllocator.Handle#lastBytesRead(int bytes)` 方法，设置**最后**读取字节数。代码如下：
 
-    ```
+    ```java
     // AdaptiveRecvByteBufAllocator.HandleImpl.java
     @Override
     public void lastBytesRead(int bytes) {
@@ -1410,22 +1334,12 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - `<1>` **未**读取到数据，即 `allocHandle.lastBytesRead() <= 0` 。
 
-  - 第 30 行：调用
-
-     
-
-    ```
-    ByteBuf#release()
-    ```
-
-     
-
-    方法，释放 ByteBuf 对象。
+  - 第 30 行：调用`ByteBuf#release()`方法，释放 ByteBuf 对象。
 
     - 第 32 行：置空 ByteBuf 对象。
 
   - 第 34 行：如果最后读取的字节为小于 0 ，说明对端已经关闭。
-
+  
   - 第 35 至 39 行：TODO 芋艿 细节
 
   - 第 41 行：`break` 结束循环。
@@ -1442,7 +1356,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
     - 如果没有自定义 ChannelHandler 进行处理，最终会被 pipeline 中的尾节点 TailContext 所处理。代码如下：
 
-      ```
+      ```java
       // TailContext.java
       @Override
       public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -1458,14 +1372,14 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
           }
       }
       ```
-
+  
       - 最终也会**释放** ByteBuf 对象。这就是为什么【第 53 行】的代码，只去置空 ByteBuf 对象，而不用再去释放的原因。
-
+  
   - 第 53 行：置空 ByteBuf 对象。
-
+  
   - 第 54 行：调用 `AdaptiveRecvByteBufAllocator.HandleImpl#incMessagesRead(int amt)#continueReading()` 方法，判断是否循环是否继续，读取新的数据。代码如下：
-
-    ```
+  
+    ```java
     // DefaultMaxMessagesRecvByteBufAllocator.MaxMessageHandle.java
     private final UncheckedBooleanSupplier defaultMaybeMoreSupplier = new UncheckedBooleanSupplier() {
         @Override
@@ -1487,9 +1401,9 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
                totalBytesRead > 0;
     }
     ```
-
+  
     - 一般情况下，最后读取的字节数，**不等于**最大可写入的字节数，即 `<1>` 处的代码 `UncheckedBooleanSupplier#get()` 返回 `false` ，则不再进行数据读取。因为 😈 也没有数据可以读取啦。
-
+  
 - 第 57 行：调用 `RecvByteBufAllocator.Handle#readComplete()` 方法，读取完成。暂无重要的逻辑，不详细解析。
 
 - 第 59 行：调用 `ChannelPipeline#fireChannelReadComplete()` 方法，触发 Channel readComplete 事件到 pipeline 中。
@@ -1498,7 +1412,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 如果没有自定义 ChannelHandler 进行处理，最终会被 pipeline 中的尾节点 TailContext 所处理。代码如下：
 
-    ```
+    ```java
     // TailContext.java
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -1522,7 +1436,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
 `#handleReadException(hannelPipeline pipeline, ByteBuf byteBuf, Throwable cause, boolean close, RecvByteBufAllocator.Handle allocHandle)` 方法，处理异常。代码如下：
 
-```
+```java
  1: private void handleReadException(ChannelPipeline pipeline, ByteBuf byteBuf, Throwable cause, boolean close, RecvByteBufAllocator.Handle allocHandle) {
  2:     if (byteBuf != null) {
  3:         if (byteBuf.isReadable()) {
@@ -1554,7 +1468,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
     - 该方法的英文注释如下：
 
-      ```
+      ```java
       /**
        * Returns {@code true}
        * if and only if {@code (this.writerIndex - this.readerIndex)} is greater
@@ -1581,7 +1495,7 @@ if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOp
 
   - 如果没有自定义 ChannelHandler 进行处理，最终会被 pipeline 中的尾节点 TailContext 所处理。代码如下：
 
-    ```
+    ```java
     // TailContext.java
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -1613,7 +1527,7 @@ TODO 芋艿，细节
 
 `doReadBytes(ByteBuf buf)` **抽象**方法，读取写入的数据到方法参数 `buf` 中。它是一个**抽象**方法，定义在 AbstractNioByteChannel 抽象类中。代码如下：
 
-```
+```java
 /**
  * Read bytes into the given {@link ByteBuf} and return the amount.
  */
@@ -1625,7 +1539,7 @@ protected abstract int doReadBytes(ByteBuf buf) throws Exception;
 
 NioSocketChannel 对该方法的实现代码如下：
 
-```
+```java
 1: @Override
 2: protected int doReadBytes(ByteBuf byteBuf) throws Exception {
 3:     // 获得 RecvByteBufAllocator.Handle 对象
@@ -1643,7 +1557,7 @@ NioSocketChannel 对该方法的实现代码如下：
 
 - 第 8 行：调用 `ByteBuf#writeBytes(ScatteringByteChannel in, int length)` 方法，读取数据到 ByteBuf 对象中。因为 ByteBuf 有多种实现，我们以默认的 PooledUnsafeDirectByteBuf 举例子。代码如下：
 
-  ```
+  ```java
   // AbstractByteBuf.java
   @Override
   public int writeBytes(ScatteringByteChannel in, int length) throws IOException {
@@ -1674,31 +1588,9 @@ NioSocketChannel 对该方法的实现代码如下：
 
   - 在 `<1>` 处，会调用 `#setBytes(int index, ScatteringByteChannel in, int length)` 方法。
 
-  - 在
+  - 在`<2>`处，会调用 Java NIO 的`ScatteringByteChannel#read(ByteBuffer)`
 
-     
-
-    ```
-    <2>
-    ```
-
-     
-
-    处，会调用 Java NIO 的
-
-     
-
-    ```
-    ScatteringByteChannel#read(ByteBuffer)
-    ```
-
-     
-
-    方法，读取
-
-    数据
-
-    到临时的 Java NIO ByteBuffer 中。
+    方法，读取数据到临时的 Java NIO ByteBuffer 中。
 
     - 在对端未断开时，返回的是读取数据的**字节数**。
     - 在对端已断开时，返回 `-1` ，表示断开。这也是为什么 `<3>` 处做了 `writtenBytes > 0` 的判断的原因。
@@ -1716,7 +1608,7 @@ NioSocketChannel 对该方法的实现代码如下：
 
 本文分享 Netty NioSocketChannel **写入**对端数据的过程。和**写入**相关的，在 Netty Channel 有三种 API 方法：
 
-```
+```java
 ChannelFuture write(Object msg)
 ChannelFuture write(Object msg, ChannelPromise promise);
 
@@ -1728,33 +1620,21 @@ ChannelFuture writeAndFlush(Object msg, ChannelPromise promise);
 
 原生的 Java NIO SocketChannel 只有一种 write 方法，将数据写到对端。而 Netty Channel 竟然有三种方法，我们来一个个看看：
 
-- write 方法：将数据写到
-
-  内存队列
-
-  中。
+- write 方法：将数据写到内存队列中。
 
   - 也就是说，此时数据**并没有**写入到对端。
 
-- flush 方法：刷新
-
-  内存队列
-
-  ，将其中的数据写入到对端。
+- flush 方法：刷新内存队列，将其中的数据写入到对端。
 
   - 也就是说，此时数据才**真正**写到对端。
 
-- writeAndFlush 方法：write + flush 的组合，将数据写到内存队列后，立即刷新
-
-  内存队列
-
-  ，又将其中的数据写入到对端。
+- writeAndFlush 方法：write + flush 的组合，将数据写到内存队列后，立即刷新内存队列，又将其中的数据写入到对端。
 
   - 也就是说，此时数据**已经**写到对端。
 
 严格来说，上述的描述不是完全准确。因为 Netty Channel 的 `#write(Object msg, ...)` 和 `#writeAndFlush(Object msg, ...)` 方法，是**异步写入**的过程，需要通过监听返回的 ChannelFuture 来确实是真正写入。例如：
 
-```
+```java
 // 方式一：异步监听
 channel.write(msg).addListener(new ChannelFutureListener() {
                 
@@ -1780,7 +1660,7 @@ channel.write(msg).sync();
 
 AbstractChannel 对 `#write(Object msg, ...)` 方法的实现，代码如下：
 
-```
+```java
 @Override
 public ChannelFuture write(Object msg) {
     return pipeline.write(msg);
@@ -1792,25 +1672,7 @@ public ChannelFuture write(Object msg, ChannelPromise promise) {
 }
 ```
 
-- 在方法内部，会调用对应的
-
-   
-
-  ```
-  ChannelPipeline#write(Object msg, ...)
-  ```
-
-   
-
-  方法，将 write 事件在 pipeline 上传播。详细解析，见
-
-   
-
-  「3. DefaultChannelPipeline」
-
-   
-
-  。
+- 在方法内部，会调用对应的`ChannelPipeline#write(Object msg, ...)`方法，将 write 事件在 pipeline 上传播。详细解析，见「3. DefaultChannelPipeline」。
 
   - 最终会传播 write 事件到 `head` 节点，将数据写入到内存队列中。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-4-write/#) 。
 
@@ -1818,7 +1680,7 @@ public ChannelFuture write(Object msg, ChannelPromise promise) {
 
 `DefaultChannelPipeline#write(Object msg, ...)` 方法，代码如下：
 
-```
+```java
 @Override
 public final ChannelFuture write(Object msg) {
     return tail.write(msg);
@@ -1836,7 +1698,7 @@ public final ChannelFuture write(Object msg, ChannelPromise promise) {
 
 TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 AbstractChannelHandlerContext 抽象类继承，代码如下：
 
-```
+```java
  1: @Override
  2: public ChannelFuture write(Object msg) {
  3:     return write(msg, newPromise());
@@ -1873,7 +1735,7 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
 
   - 缺少的 `promise` 方法参数，通过调用 `#newPromise()` 方法，进行创建 Promise 对象，代码如下：
 
-    ```
+    ```java
     @Override
     public ChannelPromise newPromise() {
         return new DefaultChannelPromise(channel(), executor());
@@ -1886,29 +1748,9 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
 
 - 第 8 至 11 行：若消息( 消息 )为空，抛出异常。
 
-- 第 15 行：调用
+- 第 15 行：调用`#isNotValidPromise(promise, true)`方法，判断是否为不合法
 
-   
-
-  ```
-  #isNotValidPromise(promise, true)
-  ```
-
-   
-
-  方法，判断是否为
-
-  不合法
-
-  的 Promise 对象。该方法，在
-
-   
-
-  《精尽 Netty 源码解析 —— ChannelPipeline（四）之 Outbound 事件的传播》
-
-   
-
-  中已经详细解析。
+  的 Promise 对象。该方法，在《精尽 Netty 源码解析 —— ChannelPipeline（四）之 Outbound 事件的传播》中已经详细解析。
 
   - 第 17 行：调用 `ReferenceCountUtil#release(msg)` 方法，释放释放消息( 数据 )相关的资源。
   - 第 19 行：返回 `promise` 对象。一般情况下，出现这种情况是 `promise` 已经被取消，所以不再有必要写入数据。或者说，**写入数据的操作被取消**。
@@ -1916,7 +1758,7 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
 
 - 第 28 行：调用 `#write(Object msg, boolean flush, ChannelPromise promise)` 方法，写入消息( 数据 )到内存队列。代码如下：
 
-  ```
+  ```java
    1: private void write(Object msg, boolean flush, ChannelPromise promise) {
    2:     // 获得下一个 Outbound 节点
    3:     AbstractChannelHandlerContext next = findContextOutbound();
@@ -1953,7 +1795,7 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
 
   - 第 5 行：调用 `DefaultChannelPipeline#touch(Object msg, AbstractChannelHandlerContext next)` 方法，记录 Record 记录。代码如下：
 
-    ```
+    ```java
     // DefaultChannelPipeline.java
     final Object touch(Object msg, AbstractChannelHandlerContext next) {
         return touch ? ReferenceCountUtil.touch(msg, next) : msg;
@@ -1983,16 +1825,10 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
     - 后续的逻辑，和 [《精尽 Netty 源码解析 —— ChannelPipeline（四）之 Outbound 事件的传播》](http://svip.iocoder.cn/Netty/Pipeline-4-outbound/) 分享的 **bind** 事件在 pipeline 中的传播是**基本一致**的。
     - 随着 write 或 writeAndFlush **事件**不断的向下一个节点传播，最终会到达 HeadContext 节点。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-4-write/#) 。
 
-  - 第 16 行：
-
-    不在
-
-     
-
-    EventLoop 的线程中。
+  - 第 16 行：不在EventLoop 的线程中。
 
     - 第 19 至 20 行：如果 `flush = true` 时，创建 WriteAndFlushTask 任务。
-    - 第 21 至 24 行：如果 `flush = false` 时，创建 WriteTask 任务。
+  - 第 21 至 24 行：如果 `flush = false` 时，创建 WriteTask 任务。
     - 第 26 行：调用 `#safeExecute(executor, task, promise, m)` 方法，提交到 EventLoop 的线程中，执行该任务。从而实现，**在** EventLoop 的线程中，执行 writeAndFlush 或 write 事件到下一个节点。详细解析，见 [「7. AbstractWriteTask」](http://svip.iocoder.cn/Netty/Channel-4-write/#) 中。
 
 - 第 29 行：返回 `promise` 对象。
@@ -2001,7 +1837,7 @@ TailContext 对 `TailContext#write(Object msg, ...)` 方法的实现，是从 Ab
 
 在 pipeline 中，write 事件最终会到达 HeadContext 节点。而 HeadContext 的 `#write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)` 方法，会处理该事件，代码如下：
 
-```
+```java
 @Override
 public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
     unsafe.write(msg, promise);
@@ -2014,7 +1850,7 @@ public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
 
 `AbstractUnsafe#write(Object msg, ChannelPromise promise)` 方法，将数据写到**内存队列**中。代码如下：
 
-```
+```java
 /**
  * 内存队列
  */
@@ -2063,21 +1899,15 @@ private volatile ChannelOutboundBuffer outboundBuffer = new ChannelOutboundBuffe
 
 - `outboundBuffer` 属性，内存队列，用于缓存写入的数据( 消息 )。
 
-- 第 7 行：内存队列为空，一般是 Channel
-
-   
-
-  已经关闭
-
-  。
+- 第 7 行：内存队列为空，一般是 Channel已经关闭。
 
   - 调用 `#safeSetFailure(promise, WRITE_CLOSED_CHANNEL_EXCEPTION)` 方法，通知 Promise 异常结果。
-  - 第 16 行：调用 `ReferenceCountUtil#release(msg)` 方法，释放释放消息( 数据 )相关的资源。
+- 第 16 行：调用 `ReferenceCountUtil#release(msg)` 方法，释放释放消息( 数据 )相关的资源。
   - 第 17 行：`return` ，结束执行。
 
 - 第 23 行：调用 `AbstractNioByteChannel#filterOutboundMessage(msg)` 方法，过滤写入的消息( 数据 )。代码如下：
 
-  ```
+  ```java
   // AbstractNioByteChannel.java
   
   @Override
@@ -2132,7 +1962,7 @@ AbstractWriteTask ，实现 Runnable 接口，写入任务**抽象类**。它有
 
 ## 7.1 构造方法
 
-```
+```java
 /**
  * 提交任务时，是否计算 AbstractWriteTask 对象的自身占用内存大小
  */
@@ -2172,16 +2002,7 @@ private AbstractWriteTask(Recycler.Handle<? extends AbstractWriteTask> handle) {
 
 - `ESTIMATE_TASK_SIZE_ON_SUBMIT` **静态**字段，提交任务时，是否计算 AbstractWriteTask 对象的自身占用内存大小。
 
-- ```
-  WRITE_TASK_OVERHEAD
-  ```
-
-   
-
-  静态
-
-  字段，每个 AbstractWriteTask 对象自身占用内存的大小。为什么占用的 48 字节呢？
-
+- `WRITE_TASK_OVERHEAD`静态字段，每个 AbstractWriteTask 对象自身占用内存的大小。为什么占用的 48 字节呢？
   - `- 16 bytes object header` ，对象头，16 字节。
   - `- 3 reference fields` ，3 个**对象引用**字段，3 * 8 = 24 字节。
   - `- 1 int fields` ，1 个 `int` 字段，4 字节。
@@ -2195,7 +2016,7 @@ private AbstractWriteTask(Recycler.Handle<? extends AbstractWriteTask> handle) {
 
 `#init(AbstractWriteTask task, AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise)` 方法，初始化 AbstractWriteTask 对象。代码如下：
 
-```
+```java
 protected static void init(AbstractWriteTask task, AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
     task.ctx = ctx;
     task.msg = msg;
@@ -2215,7 +2036,7 @@ protected static void init(AbstractWriteTask task, AbstractChannelHandlerContext
 
 - `<1>` 处，计算 AbstractWriteTask 对象大小。并且在 `<2>` 处，调用 `ChannelPipeline#incrementPendingOutboundBytes(long size)` 方法，增加 ChannelOutboundBuffer 的 `totalPendingSize` 属性。代码如下：
 
-  ```
+  ```java
   // DefaultChannelPipeline.java
   @UnstableApi
   protected void incrementPendingOutboundBytes(long size) {
@@ -2232,7 +2053,7 @@ protected static void init(AbstractWriteTask task, AbstractChannelHandlerContext
 
 `#run()` **实现**方法，
 
-```
+```java
  1: @Override
  2: public final void run() {
  3:     try {
@@ -2257,7 +2078,7 @@ protected static void init(AbstractWriteTask task, AbstractChannelHandlerContext
 
 - 在 `<1>` 处， 调用 `ChannelPipeline#decrementPendingOutboundBytes(long size)` 方法，减少 ChannelOutboundBuffer 的 `totalPendingSize` 属性。代码如下：
 
-  ```
+  ```java
   @UnstableApi
   protected void decrementPendingOutboundBytes(long size) {
       ChannelOutboundBuffer buffer = channel.unsafe().outboundBuffer();
@@ -2271,7 +2092,7 @@ protected static void init(AbstractWriteTask task, AbstractChannelHandlerContext
 
 - 第 10 行：调用 `#write(ctx, msg, promise)` 方法，执行 write 事件到下一个节点。代码如下：
 
-  ```
+  ```java
   protected void write(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
       ctx.invokeWrite(msg, promise);
   }
@@ -2289,7 +2110,7 @@ WriteTask ，实现 SingleThreadEventLoop.NonWakeupRunnable 接口，继承 Abst
 
 `#newInstance(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise)` 方法，创建 WriteTask 对象。代码如下：
 
-```
+```java
 private static final Recycler<WriteTask> RECYCLER = new Recycler<WriteTask>() {
 
     @Override
@@ -2310,7 +2131,7 @@ private static WriteTask newInstance(AbstractChannelHandlerContext ctx, Object m
 
 ### 7.4.2 构造方法
 
-```
+```java
 private WriteTask(Recycler.Handle<WriteTask> handle) {
     super(handle);
 }
@@ -2328,7 +2149,7 @@ WriteAndFlushTask ，继承 WriteAndFlushTask 抽象类，write + flush 任务�
 
 `#newInstance(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise)` 方法，创建 WriteAndFlushTask 对象。代码如下：
 
-```
+```java
 private static final Recycler<WriteAndFlushTask> RECYCLER = new Recycler<WriteAndFlushTask>() {
 
     @Override
@@ -2349,7 +2170,7 @@ private static WriteAndFlushTask newInstance(AbstractChannelHandlerContext ctx, 
 
 ### 7.5.2 构造方法
 
-```
+```java
 private WriteAndFlushTask(Recycler.Handle<WriteAndFlushTask> handle) {
     super(handle);
 }
@@ -2359,7 +2180,7 @@ private WriteAndFlushTask(Recycler.Handle<WriteAndFlushTask> handle) {
 
 `#write(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise)` 方法，在父类的该方法的基础上，增加执行 **flush** 事件到下一个节点。代码如下：
 
-```
+```java
 @Override
 public void write(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
     // 执行 write 事件到下一个节点
@@ -2375,7 +2196,7 @@ public void write(AbstractChannelHandlerContext ctx, Object msg, ChannelPromise 
 
 在一些 ChannelHandler 里，我们想要写入数据到对端，可以有两种写法，代码如下：
 
-```
+```java
 @Override
 public void channelRead(ChannelHandlerContext ctx, Object msg) {
     ctx.write(msg); // <1>
@@ -2417,7 +2238,7 @@ public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
 AbstractChannel 对 `#flush()` 方法的实现，代码如下：
 
-```
+```java
 @Override
 public Channel flush() {
     pipeline.flush();
@@ -2425,25 +2246,7 @@ public Channel flush() {
 }
 ```
 
-- 在方法内部，会调用对应的
-
-   
-
-  ```
-  ChannelPipeline#flush()
-  ```
-
-   
-
-  方法，将 flush 事件在 pipeline 上传播。详细解析，见
-
-   
-
-  「3. DefaultChannelPipeline」
-
-   
-
-  。
+- 在方法内部，会调用对应的`ChannelPipeline#flush()`方法，将 flush 事件在 pipeline 上传播。详细解析，见「3. DefaultChannelPipeline」。
 
   - 最终会传播 flush 事件到 `head` 节点，刷新**内存队列**，将其中的数据写入到对端。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
 
@@ -2451,7 +2254,7 @@ public Channel flush() {
 
 `DefaultChannelPipeline#flush()` 方法，代码如下：
 
-```
+```java
 @Override
 public final ChannelPipeline flush() {
     tail.flush();
@@ -2465,7 +2268,7 @@ public final ChannelPipeline flush() {
 
 TailContext 对 `TailContext#flush()` 方法的实现，是从 AbstractChannelHandlerContext 抽象类继承，代码如下：
 
-```
+```java
  1: @Override
  2: public ChannelHandlerContext flush() {
  3:     // 获得下一个 Outbound 节点
@@ -2497,34 +2300,22 @@ TailContext 对 `TailContext#flush()` 方法的实现，是从 AbstractChannelHa
 
 - 第 4 行：调用 `#findContextOutbound()` 方法，获得**下一个** Outbound 节点。
 
-- 第 7 行：
-
-  在
-
-   
-
-  EventLoop 的线程中。
+- 第 7 行：在EventLoop 的线程中。
 
   - 第 12 至 15 行：调用 `AbstractChannelHandlerContext#invokeFlush()()` 方法，执行 flush 事件到下一个节点。
-  - 后续的逻辑，和 [《精尽 Netty 源码解析 —— ChannelPipeline（四）之 Outbound 事件的传播》](http://svip.iocoder.cn/Netty/Pipeline-4-outbound/) 分享的 **bind** 事件在 pipeline 中的传播是**基本一致**的。
+- 后续的逻辑，和 [《精尽 Netty 源码解析 —— ChannelPipeline（四）之 Outbound 事件的传播》](http://svip.iocoder.cn/Netty/Pipeline-4-outbound/) 分享的 **bind** 事件在 pipeline 中的传播是**基本一致**的。
   - 随着 flush **事件**不断的向下一个节点传播，最终会到达 HeadContext 节点。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
 
-- 第 16 行：
-
-  不在
-
-   
-
-  EventLoop 的线程中。
+- 第 16 行：不在EventLoop 的线程中。
 
   - 第 12 至 21 行：创建 flush 任务。该任务的内部的调用【第 18 行】的代码，和【第 9 行】的代码是**一致**的。
-  - 第 23 行：调用 `#safeExecute(executor, task, promise, m)` 方法，提交到 EventLoop 的线程中，执行该任务。从而实现，**在** EventLoop 的线程中，执行 flush 事件到下一个节点。
+- 第 23 行：调用 `#safeExecute(executor, task, promise, m)` 方法，提交到 EventLoop 的线程中，执行该任务。从而实现，**在** EventLoop 的线程中，执行 flush 事件到下一个节点。
 
 # 5. HeadContext
 
 在 pipeline 中，flush 事件最终会到达 HeadContext 节点。而 HeadContext 的 `#flush()` 方法，会处理该事件，代码如下：
 
-```
+```java
 @Override
 public void flush(ChannelHandlerContext ctx) throws Exception {
     unsafe.flush();
@@ -2537,7 +2328,7 @@ public void flush(ChannelHandlerContext ctx) throws Exception {
 
 `AbstractUnsafe#flush()` 方法，刷新**内存队列**，将其中的数据写入到对端。代码如下：
 
-```
+```java
  1: @Override
  2: public final void flush() {
  3:     assertEventLoop();
@@ -2561,7 +2352,7 @@ public void flush(ChannelHandlerContext ctx) throws Exception {
 
 - 第 14 行：调用 `#flush0()` 方法，执行 flush 操作。代码如下：
 
-  ```
+  ```java
   /**
    * 是否正在 flush 中，即正在调用 {@link #flush0()} 中
    */
@@ -2642,84 +2433,18 @@ public void flush(ChannelHandlerContext ctx) throws Exception {
 
   - 第 17 行：设置 `inFlush0` 为 `true` ，表示正在 flush 中。
 
-  - 第 19 至 34 行：调用
-
-     
-
-    ```
-    #isActive()
-    ```
-
-     
-
-    方法，发现 Channel
-
-     
-
-    未激活
-
-    ，在根据 Channel
-
-     
-
-    是否打开
-
-    ，调用
-
-     
-
-    ```
-    ChannelOutboundBuffer#failFlushed(Throwable cause, boolean notify)
-    ```
-
-     
-
-    方法，通知 flush 失败
-
-    异常
-
-    。详细解析，见
-
-     
-
-    「8.6 failFlushed」
-
-     
-
-    。
+  - 第 19 至 34 行：调用`#isActive()`方法，发现 Channel未激活，在根据 Channel是否打开，调用`ChannelOutboundBuffer#failFlushed(Throwable cause, boolean notify)`方法，通知 flush 失败异常。详细解析，见「8.6 failFlushed」。
 
     - 第 29 至 33 行：最终，设置 `inFlush0` 为 `false` ，表示结束 flush 操作，最后 `return` 返回。
 
-  - 第 38 行：调用
-
-     
-
-    ```
-    AbstractChannel#doWrite(outboundBuffer)
-    ```
-
-     
-
-    方法，
-
-    执行真正的写入到对端
-
-    。详细解析，见
-
-     
-
-    「7. NioSocketChannel」
-
-     
-
-    。
-
+  - 第 38 行：调用`AbstractChannel#doWrite(outboundBuffer)`方法，执行真正的写入到对端。详细解析，见「7. NioSocketChannel」。
+  
     - 第 39 至 57 行：TODO 芋艿 细节
-    - 第 58 至 61 行：同【第 29 至 33】的代码和目的。
-
+  - 第 58 至 61 行：同【第 29 至 33】的代码和目的。
+  
 - 实际上，AbstractNioUnsafe **重写**了 `#flush0()` 方法，代码如下：
 
-  ```
+  ```java
   @Override
   protected final void flush0() {
       // Flush immediately only when there's no pending flush.
@@ -2733,7 +2458,7 @@ public void flush(ChannelHandlerContext ctx) throws Exception {
 
   - 在执行父类 AbstractUnsafe 的 `#flush0()` 方法时，先调用 `AbstractNioUnsafe#isFlushPending()` 判断，是否已经处于 flush **准备**中。代码如下：
 
-    ```
+    ```java
     private boolean isFlushPending() {
         SelectionKey selectionKey = selectionKey();
         return selectionKey.isValid() // 合法
@@ -2749,7 +2474,7 @@ public void flush(ChannelHandlerContext ctx) throws Exception {
 
 `AbstractChannel#doWrite(ChannelOutboundBuffer in)` **抽象**方法，**执行真正的写入到对端**。定义在 AbstractChannel **抽象**类中，代码如下：
 
-```
+```java
 /**
  * Flush the content of the given buffer to the remote peer.
  */
@@ -2760,7 +2485,7 @@ protected abstract void doWrite(ChannelOutboundBuffer in) throws Exception;
 
 NioSocketChannel 对该**抽象**方法，实现代码如下：
 
-```
+```java
  1: @Override
  2: protected void doWrite(ChannelOutboundBuffer in) throws Exception {
  3:     SocketChannel ch = javaChannel();
@@ -2847,7 +2572,7 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
 - 第 5 行：调用 `ChannelConfig#getWriteSpinCount()` 方法，获得**自旋**写入次数 N 。在【第 6 至 76 行】的代码，我们可以看到，不断**自旋**写入 N 次，直到完成写入结束。关于该配置项，官方注释如下：
 
-  ```
+  ```java
   /**
    * Returns the maximum loop count for a write operation until {@link WritableByteChannel#write(ByteBuffer)} returns a non-zero value.
    * It is similar to what a spin lock is used for in concurrency programming.
@@ -2864,7 +2589,7 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
   - 第 10 行：因为在 Channel **不可写**的时候，会注册 `SelectionKey.OP_WRITE` ，等待 NIO Channel 可写。而后会”回调” `#forceFlush()` 方法，该方法内部也会调用 `#doWrite(ChannelOutboundBuffer in)` 方法。所以在完成内部队列的数据向对端写入时候，需要调用 `#clearOpWrite()` 方法，代码如下：
 
-    ```
+    ```java
     protected final void clearOpWrite() {
         final SelectionKey key = selectionKey();
         // Check first if the key is still valid as it may be canceled as part of the deregistration
@@ -2885,33 +2610,11 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
 - 第 18 行：调用 `NioSocketChannelConfig#getMaxBytesPerGatheringWrite()` 方法，获得每次写入的最大字节数。// TODO 芋艿 调整每次写入的最大字节数
 
-- 第 20 行：调用
-
-   
-
-  ```
-  ChannelOutboundBuffer#nioBuffers(int maxCount, long maxBytes)
-  ```
-
-   
-
-  方法，从内存队列中，获得要写入的 ByteBuffer 数组。
-
-  注意
-
-  ，如果内存队列中数据量很大，可能获得的仅仅是一部分数据。详细解析，见
-
-   
-
-  「8.5 nioBuffers」
-
-   
-
-  。
+- 第 20 行：调用`ChannelOutboundBuffer#nioBuffers(int maxCount, long maxBytes)`方法，从内存队列中，获得要写入的 ByteBuffer 数组。注意，如果内存队列中数据量很大，可能获得的仅仅是一部分数据。详细解析，见「8.5 nioBuffers」。
 
   - 第 22 行：获得写入的 ByteBuffer 数组的个数。为什么不直接调用数组的 `#length()` 方法呢？因为返回的 ByteBuffer 数组是**预先生成的数组缓存**，存在不断重用的情况，所以不能直接使用 `#length()` 方法，而是要调用 `ChannelOutboundBuffer#nioBufferCount()` 方法，获得写入的 ByteBuffer 数组的个数。详细解析，见 [「8.5 nioBuffers」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
   - 后续根据 `nioBufferCnt` 的数值，分成**三种**情况。
-
+  
 - **(づ￣3￣)づ╭❤～ 第一种**，`nioBufferCnt = 0` 。
 
 - 芋艿 TODO 1014 扣 doWrite0 的细节，应该是内部的数据为 FileRegion ，可以暂时无视，不影响本文理解。
@@ -2924,7 +2627,7 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
   - 第 43 行：调用 `AbstractNioByteChannel#incompleteWrite(true)` 方法，代码如下：
 
-    ```
+    ```java
     protected final void incompleteWrite(boolean setOpWrite) {
         // Did not write completely.
         // true ，注册对 SelectionKey.OP_WRITE 事件感兴趣
@@ -2947,7 +2650,7 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
     - `setOpWrite` 为 `true` ，调用 `#setOpWrite()` 方法，注册对 `SelectionKey.OP_WRITE` 事件感兴趣。代码如下：
 
-      ```
+      ```java
       protected final void setOpWrite() {
           final SelectionKey key = selectionKey();
           // Check first if the key is still valid as it may be canceled as part of the deregistration
@@ -2978,51 +2681,7 @@ NioSocketChannel 对该**抽象**方法，实现代码如下：
 
 - =========== 结束 ===========
 
-- 第 79 行：通过
-
-   
-
-  ```
-  writeSpinCount < 0
-  ```
-
-   
-
-  来判断，内存队列中的数据
-
-  是否
-
-  未完全写入。从目前逻辑看下来，笔者认为只会返回
-
-   
-
-  ```
-  true
-  ```
-
-   
-
-  ，即内存队列中的数据未完全写入，说明 NIO Channel 不可写，所以注册
-
-   
-
-  ```
-  SelectionKey.OP_WRITE
-  ```
-
-   
-
-  ，等待 NIO Channel 可写。因此，调用
-
-   
-
-  ```
-  #incompleteWrite(true)
-  ```
-
-   
-
-  方法。
+- 第 79 行：通过`writeSpinCount < 0`来判断，内存队列中的数据是否未完全写入。从目前逻辑看下来，笔者认为只会返回`true`，即内存队列中的数据未完全写入，说明 NIO Channel 不可写，所以注册`SelectionKey.OP_WRITE`，等待 NIO Channel 可写。因此，调用`#incompleteWrite(true)`方法。
 
   - 举个例子，最后一次写入，Channel 的缓冲区还剩下 10 字节可写，内存队列中剩余 90 字节，那么可以成功写入 10 字节，剩余 80 字节。😈 也就说，此时 Channel 不可写落。
 
@@ -3073,7 +2732,7 @@ protected final Object filterOutboundMessage(Object msg) throws Exception {
 
 在 write 操作时，将数据写到 ChannelOutboundBuffer 中，都会产生一个 Entry 对象。代码如下：
 
-```
+```java
 /**
  * Recycler 对象，用于重用 Entry 对象
  */
@@ -3137,22 +2796,8 @@ private Entry(Handle<Entry> handle) {
 }
 ```
 
-- ```
-  RECYCLER
-  ```
-
-   
-
-  静态
-
-  属性，用于
-
-  重用
-
-   
-
-  Entry 对象。
-
+- `RECYCLER`静态属性，用于重用Entry 对象。
+  
   - `handle` 属性，Recycler 处理器，用于**回收** Entry 对象。
 
 - `next` 属性，指向**下一条** Entry 。通过它，形成 ChannelOutboundBuffer 内部的链式存储**每条写入数据**的数据结构。
@@ -3163,7 +2808,7 @@ private Entry(Handle<Entry> handle) {
 
   - `total` 属性，长度，可读字节数。通过 `#total(Object msg)` 方法来计算。代码如下：
 
-    ```
+    ```java
     private static long total(Object msg) {
         if (msg instanceof ByteBuf) {
             return ((ByteBuf) msg).readableBytes();
@@ -3182,25 +2827,11 @@ private Entry(Handle<Entry> handle) {
 
   - `process` 属性，已写入的字节数。详细解析，见 [「8.7.1 process」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
 
-- ```
-  count
-  ```
-
-   
-
-  属性，
-
-  ```
-  msg
-  ```
-
-   
-
-  属性转化的 NIO ByteBuffer 的数量。
-
+- `count`属性，`msg`属性转化的 NIO ByteBuffer 的数量。
+  
   - `bufs` 属性，当 `count > 0` 时使用，表示 `msg` 属性转化的 NIO ByteBuffer 数组。
   - `buf` 属性，当 `count = 0` 时使用，表示 `msg` 属性转化的 NIO ByteBuffer 对象。
-
+  
 - `cancelled` 属性，是否取消写入对端。
 
 - `pendingSize` 属性，每个 Entry 预计占用的内存大小，计算方式为消息( `msg` )的字节数 + Entry 对象自身占用内存的大小。
@@ -3209,7 +2840,7 @@ private Entry(Handle<Entry> handle) {
 
 `#newInstance(Object msg, int size, long total, ChannelPromise promise)` **静态**方法，创建 Entry 对象。代码如下：
 
-```
+```java
 static Entry newInstance(Object msg, int size, long total, ChannelPromise promise) {
     // 通过 Recycler 重用对象
     Entry entry = RECYCLER.get();
@@ -3228,7 +2859,7 @@ static Entry newInstance(Object msg, int size, long total, ChannelPromise promis
 
 `#recycle()` 方法，**回收** Entry 对象，以为下次**重用**该对象。代码如下：
 
-```
+```java
 void recycle() {
     // 重置属性
     next = null;
@@ -3250,7 +2881,7 @@ void recycle() {
 
 `#recycleAndGetNext()` 方法，获得下一个 Entry 对象，并**回收**当前 Entry 对象。代码如下：
 
-```
+```java
 Entry recycleAndGetNext() {
     // 获得下一个 Entry 对象
     Entry next = this.next;
@@ -3265,7 +2896,7 @@ Entry recycleAndGetNext() {
 
 `#cancel()` 方法，标记 Entry 对象，取消写入到对端。在 ChannelOutboundBuffer 里，Entry 数组是通过**链式**的方式进行组织，而当某个 Entry 对象( **节点** )如果需要取消写入到对端，是通过设置 `canceled = true` 来**标记删除**。代码如下：
 
-```
+```java
 int cancel() {
     if (!cancelled) {
         // 标记取消
@@ -3294,7 +2925,7 @@ int cancel() {
 
 ## 8.2 构造方法
 
-```
+```java
 /**
  * Entry 对象自身占用内存的大小
  */
@@ -3407,115 +3038,43 @@ ChannelOutboundBuffer(AbstractChannel channel) {
   - `flushed` 属性， 已 flush 但未写入对端的 Entry 数量。
   - 指向关系是 `Entry(flushedEntry) --> ... Entry(unflushedEntry) --> ... Entry(tailEntry)` 。这样看，可能有点抽象，下文源码解析详细理解。
 
-- ```
-  NIO_BUFFERS
-  ```
-
-   
-
-  静态
-
-  属性，线程对应的 NIO ByteBuffer 数组缓存。在
-
-   
-
-  ```
-  AbstractChannel#doWrite(ChannelOutboundBuffer)
-  ```
-
-   
-
-  方法中，会调用
-
-   
-
-  ```
-  ChannelOutbound#nioBuffers(int maxCount, long maxBytes)
-  ```
-
-   
-
-  方法，初始化数组缓存。 详细解析，见
-
-   
-
-  「8.6 nioBuffers」
-
-   
-
-  中。
-
+- `NIO_BUFFERS`静态属性，线程对应的 NIO ByteBuffer 数组缓存。在`AbstractChannel#doWrite(ChannelOutboundBuffer)`方法中，会调用`ChannelOutbound#nioBuffers(int maxCount, long maxBytes)`方法，初始化数组缓存。 详细解析，见「8.6 nioBuffers」中。
+  
   - `nioBufferCount` 属性：NIO ByteBuffer 数组的**数组**大小。
   - `nioBufferSize` 属性：NIO ByteBuffer 数组的字**节**大小。
-
+  
 - `inFail` 属性，正在通知 flush 失败中。详细解析，见 [「8.8 failFlushed」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 中。
 
-- ChannelOutboundBuffer 写入控制相关。😈 详细解析，见
+- ChannelOutboundBuffer 写入控制相关。😈 详细解析，见「10. ChannelOutboundBuffer」。
 
-   
-
-  「10. ChannelOutboundBuffer」
-
-   
-
-  。
-
-  - ```
-    unwritable
-    ```
-
-     
-
-    属性，是否不可写。
-
+  - `unwritable`属性，是否不可写。
+  
     - `UNWRITABLE_UPDATER` 静态属性，`unwritable` 属性的原子更新器。
 
-  - ```
-    totalPendingSize
-    ```
-
-     
-
-    属性，所有 Entry 预计占用的内存大小，通过
-
-     
-
-    ```
-    Entry.pendingSize
-    ```
-
-     
-
-    来合计。
+  - `totalPendingSize`属性，所有 Entry 预计占用的内存大小，通过
+  
+    `Entry.pendingSize`来合计。
 
     - `TOTAL_PENDING_SIZE_UPDATER` 静态属性，`totalPendingSize` 属性的原子更新器。
-
+  
   - `fireChannelWritabilityChangedTask` 属性，触发 Channel 可写的改变的**任务**。
 
-  - ```
-    CHANNEL_OUTBOUND_BUFFER_ENTRY_OVERHEAD
-    ```
-
-     
-
-    静态
-
-    属性，每个 Entry 对象自身占用内存的大小。为什么占用的 96 字节呢？
-
+  - `CHANNEL_OUTBOUND_BUFFER_ENTRY_OVERHEAD`静态属性，每个 Entry 对象自身占用内存的大小。为什么占用的 96 字节呢？
+  
     - `- 16 bytes object header` ，对象头，16 字节。
-    - `- 8 reference fields` ，实际是 6 个**对象引用**字段，6 * 8 = 48 字节。
+  - `- 8 reference fields` ，实际是 6 个**对象引用**字段，6 * 8 = 48 字节。
     - `- 2 long fields` ，2 个 `long` 字段，2 * 8 = 16 字节。
-    - `- 2 int fields` ，1 个 `int` 字段，2 * 4 = 8 字节。
+  - `- 2 int fields` ，1 个 `int` 字段，2 * 4 = 8 字节。
     - `- 1 boolean field` ，1 个 `boolean` 字段，1 字节。
     - `padding` ，补齐 8 字节的整数倍，因此 7 字节。
     - 因此，合计 96 字节( 64 位的 JVM 虚拟机，并且不考虑压缩 )。
-    - 如果不理解的胖友，可以看看 [《JVM中 对象的内存布局 以及 实例分析》](https://www.jianshu.com/p/12a3c97dc2b7) 。
+  - 如果不理解的胖友，可以看看 [《JVM中 对象的内存布局 以及 实例分析》](https://www.jianshu.com/p/12a3c97dc2b7) 。
 
 ## 8.3 addMessage
 
 `#addMessage(Object msg, int size, ChannelPromise promise)` 方法，写入消息( 数据 )到内存队列。**注意**，`promise` 只有在真正完成写入到对端操作，才会进行通知。代码如下：
 
-```
+```java
  1: /**
  2:  * Add given message to this {@link ChannelOutboundBuffer}. The given {@link ChannelPromise} will be notified once
  3:  * the message was written.
@@ -3547,24 +3106,10 @@ ChannelOutboundBuffer(AbstractChannel channel) {
 
 - 第 7 行：调用 `#newInstance(Object msg, int size, long total, ChannelPromise promise)` **静态**方法，创建 Entry 对象。
 
-- 第 11 至 17 行：修改
-
-  尾
-
-  节点
-
-   
-
-  ```
-  tailEntry
-  ```
-
-   
-
-  为新的 Entry 节点。
+- 第 11 至 17 行：修改尾节点`tailEntry`为新的 Entry 节点。
 
   - 第 8 至 10 行：若 `tailEntry` 为空，将 `flushedEntry` 也设置为空。防御型编程，实际不会出现，胖友可以忽略。😈 当然，原因在 `#removeEntry(Entry e)` 方法。
-  - 第 11 至 15 行：若 `tailEntry` 非空，将原 `tailEntry.next` 指向**新** Entry 。
+- 第 11 至 15 行：若 `tailEntry` 非空，将原 `tailEntry.next` 指向**新** Entry 。
   - 第 17 行：更新原 `tailEntry` 为新 Entry 。
 
 - 第 18 至 21 行：若 `unflushedEntry` 为空，则更新为新 Entry ，此时相当于**首**节点。
@@ -3599,7 +3144,7 @@ ChannelOutboundBuffer(AbstractChannel channel) {
 
 > 老艿艿：总觉得这个方法名取的有点奇怪，胖友可以直接看英文注释。😈 我“翻译”不好，哈哈哈。
 
-```
+```java
  1: public void addFlush() {
  2:     // There is no need to process all entries if there was already a flush before and no new messages
  3:     // where added in the meantime.
@@ -3680,7 +3225,7 @@ ChannelOutboundBuffer(AbstractChannel channel) {
 
 `#size()` 方法，获得 `flushed` 属性。代码如下：
 
-```
+```java
 /**
  * Returns the number of flushed messages in this {@link ChannelOutboundBuffer}.
  */
@@ -3693,7 +3238,7 @@ public int size() {
 
 `#isEmpty()` 方法，是否为空。代码如下：
 
-```
+```java
 /**
  * Returns {@code true} if there are flushed messages in this {@link ChannelOutboundBuffer} or {@code false}
  * otherwise.
@@ -3707,7 +3252,7 @@ public boolean isEmpty() {
 
 `#current()` 方法，获得**当前**要写入对端的消息( 数据 )。代码如下：
 
-```
+```java
 /**
  * Return the current message to write or {@code null} if nothing was flushed before and so is ready to be written.
  */
@@ -3727,7 +3272,7 @@ public Object current() {
 
 `#nioBuffers(int maxCount, long maxBytes)` 方法，获得当前要写入到对端的 NIO ByteBuffer 数组，并且获得的数组大小不得超过 `maxCount` ，字节数不得超过 `maxBytes` 。我们知道，在写入数据到 ChannelOutboundBuffer 时，一般使用的是 Netty ByteBuf 对象，但是写到 NIO SocketChannel 时，则必须使用 NIO ByteBuffer 对象，因此才有了这个方法。考虑到性能，这个方法里会使用到“**缓存**”，所以看起来会比较绕一丢丢。OK，开始看代码落：
 
-```
+```java
 /**
  * Returns an array of direct NIO buffers if the currently pending messages are made of {@link ByteBuf} only.
  * {@link #nioBufferCount()} and {@link #nioBufferSize()} will return the number of NIO buffers in the returned
@@ -3850,7 +3395,7 @@ public Object current() {
 
   - 调用 `#isFlushedEntry(Entry entry)` 方法，判断是否为已经“标记”为 flush 的 Entry 节点。代码如下：
 
-    ```
+    ```java
     private boolean isFlushedEntry(Entry e) {
         return e != null && e != unflushedEntry;
     }
@@ -3873,58 +3418,20 @@ public Object current() {
 
 - 第 39 行：增加 `nioBufferSize` 。
 
-- 第 40 至 45 行：调用
+- 第 40 至 45 行：调用`ByteBuf#nioBufferCount()`方法，初始 Entry 节点的
 
-   
-
-  ```
-  ByteBuf#nioBufferCount()
-  ```
-
-   
-
-  方法，初始 Entry 节点的
-
-   
-
-  ```
-  count
-  ```
-
-   
-
-  属性( NIO ByteBuffer 数量)。
+  `count`属性( NIO ByteBuffer 数量)。
 
   - 使用 `count == -1` 的原因是，`Entry.count` 未初始化时，为 `-1` 。
-
+  
 - 第 47 至 51 行：如果超过 NIO ByteBuffer 数组的大小，调用 `#expandNioBufferArray(ByteBuffer[] array, int neededSpace, int size)` 方法，进行扩容。详细解析，见 [「8.6.1 expandNioBufferArray」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
 
-- 第 52 至 77 行：初始 Entry 节点的
-
-   
-
-  ```
-  buf
-  ```
-
-   
-
-  或
-
-   
-
-  ```
-  bufs
-  ```
-
-   
-
-  属性。
+- 第 52 至 77 行：初始 Entry 节点的`buf`或`bufs`属性。
 
   - 当 `count = 1` 时，调用 `ByteBuf#internalNioBuffer(readerIndex, readableBytes)` 方法，获得 NIO ByteBuffer 对象。
   - 当 `count > 1` 时，调用 `ByteBuf#nioBuffers()` 方法，获得 NIO ByteBuffer 数组。
   - 通过 `nioBuffers[nioBufferCount++] = nioBuf` ，将 NIO ByteBuffer 赋值到结果数组 `nioBuffers` 中，并增加 `nioBufferCount` 。
-
+  
 - 第 79 至 82 行：到达 `maxCount` 上限，结束循环。老艿艿的想法，这里最好改成 `nioBufferCount >= maxCount` ，是有可能会超过的。
 
 - 第 87 行：**下一个 Entry 节点**。
@@ -3935,7 +3442,7 @@ public Object current() {
 
 `#expandNioBufferArray(ByteBuffer[] array, int neededSpace, int size)` 方法，进行 NIO ByteBuff 数组的**扩容**。代码如下：
 
-```
+```java
 private static ByteBuffer[] expandNioBufferArray(ByteBuffer[] array, int neededSpace, int size) {
     // 计算扩容后的数组的大小，按照 2 倍计算
     int newCapacity = array.length;
@@ -3966,7 +3473,7 @@ private static ByteBuffer[] expandNioBufferArray(ByteBuffer[] array, int neededS
 
 `#nioBufferCount()` 方法，返回 `nioBufferCount` 属性。代码如下：
 
-```
+```java
 /**
  * Returns the number of {@link ByteBuffer} that can be written out of the {@link ByteBuffer} array that was
  * obtained via {@link #nioBuffers()}. This method <strong>MUST</strong> be called after {@link #nioBuffers()}
@@ -3981,7 +3488,7 @@ public int nioBufferCount() {
 
 `#nioBufferSize()` 方法，返回 `nioBufferSize` 属性。代码如下：
 
-```
+```java
 /**
  * Returns the number of bytes that can be written out of the {@link ByteBuffer} array that was
  * obtained via {@link #nioBuffers()}. This method <strong>MUST</strong> be called after {@link #nioBuffers()}
@@ -3996,7 +3503,7 @@ public long nioBufferSize() {
 
 `#removeBytes(long writtenBytes)` 方法，移除已经写入 `writtenBytes` 字节对应的 Entry 对象 / 对象们。代码如下：
 
-```
+```java
  1: public void removeBytes(long writtenBytes) {
  2:     // 循环移除
  3:     for (;;) {
@@ -4040,21 +3547,7 @@ public long nioBufferSize() {
 41: }
 ```
 
-- 第 3 行：
-
-  循环
-
-  ，移除已经写入
-
-   
-
-  ```
-  writtenBytes
-  ```
-
-   
-
-  字节对应的 Entry 对象。
+- 第 3 行：循环，移除已经写入`writtenBytes`字节对应的 Entry 对象。
 
   - 第 5 行：调用 `#current()` 方法，获得当前消息( 数据 )。
   - 第 12 至 15 行：获得消息( 数据 )开始读取位置和可读取的字节数。
@@ -4066,14 +3559,14 @@ public long nioBufferSize() {
   - 第 31 行：调用 `ByteBuf#readerIndex(readerIndex)` 方法，标记当前消息的 ByteBuf 的**读取位置**。
   - 第 33 行：调用 `#progress(long amount)` 方法，处理当前消息的 Entry 的写入进度。
   - 第 35 行：`break` ，结束循环。
-
+  
 - 第 40 行：调用 `#clearNioBuffers()` 方法，**清除** NIO ByteBuff 数组的缓存。详细解析，见 [「8.7.4 clearNioBuffers」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 。
 
 ### 8.7.1 progress
 
 `#progress(long amount)` 方法，处理当前消息的 Entry 的写入进度，主要是**通知** Promise 消息写入的进度。代码如下：
 
-```
+```java
 /**
  * Notify the {@link ChannelPromise} of the current message about writing progress.
  */
@@ -4099,7 +3592,7 @@ public long nioBufferSize() {
 
 `#remove()` 方法，移除当前消息对应的 Entry 对象，并 Promise 通知成功。代码如下：
 
-```
+```java
  1: public boolean remove() {
  2:     Entry e = flushedEntry;
  3:     if (e == null) {
@@ -4141,7 +3634,7 @@ public long nioBufferSize() {
 
 - 第 21 行：【**重要**】调用 `#safeSuccess(promise)` 方法，通知 Promise 执行成功。此处才是，真正触发 `Channel#write(...)` 或 `Channel#writeAndFlush(...)` 方法，返回的 Promise 的通知。`#safeSuccess(promise)` 方法的代码如下：
 
-  ```
+  ```java
   private static void safeSuccess(ChannelPromise promise) {
       // Only log if the given promise is not of type VoidChannelPromise as trySuccess(...) is expected to return
       // false.
@@ -4157,7 +3650,7 @@ public long nioBufferSize() {
 
 `#removeEntry(Entry e)` 方法，移除**指定** Entry 对象。代码如下：
 
-```
+```java
  1: private void removeEntry(Entry e) {
  2:     // 已移除完已 flush 的 Entry 节点，置空 flushedEntry、tailEntry、unflushedEntry 。
  3:     if (-- flushed == 0) {
@@ -4181,7 +3674,7 @@ public long nioBufferSize() {
 
 `#clearNioBuffers()` 方法，**清除** NIO ByteBuff 数组的缓存。代码如下：
 
-```
+```java
 // Clear all ByteBuffer from the array so these can be GC'ed.
 // See https://github.com/netty/netty/issues/3837
 private void clearNioBuffers() {
@@ -4201,7 +3694,7 @@ private void clearNioBuffers() {
 
 `#failFlushed(Throwable cause, boolean notify)` 方法，写入数据到对端**失败**，进行后续的处理，详细看代码。代码如下：
 
-```
+```java
  1: void failFlushed(Throwable cause, boolean notify) {
  2:     // 正在通知 flush 失败中，直接返回
  3:     // Make sure that this method does not reenter.  A listener added to the current promise can be notified by the
@@ -4238,7 +3731,7 @@ private void clearNioBuffers() {
 
 `#remove0(Throwable cause, boolean notifyWritability)` 方法，移除当前消息对应的 Entry 对象，并 Promise 通知异常。代码如下：
 
-```
+```java
  1: private boolean remove0(Throwable cause, boolean notifyWritability) {
  2:     Entry e = flushedEntry;
  3:     // 所有 flush 的 Entry 节点，都已经写到对端
@@ -4282,7 +3775,7 @@ private void clearNioBuffers() {
 
 - 第 21 行：【**重要**】调用 `#safeFail(promise)` 方法，通知 Promise 执行失败。此处才是，真正触发 `Channel#write(...)` 或 `Channel#writeAndFlush(...)` 方法，返回的 Promise 的通知。`#safeFail(promise)` 方法的代码如下：
 
-  ```
+  ```java
   private static void safeFail(ChannelPromise promise, Throwable cause) {
       // Only log if the given promise is not of type VoidChannelPromise as tryFailure(...) is expected to return
       // false.
@@ -4302,7 +3795,7 @@ TODO 1015 forEachFlushedMessage 在 `netty-transport-native-poll` 和 `netty-tra
 
 `#close(...)` 方法，关闭 ChannelOutboundBuffer ，进行后续的处理，详细看代码。代码如下：
 
-```
+```java
 void close(ClosedChannelException cause) {
     close(cause, false);
 }
@@ -4368,20 +3861,10 @@ void close(ClosedChannelException cause) {
 
 - 第 16 行：标记正在通知 flush 失败中，即 `inFail = true` 。
 
-- 第 28 至 30 行：从
-
-   
-
-  ```
-  unflushedEntry
-  ```
-
-   
-
-  节点，开始向下遍历。
+- 第 28 至 30 行：从`unflushedEntry`节点，开始向下遍历。
 
   - 第 31 至 34 行：减少 `totalPendingSize` 计数。
-  - 第 36 行：若 Entry 已取消，则忽略。
+- 第 36 行：若 Entry 已取消，则忽略。
   - 第 38 行：调用 `ReferenceCountUtil#safeRelease(msg)` 方法，释放消息( 数据 )相关的资源。
   - 第 40 行：【**重要**】调用 `#safeFail(promise)` 方法，通知 Promise 执行失败。此处才是，真正触发 `Channel#write(...)` 或 `Channel#writeAndFlush(...)` 方法，返回的 Promise 的通知。
   - 第 43 行：调用 `Entry#recycleAndGetNext()` 方法，回收当前节点，并获得下一个 Entry 节点。
@@ -4394,7 +3877,7 @@ void close(ClosedChannelException cause) {
 
 在上文 [「7. NioSocketChannel」](http://svip.iocoder.cn/Netty/Channel-5-flush/#) 中，在写入到 Channel 到对端，若 TCP 数据发送缓冲区**已满**，这将导致 Channel **不写可**，此时会注册对该 Channel 的 `SelectionKey.OP_WRITE` 事件感兴趣。从而实现，再在 Channel 可写后，进行**强制** flush 。这块的逻辑，在 `NioEventLoop#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 中实现，代码如下：
 
-```
+```java
 // OP_WRITE 事件就绪
 // Process OP_WRITE first as we may be able to write some queued buffers and so free memory.
 if ((readyOps & SelectionKey.OP_WRITE) != 0) {
@@ -4406,7 +3889,7 @@ if ((readyOps & SelectionKey.OP_WRITE) != 0) {
 
 - 通过 Selector 轮询到 Channel 的 `OP_WRITE` 就绪时，调用 `AbstractNioUnsafe#forceFlush()` 方法，强制 flush 。代码如下：
 
-  ```
+  ```java
   // AbstractNioUnsafe.java
   @Override
   public final void forceFlush() {
@@ -4422,7 +3905,7 @@ if ((readyOps & SelectionKey.OP_WRITE) != 0) {
 
 1. 配置服务端 ServerBootstrap 的启动参数如下：
 
-   ```
+   ```java
    .childOption(ChannelOption.SO_SNDBUF, 5) // Socket 参数，TCP 数据发送缓冲区大小。
    ```
 
@@ -4441,7 +3924,7 @@ if ((readyOps & SelectionKey.OP_WRITE) != 0) {
 
 `#incrementPendingOutboundBytes(long size, ...)` 方法，增加 `totalPendingSize` 计数。代码如下：
 
-```
+```java
  1: /**
  2:  * Increment the pending bytes which will be written at some point.
  3:  * This method is thread-safe!
@@ -4468,7 +3951,7 @@ if ((readyOps & SelectionKey.OP_WRITE) != 0) {
 
 - 第 16 至 19 行：`totalPendingSize` 大于高水位阀值时，调用 `#setUnwritable(boolean invokeLater)` 方法，设置为不可写。代码如下：
 
-  ```
+  ```java
    1: private void setUnwritable(boolean invokeLater) {
    2:     for (;;) {
    3:         final int oldValue = unwritable;
@@ -4495,7 +3978,7 @@ if ((readyOps & SelectionKey.OP_WRITE) != 0) {
 
 `#bytesBeforeUnwritable()` 方法，获得距离**不可写**还有多少字节数。代码如下：
 
-```
+```java
 public long bytesBeforeUnwritable() {
     long bytes = channel.config().getWriteBufferHighWaterMark() - totalPendingSize;
     // If bytes is negative we know we are not writable, but if bytes is non-negative we have to check writability.
@@ -4514,7 +3997,7 @@ public long bytesBeforeUnwritable() {
 
 `#decrementPendingOutboundBytes(long size, ...)` 方法，减少 `totalPendingSize` 计数。代码如下：
 
-```
+```java
  1: /**
  2:  * Decrement the pending bytes which will be written at some point.
  3:  * This method is thread-safe!
@@ -4541,7 +4024,7 @@ public long bytesBeforeUnwritable() {
 
 - 第 16 至 19 行：`totalPendingSize` 小于低水位阀值时，调用 `#setWritable(boolean invokeLater)` 方法，设置为可写。代码如下：
 
-  ```
+  ```java
    1: private void setWritable(boolean invokeLater) {
    2:     for (;;) {
    3:         final int oldValue = unwritable;
@@ -4568,7 +4051,7 @@ public long bytesBeforeUnwritable() {
 
 `#bytesBeforeWritable()` 方法，获得距离**可写**还要多少字节数。代码如下：
 
-```
+```java
 /**
  * Get how many bytes must be drained from the underlying buffer until {@link #isWritable()} returns {@code true}.
  * This quantity will always be non-negative. If {@link #isWritable()} is {@code true} then 0.
@@ -4591,7 +4074,7 @@ public long bytesBeforeWritable() {
 
 `#fireChannelWritabilityChanged(boolean invokeLater)` 方法，触发 Channel WritabilityChanged 事件到 pipeline 中。代码如下：
 
-```
+```java
 private void fireChannelWritabilityChanged(boolean invokeLater) {
     final ChannelPipeline pipeline = channel.pipeline();
     // 延迟执行，即提交 EventLoop 中触发 Channel WritabilityChanged 事件到 pipeline 中
@@ -4617,17 +4100,7 @@ private void fireChannelWritabilityChanged(boolean invokeLater) {
 
 - 后续的流程，就是 [《精尽 Netty 源码解析 —— ChannelPipeline（五）之 Inbound 事件的传播》](http://svip.iocoder.cn/Netty/Pipeline-5-inbound/) 。
 
-- 通过 Channel WritabilityChanged 事件，配合
-
-   
-
-  ```
-  io.netty.handler.stream.ChunkedWriteHandler
-  ```
-
-   
-
-  处理器，实现 ChannelOutboundBuffer 写入的控制，避免 OOM 。ChunkedWriteHandler 的具体代码实现，我们在后续的文章，详细解析。
+- 通过 Channel WritabilityChanged 事件，配合`io.netty.handler.stream.ChunkedWriteHandler`处理器，实现 ChannelOutboundBuffer 写入的控制，避免 OOM 。ChunkedWriteHandler 的具体代码实现，我们在后续的文章，详细解析。
 
   - 所以，有一点要注意，ChannelOutboundBuffer 的 `unwritable` 属性，仅仅作为一个是否不可写的**开关**，具体需要配合响应的 ChannelHandler 处理器，才能实现“不可写”的功能。
 
@@ -4635,7 +4108,7 @@ private void fireChannelWritabilityChanged(boolean invokeLater) {
 
 `#isWritable()` 方法，是否可写。代码如下：
 
-```
+```java
 /**
  * Returns {@code true} if and only if {@linkplain #totalPendingWriteBytes() the total number of pending bytes} did
  * not exceed the write watermark of the {@link Channel} and
@@ -4653,7 +4126,7 @@ public boolean isWritable() {
 
 `#getUserDefinedWritability(int index)` 方法，获得指定 bits 是否可写。代码如下：
 
-```
+```java
 /**
  * Returns {@code true} if and only if the user-defined writability flag at the specified index is set to
  * {@code true}.
@@ -4678,7 +4151,7 @@ private static int writabilityMask(int index) {
 
 `#setUserDefinedWritability(int index, boolean writable)` 方法，设置指定 bits 是否可写。代码如下：
 
-```
+```java
 /**
  * Sets a user-defined writability flag at the specified index.
  */
@@ -4752,7 +4225,7 @@ private void clearUserDefinedWritability(int index) {
 
 AbstractChannel 对 `#writeAndFlush(Object msg, ...)` 方法的实现，代码如下：
 
-```
+```java
 @Override
 public ChannelFuture writeAndFlush(Object msg) {
     return pipeline.writeAndFlush(msg);
@@ -4764,40 +4237,16 @@ public ChannelFuture writeAndFlush(Object msg, ChannelPromise promise) {
 }
 ```
 
-- 在方法内部，会调用对应的
-
-   
-
-  ```
-  ChannelPipeline#write(Object msg, ...)
-  ```
-
-   
-
-  方法，将 write 和 flush
-
-   
-
-  两个
-
-  事件在 pipeline 上传播。详细解析，见
-
-   
-
-  「3. DefaultChannelPipeline」
-
-   
-
-  。
+- 在方法内部，会调用对应的`ChannelPipeline#write(Object msg, ...)`方法，将 write 和 flush两个事件在 pipeline 上传播。详细解析，见「3. DefaultChannelPipeline」。
 
   - 最终会传播 write 事件到 `head` 节点，将数据写入到内存队列中。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-6-writeAndFlush/#) 。
-  - 最终会传播 flush 事件到 `head` 节点，刷新**内存队列**，将其中的数据写入到对端。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-6-writeAndFlush/#) 。
+- 最终会传播 flush 事件到 `head` 节点，刷新**内存队列**，将其中的数据写入到对端。详细解析，见 [「5. HeadContext」](http://svip.iocoder.cn/Netty/Channel-6-writeAndFlush/#) 。
 
 # 3. DefaultChannelPipeline
 
 `DefaultChannelPipeline#writeAndFlush(Object msg, ...)` 方法，代码如下：
 
-```
+```java
 @Override
 public final ChannelFuture write(Object msg) {
     return tail.writeAndFlush(msg);
@@ -4815,7 +4264,7 @@ public final ChannelFuture write(Object msg, ChannelPromise promise) {
 
 TailContext 对 `TailContext#writeAndFlush(Object msg, ...)` 方法的实现，是从 AbstractChannelHandlerContext 抽象类继承，代码如下：
 
-```
+```java
 @Override
 public ChannelFuture writeAndFlush(Object msg, ChannelPromise promise) {
     if (msg == null) {
@@ -4839,7 +4288,7 @@ public ChannelFuture writeAndFlush(Object msg, ChannelPromise promise) {
 
 - 这个方法，和我们在 [《精尽 Netty 源码解析 —— Channel（四）之 write 操作》](http://svip.iocoder.cn/Netty/Channel-4-write/) 的 [「4. TailContext」](http://svip.iocoder.cn/Netty/Channel-6-writeAndFlush/#) 的小节，`TailContext#write(Object msg, ...)` 方法，基本类似，差异在于 `<1>` 处，调用 `#write(Object msg, boolean flush, ChannelPromise promise)` 方法，传入的 `flush = true` 方法参数，表示 write 操作的同时，**后续**需要执行 flush 操作。代码如下：
 
-  ```
+  ```java
   private void write(Object msg, boolean flush, ChannelPromise promise) {
       // 获得下一个 Outbound 节点
       AbstractChannelHandlerContext next = findContextOutbound();
@@ -4892,7 +4341,7 @@ public ChannelFuture writeAndFlush(Object msg, ChannelPromise promise) {
 
 通过 `NioSocketChannel#close()` 方法，应用程序里可以主动关闭 NioSocketChannel 通道。代码如下：
 
-```
+```java
 // AbstractChannel.java
 @Override
 public ChannelFuture close() {
@@ -4904,7 +4353,7 @@ public ChannelFuture close() {
 
 - 在方法内部，会调用对应的 `ChannelPipeline#close()` 方法，将 close 事件在 pipeline 上传播。而 close 事件属于 Outbound 事件，所以会从 `tail` 节点开始，最终传播到 `head` 节点，使用 Unsafe 进行关闭。代码如下：
 
-  ```
+  ```java
   // DefaultChannelPipeline.java
   @Override
   public final ChannelFuture close() {
@@ -4928,7 +4377,7 @@ public ChannelFuture close() {
 
 `AbstractUnsafe#close()` 方法，关闭 Channel 。代码如下：
 
-```
+```java
 @Override
 public final void close(final ChannelPromise promise) {
     assertEventLoop();
@@ -5034,7 +4483,7 @@ public final void close(final ChannelPromise promise) {
 
 - 方法参数 `cause`、`closeCause` ，关闭的“原因”。对于 **close** 操作来说，无论是正常关闭，还是异常关闭，通过使用 **Exception** 来表示**来源**。在 AbstractChannel 类中，枚举了所有来源：
 
-  ```
+  ```java
   // AbstractChannel.java
   private static final ClosedChannelException FLUSH0_CLOSED_CHANNEL_EXCEPTION = ThrowableUtil.unknownStackTrace(
           new ClosedChannelException(), AbstractUnsafe.class, "flush0()");
@@ -5050,154 +4499,36 @@ public final void close(final ChannelPromise promise) {
 
 - 第 2 至 5 行：调用 `ChannelPromise#setUncancellable()` 方法，设置 Promise 不可取消。
 
-- 第 8 行：若
-
-   
-
-  ```
-  AbstractChannel.closeInitiated
-  ```
-
-   
-
-  为
-
-   
-
-  ```
-  true
-  ```
-
-   
-
-  时，表示关闭已经标记初始化，此时
-
-  可能
-
-  已经关闭完成。
+- 第 8 行：若`AbstractChannel.closeInitiated`为`true`时，表示关闭已经标记初始化，此时可能已经关闭完成。
 
   - 第 10 至 12 行：关闭**已经**完成，直接通知 Promise 对象。
   - 第 13 至 22 行：关闭**并未**完成，通过监听器回调通知 Promise 对象。
   - 第 23 行：`return` 结束。
   - 第 27 行：标记关闭已经初始化。
-
+  
 - 第 30 行：调用 `#isActive()` 方法， 获得 Channel 是否激活。
 
 - 第 31 至 33 行：标记内存队列 `outboundBuffer` 为空。
 
 - 第 35 行：调用 `#prepareToClose()` 方法，执行准备关闭。详细解析，胖友先跳到 [「2.2 NioSocketChannelUnsafe#prepareToClose」](http://svip.iocoder.cn/Netty/Channel-7-close/#) 中。
 
-- 第 37 行：若
-
-   
-
-  ```
-  closeExecutor
-  ```
-
-   
-
-  非空，在
-
-   
-
-  「2.2 NioSocketChannelUnsafe#prepareToClose」
-
-   
-
-  中，我们已经看到如果开启
-
-   
-
-  ```
-  SO_LINGER
-  ```
-
-   
-
-  功能，会返回
-
-   
-
-  ```
-  GlobalEventExecutor.INSTANCE
-  ```
-
-   
-
-  对象。
+- 第 37 行：若`closeExecutor`非空，在「2.2 NioSocketChannelUnsafe#prepareToClose」中，我们已经看到如果开启`SO_LINGER`功能，会返回`GlobalEventExecutor.INSTANCE`对象。
 
   - 第 38 至 44 行：提交任务到 `closeExecutor` 中，**在它的线程中**，执行 `#doClose0(promise)` 方法，执行关闭。为什么要在“在它的线程中”中？回答不出来的胖友，再好好重新看下 [「2.2 NioSocketChannelUnsafe#prepareToClose」](http://svip.iocoder.cn/Netty/Channel-7-close/#) 小节。
   - 第 46 至 61 行：提交任务到 Channel 所在的 EventLoop 中，执行后续的任务。
   - 整体的逻辑和代码，和【第 66 至 91 行】的代码是**基本**一致。
-
-- 第 66 行：若
-
-   
-
-  ```
-  closeExecutor
-  ```
-
-   
-
-  为空。
+  
+- 第 66 行：若`closeExecutor`为空。
 
   - 第 70 行：调用 `#doClose0(promise)` 方法，执行**真正的**关闭。详细解析，胖友先跳到 [「2.4 doClose0」](http://svip.iocoder.cn/Netty/Channel-7-close/#) 中。
 
   - 第 75 行：调用 `ChannelOutboundBuffer#failFlushed(Throwable cause, boolean notify)` 方法，写入数据( 消息 )到对端失败，通知相应数据对应的 Promise 失败。详细解析，见 [《精尽 Netty 源码解析 —— Channel（五）之 flush 操作》](http://svip.iocoder.cn/Netty/Channel-5-flush/) 。
-
+  
   - 第 77 行：调用 `ChannelOutboundBuffer#close(Throwable cause)` 方法，关闭内存队列。详细解析，见 [《精尽 Netty 源码解析 —— Channel（五）之 flush 操作》](http://svip.iocoder.cn/Netty/Channel-5-flush/) 。
 
-  - 第 81 行：若
+  - 第 81 行：若`inFlush0`为`true`，正在flush 中，在 EventLoop 中的线程中
 
-     
-
-    ```
-    inFlush0
-    ```
-
-     
-
-    为
-
-     
-
-    ```
-    true
-    ```
-
-     
-
-    ，
-
-    正在
-
-     
-
-    flush 中，
-
-    在 EventLoop 中的线程中
-
-    ，调用
-
-     
-
-    ```
-    #fireChannelInactiveAndDeregister(boolean wasActive)
-    ```
-
-     
-
-    方法，执行取消注册，并触发 Channel Inactive 事件到 pipeline 中。详细解析，见
-
-     
-
-    「2.5 AbstractUnsafe#fireChannelInactiveAndDeregister」
-
-     
-
-    中。
+    ，调用`#fireChannelInactiveAndDeregister(boolean wasActive)`方法，执行取消注册，并触发 Channel Inactive 事件到 pipeline 中。详细解析，见「2.5 AbstractUnsafe#fireChannelInactiveAndDeregister」中。
 
     - 第 90 行：若 `inFlush0` 为 `false` ，**不在** flush 中，**直接**调用 `#fireChannelInactiveAndDeregister(boolean wasActive)` 方法，执行取消注册，并触发 Channel Inactive 事件到 pipeline 中。
 
@@ -5205,7 +4536,7 @@ public final void close(final ChannelPromise promise) {
 
 `NioSocketChannelUnsafe#prepareToClose()` 方法，执行准备关闭。代码如下：
 
-```
+```java
  1: @Override
  2: protected Executor prepareToClose() {
  3:     try {
@@ -5229,7 +4560,7 @@ public final void close(final ChannelPromise promise) {
 
 - 第 4 行：如果配置 `StandardSocketOptions.SO_LINGER` 大于 0 。让我们先来看下它的定义：
 
-  ```
+  ```java
   Socket 参数，关闭 Socket 的延迟时间，Netty 默认值为 -1 ，表示禁用该功能。
   
   * -1 表示 socket.close() 方法立即返回，但 OS 底层会将发送缓冲区全部发送到对端。
@@ -5244,70 +4575,10 @@ public final void close(final ChannelPromise promise) {
 
 - 【来自我表弟普架的牛逼解答，我表示点赞支持】第 9 行的：为什么要调用
 
-   
+  `#doDeregister()`方法呢？因为`SO_LINGER`大于 0 时，真正关闭Channel ，需要
 
-  ```
-  #doDeregister()
-  ```
-
-   
-
-  方法呢？因为
-
-   
-
-  ```
-  SO_LINGER
-  ```
-
-   
-
-  大于 0 时，
-
-  真正关闭
-
-   
-
-  Channel ，需要
-
-  阻塞
-
-  直到延迟时间到或发送缓冲区中的数据发送完毕。如果不取消该 Channel 的
-
-   
-
-  ```
-  SelectionKey.OP_READ
-  ```
-
-   
-
-  事件的感兴趣，就会不断触发读事件，导致 CPU 空轮询。为什么呢?在 Channel 关闭时，会
-
-  自动
-
-  触发
-
-   
-
-  ```
-  SelectionKey.OP_READ
-  ```
-
-   
-
-  事件。而且，会不断不断不断的触发，如果不进行取消
-
-   
-
-  ```
-  SelectionKey.OP_READ
-  ```
-
-   
-
-  事件的感兴趣。
-
+  阻塞直到延迟时间到或发送缓冲区中的数据发送完毕。如果不取消该 Channel 的`SelectionKey.OP_READ`事件的感兴趣，就会不断触发读事件，导致 CPU 空轮询。为什么呢?在 Channel 关闭时，会自动触发`SelectionKey.OP_READ`事件。而且，会不断不断不断的触发，如果不进行取消`SelectionKey.OP_READ`事件的感兴趣。
+  
   - 😈 感叹一句，细思极恐啊，厉害了，Netty 。
 
 - 第 11 行：如果开启 `SO_LINGER` 功能，返回 `GlobalEventExecutor.INSTANCE` 对象。
@@ -5320,7 +4591,7 @@ public final void close(final ChannelPromise promise) {
 
 `AbstractUnsafe#doDeregister()` 方法，执行取消注册。代码如下：
 
-```
+```java
 @Override
 protected void doDeregister() throws Exception {
     eventLoop().cancel(selectionKey());
@@ -5333,7 +4604,7 @@ protected void doDeregister() throws Exception {
 
 `AbstractUnsafe#doClose0(ChannelPromise promise)` 方法，执行**真正的**关闭。代码如下：
 
-```
+```java
  1: private void doClose0(ChannelPromise promise) {
  2:     try {
  3:         // 执行关闭
@@ -5355,7 +4626,7 @@ protected void doDeregister() throws Exception {
 
 - 第 6 行：调用 `CloseFuture#setClosed()` 方法，通知 `closeFuture` 关闭完成。此处就会结束我们在 EchoClient 的阻塞监听客户端关闭。例如：
 
-  ```
+  ```java
   // Wait until the connection is closed.
   // 监听客户端关闭，并阻塞等待
   f.channel().closeFuture().sync();
@@ -5365,7 +4636,7 @@ protected void doDeregister() throws Exception {
 
 - 第 8 行：调用 `#safeSetSuccess(promise)` 方法，通知 通知 Promise 关闭**成功**。此处就会回调我们对 `Channel#close()` 方法的返回的 ChannelFuture 的监听。示例如下：
 
-  ```
+  ```java
   ctx.channel().close().addListener(new ChannelFutureListener() { // 我是一个萌萌哒监听器
       @Override
       public void operationComplete(ChannelFuture future) throws Exception {
@@ -5385,7 +4656,7 @@ protected void doDeregister() throws Exception {
 
 `NioSocketChannel#doClose()` 方法，执行 Java 原生 NIO SocketChannel 关闭。代码如下：
 
-```
+```java
 1: @Override
 2: protected void doClose() throws Exception {
 3:     // 执行父类关闭方法
@@ -5397,7 +4668,7 @@ protected void doDeregister() throws Exception {
 
 - 第 4 行：调用 `AbstractNioChannel#doClose()` 方法，执行**父类**关闭方法。代码如下：
 
-  ```
+  ```java
   @Override
   protected void doClose() throws Exception {
       // 通知 connectPromise 异常失败
@@ -5425,7 +4696,7 @@ protected void doDeregister() throws Exception {
 
 `AbstractUnsafe#fireChannelInactiveAndDeregister(boolean wasActive)` 方法，执行取消注册，并触发 Channel Inactive 事件到 pipeline 中。代码如下：
 
-```
+```java
 private void fireChannelInactiveAndDeregister(final boolean wasActive) {
     deregister(voidPromise() /** <1> **/, wasActive && !isActive() /** <2> **/); 
 }
@@ -5486,7 +4757,7 @@ private void fireChannelInactiveAndDeregister(final boolean wasActive) {
 
 - `<1>` 处，传入 `#deregister(...)` 方法的第一个参数为 `unsafeVoidPromise` ，类型为 VoidChannelPromise **类**，表示需要通知 Promise 。为什么这么说呢？在 `#safeSetSuccess(promise)` 方法中，可以看到：
 
-  ```
+  ```java
   protected final void safeSetSuccess(ChannelPromise promise) {
       if (!(promise instanceof VoidChannelPromise) && !promise.trySuccess()) {
           logger.warn("Failed to mark a promise as success because it is done already: {}", promise);
@@ -5500,41 +4771,11 @@ private void fireChannelInactiveAndDeregister(final boolean wasActive) {
 
 - 第 2 至 5 行：调用 `ChannelPromise#setUncancellable()` 方法，设置 Promise 不可取消。
 
-- 第 7 至 11 行：不处于已经注册状态，直接通知 Promise 取消注册成功，并
-
-   
-
-  ```
-  return
-  ```
-
-   
-
-  返回。
+- 第 7 至 11 行：不处于已经注册状态，直接通知 Promise 取消注册成功，并`return`返回。
 
   - 😈 在当前情况下，`registered = true` ，所以不符合条件。
 
-- 第 22 行：调用
-
-   
-
-  ```
-  #invokeLater(Runnable)
-  ```
-
-   
-
-  方法，提交任务到 EventLoop 的线程中执行，以避免
-
-  一个
-
-   
-
-  Channel 的 ChannelHandler 在
-
-  不同
-
-  的 EventLoop 或者线程中执行。详细的说明，可以看下【第 13 至 21 行】的英文说明。
+- 第 22 行：调用`#invokeLater(Runnable)`方法，提交任务到 EventLoop 的线程中执行，以避免一个Channel 的 ChannelHandler 在不同的 EventLoop 或者线程中执行。详细的说明，可以看下【第 13 至 21 行】的英文说明。
 
   - 😈 实际从目前该方法的调用看下来，有可能不是从 EventLoop 的线程中调用。
 
@@ -5544,37 +4785,7 @@ private void fireChannelInactiveAndDeregister(final boolean wasActive) {
 
 - 第 40 至 42 行：标记为未注册。
 
-- 第 44 行：调用
-
-   
-
-  ```
-  ChannelPipeline#fireChannelUnregistered()
-  ```
-
-   
-
-  方法，触发 Channel Unregistered 事件到 pipeline 中。而 Channel Unregistered 事件属于 Inbound 事件，所以会从
-
-   
-
-  ```
-  head
-  ```
-
-   
-
-  节点开始，最终传播到
-
-   
-
-  ```
-  tail
-  ```
-
-   
-
-  节点，目前并未执行什么逻辑，感兴趣的胖友，可以自己去看看。如果胖友业务上有需要，可以自己添加 ChannelHandler 进行处理。
+- 第 44 行：调用`ChannelPipeline#fireChannelUnregistered()`方法，触发 Channel Unregistered 事件到 pipeline 中。而 Channel Unregistered 事件属于 Inbound 事件，所以会从`head`节点开始，最终传播到`tail`节点，目前并未执行什么逻辑，感兴趣的胖友，可以自己去看看。如果胖友业务上有需要，可以自己添加 ChannelHandler 进行处理。
 
   - 😈 又啰嗦了一遍，【第 31 至 34 行】的代码的逻辑。
 
@@ -5586,7 +4797,7 @@ private void fireChannelInactiveAndDeregister(final boolean wasActive) {
 
 `NioSocketChannel#doClose()` 方法，执行 Java 原生 NIO SocketServerChannel 关闭。代码如下：
 
-```
+```java
 @Override
 protected void doClose() throws Exception {
     javaChannel().close();
@@ -5603,7 +4814,7 @@ protected void doClose() throws Exception {
 
 实际上，在 Unsafe 接口上定义了 `#closeForcibly()` 方法，英文注释如下：
 
-```
+```java
 /**
  * Closes the {@link Channel} immediately without firing any events.  Probably only useful
  * when registration attempt failed.
@@ -5616,7 +4827,7 @@ void closeForcibly();
 
 AbstractUnsafe 对该接口方法，实现代码如下：
 
-```
+```java
 @Override
 public final void closeForcibly() {
     assertEventLoop();
@@ -5636,7 +4847,7 @@ public final void closeForcibly() {
 
 在客户端主动关闭时，服务端会收到一个 `SelectionKey.OP_READ` 事件的就绪，在调用客户端对应在服务端的 SocketChannel 的 `#read()` 方法会返回 **-1** ，从而实现在服务端关闭客户端的逻辑。在 Netty 的实现，在 `NioByteUnsafe#read()` 方法中，简化代码如下：
 
-```
+```java
 // <1>
 // 读取数据
 // 设置最后读取字节数
@@ -5654,7 +4865,7 @@ if (close) {
 
 - `<2>` 处，调用 `#closeOnRead(ChannelPipeline pipeline)` 方法，关闭客户端的连接。代码如下：
 
-  ```
+  ```java
    1: private void closeOnRead(ChannelPipeline pipeline) {
    2:     if (!isInputShutdown0()) {
    3:         // 开启连接半关闭
@@ -5677,7 +4888,7 @@ if (close) {
 
   - 第 2 行：调用 `NioSocketChannel#isInputShutdown0()` 方法，判断是否关闭 Channel 数据的读取。代码如下：
 
-    ```
+    ```java
     // NioSocketChannel.java
     @Override
     protected boolean isInputShutdown0() {
@@ -5707,7 +4918,7 @@ if (close) {
 
   - `<1>` 第 4 行：调用 `AbstractNioByteChannel#isAllowHalfClosure()` 方法，判断是否开启连接**半关闭**的功能。代码如下：
 
-    ```
+    ```java
     // AbstractNioByteChannel.java
     private static boolean isAllowHalfClosure(ChannelConfig config) {
         return config instanceof SocketChannelConfig &&
@@ -5715,25 +4926,15 @@ if (close) {
     }
     ```
 
-    - 可通过
-
-       
-
-      ```
-      ALLOW_HALF_CLOSURE
-      ```
-
-       
-
-      配置项开启。
+    - 可通过`ALLOW_HALF_CLOSURE`配置项开启。
 
       - Netty 参数，一个连接的远端关闭时本地端是否关闭，默认值为 `false` 。
       - 值为 `false`时，连接自动关闭。
       - 值为 `true` 时，触发 ChannelInboundHandler 的`#userEventTriggered()` 方法，事件 ChannelInputShutdownEvent 。
-
+      
     - `<1.1>` 第 6 行：调用 `NioSocketChannel#shutdownInput()` 方法，关闭 Channel 数据的读取。代码如下：
 
-      ```
+      ```java
       @Override
       public ChannelFuture shutdownInput() {
           return shutdownInput(newPromise());
@@ -5776,18 +4977,18 @@ if (close) {
           }
       }
       ```
-
+    
       - 核心是，调用 Java NIO Channel 的 shutdownInput 方法。
-
+    
     - `<1.1>` 第 8 行：调用 `ChannelPipeline#fireUserEventTriggered(Object event)` 方法，触发 `ChannelInputShutdownEvent.INSTANCE` 事件到 pipeline 中。关于这个事件，胖友可以看看 [《netty 处理远程主机强制关闭一个连接》](https://my.oschina.net/chenleijava/blog/484667) 。
-
+    
     - `<1.2>` 第 9 至 11 行：调用 `#close(Promise)` 方法，关闭客户端的 Channel 。后续的，就是 [「2. NioSocketChannel」](http://svip.iocoder.cn/Netty/Channel-7-close/#) 中。
-
+  
 - 第 12 至 17 行：
 
   - 第 14 行：标记 `inputClosedSeenErrorOnRead` 为 `true` 。原因如下：
 
-    ```
+    ```java
     /**
      * 通道关闭读取，又错误读取的错误的标识
      *
@@ -5798,7 +4999,7 @@ if (close) {
 
     - 如下是提交的说明：
 
-      ```
+      ```java
       AbstractNioByteChannel will detect that the remote end of the socket has
       been closed and propagate a user event through the pipeline. However if
       the user has auto read on, or calls read again, we may propagate the
@@ -5811,7 +5012,7 @@ if (close) {
 
       - 在标记 `inputClosedSeenErrorOnRead = true` 后，在 `NioByteUnsafe#read()` 方法中，会主动对 `SelectionKey.OP_READ` 的感兴趣，避免空轮询。代码如下：
 
-        ```
+        ```java
         // AbstractNioByteUnsafe.java
         public final void read() {
             final ChannelConfig config = config();
@@ -5860,7 +5061,7 @@ if (close) {
 
 通过 `NioSocketChannel#disconnect()` 方法，应用程序里可以主动关闭 NioSocketChannel 通道。代码如下：
 
-```
+```java
 @Override
 public ChannelFuture disconnect() {
     return pipeline.disconnect();
@@ -5874,7 +5075,7 @@ public ChannelFuture disconnect() {
 
 `DefaultChannelPipeline#disconnect()` 方法，代码如下：
 
-```
+```java
 @Override
 public final ChannelPipeline disconnect() {
     tail.disconnect();
@@ -5888,7 +5089,7 @@ public final ChannelPipeline disconnect() {
 
 TailContext 对 `#flush()` 方法的实现，是从 AbstractChannelHandlerContext 抽象类继承，代码如下：
 
-```
+```java
 @Override
 public ChannelFuture disconnect() {
     return disconnect(newPromise());
@@ -5932,39 +5133,11 @@ public ChannelFuture disconnect(final ChannelPromise promise) {
 }
 ```
 
-- 在
-
-   
-
-  ```
-  <1>
-  ```
-
-   
-
-  处，调用
-
-   
-
-  ```
-  ChannelMetadata#hasDisconnect()
-  ```
-
-   
-
-  方法，判断 Channel
-
-   
-
-  是否支持
-
-   
-
-  disconnect 操作。
+- 在`<1>`处，调用`ChannelMetadata#hasDisconnect()`方法，判断 Channel是否支持disconnect 操作。
 
   - 如果支持，则**转换**执行 close 事件在 pipeline 上。后续的逻辑，就是 [《精尽 Netty 源码解析 —— Channel（七）之 close 操作》](http://svip.iocoder.cn/Netty/Channel-7-close/) 。
   - 如果不支持，则**保持**执行 disconnect 事件在 pipeline 上。
-
+  
 - 支持 disconnect 操作的 Netty Channel 实现类有：
 
   ![支持](http://static.iocoder.cn/images/Netty/2018_07_22/01.png)

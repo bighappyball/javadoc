@@ -1312,6 +1312,27 @@ public int subarraySum(int[] nums, int k) {
     }
 ```
 
+### [977. 有序数组的平方 - 力扣（Leetcode）](https://leetcode.cn/problems/squares-of-a-sorted-array/description/)
+
+```java
+ public int[] sortedSquares(int[] nums) {
+        int left=0,right=nums.length-1,index=nums.length-1;
+        int[] res=new int[nums.length];
+        while(left<=right){
+            int leftSquare = nums[left]*nums[left];
+            int rightSquare= nums[right]*nums[right];
+            if(rightSquare>leftSquare){
+                res[index--]=rightSquare;
+                right--;
+            }else{
+                res[index--]=leftSquare;
+                left++;
+            }
+        }
+        return res;
+    }
+```
+
 
 
 
