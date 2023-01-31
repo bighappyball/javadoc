@@ -117,5 +117,99 @@ class MyCircularQueue {
 
 ```
 
+### [706. 设计哈希映射 - 力扣（Leetcode）](https://leetcode.cn/problems/design-hashmap/)
 
+#### 链地址法
+
+思路: 设哈希表的大小为 base，则可以设计一个简单的哈希函数：hash(x)=x  mod base。
+
+我们开辟一个大小为 base 的数组，数组的每个位置是一个链表。当计算出哈希值之后，就插入到对应位置的链表当中。
+
+由于我们使用整数除法作为哈希函数，为了尽可能避免冲突，应当将 base 取为一个质数。在这里，我们取 base=769。
+
+```java
+class MyHashMap {
+    private static final int BASE=769;
+    private LinkedList[] data;
+
+    class Node{
+        private Integer key;
+        private Integer value;
+        public Node(int key,int value){
+            this.key=key;
+            this.value=value;
+        }
+    }
+
+    public MyHashMap() {
+        data=new LinkedList[BASE];
+        // for(int i=0;i<BASE;i++){
+        //     data[i] = new LinkedList<Node>();
+        // }
+    }
+    
+    public void put(int key, int value) {
+        int h = hash(key);
+        LinkedList list = data[h];
+        if(list==null){
+            list=new LinkedList<Node>();
+            data[h]=list;
+        }
+        Iterator<Node> iterator=list.iterator();
+        while(iterator.hasNext()){
+            Node element=iterator.next();
+            if(element.key==key){
+                element.value=value;
+                return;
+            }
+        }
+        list.add(new Node(key,value));
+
+    }
+    
+    public int get(int key) {
+        int h = hash(key);
+        LinkedList list = data[h];
+        if(list==null){
+            return-1;
+        }
+        Iterator<Node> iterator=list.iterator();
+        while(iterator.hasNext()){
+            Node element=iterator.next();
+            if(element.key==key){
+                return element.value;
+            }
+        }
+        return -1;
+    }
+    
+    public void remove(int key) {
+        int h = hash(key);
+        LinkedList list = data[h];
+        if(list==null){
+            return;
+        }
+        Iterator<Node> iterator=list.iterator();
+        while(iterator.hasNext()){
+            Node element=iterator.next();
+            if(element.key==key){
+                list.remove(element);
+                return ;
+            }
+        }
+    }
+
+    private static int hash(int key) {
+        return key % BASE;
+    }
+}
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap obj = new MyHashMap();
+ * obj.put(key,value);
+ * int param_2 = obj.get(key);
+ * obj.remove(key);
+ */
+```
 

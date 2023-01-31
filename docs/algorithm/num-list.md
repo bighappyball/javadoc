@@ -1121,6 +1121,49 @@ public int subarraySum(int[] nums, int k) {
 <!-- tabs:end -->
 
 ## 滑动窗口问题
+
+### 3. 无重复字符的最长子串
+
+#### **滑动窗口**
+
+```java
+public int lengthOfLongestSubstring(String s) {
+        int[] map=new int[200];
+        int max=0,left=0,right=0,len=s.length();
+        while(left<len&&right<len){
+            char c=s.charAt(right);
+            if(map[c]==0){
+                map[c]++;
+                right++;
+                max=Math.max(max,right-left);
+            }else{
+                map[s.charAt(left++)]=0;
+            }
+        }
+        return max;
+}
+```
+
+#### **一次循环**
+
+```java
+
+   public int lengthOfLongestSubstring(String s) {
+        int[] map=new int[128];
+        // last 区间内字符出现的最大位置
+        int max=0,last=0;
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            last=Math.max(map[c],last);
+            max=Math.max(i-last+1,max);
+            map[c]=i+1;
+        }
+        return max;
+    }
+```
+
+
+
 ### [209. 长度最小的子数组 ](https://leetcode.cn/problems/minimum-size-subarray-sum/solutions/305704/chang-du-zui-xiao-de-zi-shu-zu-by-leetcode-solutio/)
 
 <!-- tabs:start -->
@@ -1173,6 +1216,40 @@ public int subarraySum(int[] nums, int k) {
 **前缀和 + 二分查找**
 
 <!-- tabs:end -->
+
+### [567. 字符串的排列 - 力扣（Leetcode）](https://leetcode.cn/problems/permutation-in-string/description/)
+
+#### **滑动窗口**
+
+```java
+    public boolean checkInclusion(String s1, String s2) {
+        int n=s1.length(),m=s2.length();
+        if(n>m){
+            return false;
+        }
+        int[] map1=new int[26];
+        int[] map2=new int[26];
+        for(int i=0;i<n;i++){
+            map1[s1.charAt(i)-'a']++;
+            map2[s2.charAt(i)-'a']++;
+        }
+        if(Arrays.equals(map1,map2)){
+            return true;
+        }
+        for(int i=n;i<m;i++){
+            ++map2[s2.charAt(i) - 'a'];
+            --map2[s2.charAt(i - n) - 'a'];
+            //此处可优化,不需要每次比较整个数组
+            if(Arrays.equals(map1,map2)){
+                return true;
+            }
+        }
+        return false;
+    }
+```
+
+
+
 ## 游戏问题
 
 ### [55. 跳跃游戏](https://leetcode.cn/problems/jump-game/submissions/392754854/)
@@ -1389,3 +1466,30 @@ public int subarraySum(int[] nums, int k) {
     }
 ```
 
+## 回溯
+
+### [77. 组合 - 力扣（Leetcode）](https://leetcode.cn/problems/combinations/description/)
+
+```java
+  List<List<Integer>> res=new ArrayList();
+    public List<List<Integer>> combine(int n, int k) {
+        backtrack(n,1,k,new ArrayList());
+        return res;
+    }
+
+    public void backtrack(int n,int start,int k,List<Integer> list){
+        if(k==0){
+            res.add(new ArrayList(list));
+            return;
+        }
+        if(start>n){
+            return;
+        }
+
+        for(int i=start;i<=n;i++){
+            list.add(i);
+            backtrack(n,i+1,k-1,list);
+            list.remove(list.size()-1);
+        }
+    }
+```
