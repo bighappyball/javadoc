@@ -1,5 +1,90 @@
 ## 数据结构
 
+### [146. LRU 缓存 - 力扣（Leetcode）](https://leetcode.cn/problems/lru-cache/description/)
+
+#### 双向链表+哈希
+
+```java
+class LRUCache {
+
+    Map<Integer,Node> map;
+    Node head;
+    Node tail;
+    int capacity;
+
+    class Node{
+        Integer key, value;
+        Node next, pre;
+        public Node(Integer key,Integer value){
+            this.key=key;
+            this.value=value;
+        }
+    }
+
+    public LRUCache(int capacity) {
+        this.map=new HashMap();
+        this.head=new Node(0,0);
+        this.tail=new Node(0,0);
+        head.next=tail;
+        tail.pre=head;
+        this.capacity=capacity;
+    }
+    
+    public int get(int key) {
+        if(map.containsKey(key)){
+            Node node=map.get(key);
+            moveTail(node);
+            return node.value;
+        }
+        return -1;
+    }
+    
+    public void put(int key, int value) {
+        if(map.containsKey(key)){
+            Node node=map.get(key);
+            node.value=value;
+            moveTail(node);
+        }else{
+            if(map.size()==capacity){
+                removeHead();
+            }
+            Node node=new Node(key,value);
+            addTail(node);
+            map.put(key,node);
+        }
+    }
+
+    public void addTail(Node node){
+        Node last=tail.pre;
+        last.next=node;
+        node.pre=last;
+        node.next=tail;
+        tail.pre=node;
+    }
+    
+    public void moveTail(Node node){
+        Node pre=node.pre;
+        Node next=node.next;
+        pre.next=next;
+        next.pre=pre;
+        addTail(node);
+    }
+
+    public void removeHead(){
+        if(head.next==tail){
+            return;
+        }
+        Node next=head.next;
+        head.next=next.next;
+        next.next.pre=head;
+        next.next=null;
+        next.pre=null;
+        map.remove(next.key);
+    }
+}
+```
+
+
 ### [380. O(1) 时间插入、删除和获取随机元素 - 力扣（Leetcode）](https://leetcode.cn/problems/insert-delete-getrandom-o1/description/)
 
 #### 数组+哈希表
@@ -212,4 +297,6 @@ class MyHashMap {
  * obj.remove(key);
  */
 ```
+
+### 
 

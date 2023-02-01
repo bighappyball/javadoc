@@ -18,11 +18,39 @@ B走路径b->c-a
 
 ### 反转链表
 
-思路: 
+#### [206. 反转链表 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-linked-list/)
 
-1. 迭代
+##### **迭代**
 
-2. 递归
+```java
+ public ListNode reverseList(ListNode head) {
+        ListNode res=null;
+        ListNode temp=head;
+        while(temp!=null){
+            ListNode next=temp.next;
+            temp.next=res;
+            res=temp;
+            temp=next;
+        }
+        return res;
+    }
+```
+
+##### 递归
+
+```java
+   public ListNode reverseList(ListNode head) {
+        if(head==null||head.next==null){
+            return head;
+        }
+        ListNode next=reverseList(head.next);
+        head.next.next=head;
+        head.next=null;
+        return next;
+    }
+```
+
+
 
 #### [206.反转链表](https://leetcode.cn/problems/reverse-linked-list)
 

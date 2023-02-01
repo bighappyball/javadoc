@@ -90,7 +90,7 @@
 - 通过缓存一致性协议（当线程修改内存时通知其他线程 此时内存以改变，缓存失效需要重新读取）
 
 
- 
+
 
 ### 并发编程中的三个概念
 
@@ -101,7 +101,7 @@
 - 有序性：即程序执行的顺序按照代码的先后顺序执行。（由于指令重排序）
 
 
- 
+
 
 ### 指令重排序
 
@@ -311,7 +311,7 @@ Executor 管理多个异步任务的执行，而无需程序员显式地管理�
 - 共享锁
 
 
- 
+
 
 ### Synchronized详解
 
@@ -606,9 +606,9 @@ volatile 的 happens-before 关系 happens-before 规则中有一条是 volatile
 
 ThreadLocalMap 中使用的 key 为 ThreadLoca的弱引用,而 value 是强引用。所以，如果 ThreadLoca没有被外部强引用的情况下，在垃圾回收的时候，key 会被清理掉，而 value 不会被清理掉。这样一来，ThreadLocalMap 中就会出现 key 为 nul的 Entry。假如我们不做任何措施的话，value 永远无法被 GC 回收，这个时候就可能会产生内存泄露。ThreadLocalMap 实现中已经考虑了这种情况，在调用 set()、get()、remove() 方法的时候，会清理掉 key 为 nul的记录。使用完 ThreadLocal方法后 最好手动调用remove()方法
 
-### 线程池
+## 线程池
 
-#### 线程池的状态
+### 线程池的状态
 
 总共有 5 种：
 
@@ -623,7 +623,7 @@ ThreadLocalMap 中使用的 key 为 ThreadLoca的弱引用,而 value 是强引�
 - 当调用 shutdown() 方法时，线程池的状态会从 RUNNING 到 SHUTDOWN，再到 TIDYING，最后到 TERMENATED 销毁状态；
 - 当调用 shutdownNow() 方法时，线程池的状态会从 RUNNING 到 STOP，再到 TIDYING，最后到 TERMENATED 销毁状态。
 
-#### 线程池的好处
+### 线程池的好处
 
 - 降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
 
@@ -632,28 +632,28 @@ ThreadLocalMap 中使用的 key 为 ThreadLoca的弱引用,而 value 是强引�
 - 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
 
 
-#### 实现 Runnable 接口和 Callable 接口的区别
+### 实现 Runnable 接口和 Callable 接口的区别
 
 - Runnable自 Java 1.0 以来一直存在，但Callable仅在 Java 1.5 中引入,目的就是为了来处理Runnable不支持的用例。
 
 - Runnable 接口 不会返回结果或抛出检查异常，但是 Callable 接口 可以。
 
 
-#### 执行 execute()方法和 submit()方法的区别是什么呢？
+### 执行 execute()方法和 submit()方法的区别是什么呢？
 
 1. execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
 
 2. submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，并且可以通过 Future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get(long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。
 
 
-#### 如何创建线程池
+### 如何创建线程池
 
 - ThreadPoolExecutor 通过构造方法实现
 
 - 通过 Executor 框架的工具类 Executors 来实现
 
 
-#### 几种常见的线程池详解
+### 几种常见的线程池详解
 
 - FixedThreadPoo被称为可重用固定线程数的线程池。
 
@@ -675,7 +675,7 @@ ThreadLocalMap 中使用的 key 为 ThreadLoca的弱引用,而 value 是强引�
 
   线程 1 把这个修改 time 之后的 ScheduledFutureTask 放回 DelayQueue 中（DelayQueue.add())
 
-#### ThreadPoolExecutor构造参数
+### ThreadPoolExecutor构造参数
 
 corePoolSize : 核心线程数定义了最小可以同时运行的线程数量。
 
@@ -691,20 +691,20 @@ threadFactory :executor 创建新线程的时候会用到。
 
 handler :饱和策略。关于饱和策略下面单独介绍一下。
 
-#### 线程池大小确定
+### 线程池大小确定
 
 - CPU 密集型任务(N+1)
 
 - I/O 密集型任务(2N)
 
 
-#### 动态参数设置
+### 动态参数设置
 
 格外需要注意的是corePoolSize， 程序运行期间的时候，我们调用 setCorePoolSize（） 这个方法的话，线程池会首先判断当前工作线程数是否大于corePoolSize，如果大于的话就会回收工作线程。
 
 另外，你也看到了上面并没有动态指定队列长度的方法，美团的方式是自定义了一个叫做 ResizableCapacityLinkedBlockIngQueue 的队列（主要就是把LinkedBlockingQueue的capacity 字段的final关键字修饰给去掉了，让它变为可变的）。
 
-#### 饱和策略
+### 饱和策略
 
 如果当前同时运行的线程数量达到最大线程数量并且队列也已经被放满了任务时，ThreadPoolTaskExecutor 定义一些策略:
 
@@ -717,84 +717,67 @@ handler :饱和策略。关于饱和策略下面单独介绍一下。
 - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
 
-#### 1.8.8. Java 常见并发容器总结
+## Java 常见并发容器总结
 
 JDK 提供的这些容器大部分在 java.util.concurrent 包中。
 
-ConcurrentHashMap : 线程安全的 HashMap
+- ConcurrentHashMap : 线程安全的 HashMap
 
-CopyOnWriteArrayList : 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector。
+- ConcurrentSkipListMap : 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
 
-ConcurrentLinkedQueue : 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。
+- CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector。类的所有可变操作（add，set 等等）都是通过创建底层数组的新副本来实现的。当 List 需要被修改的时候，我并不修改原有内容，而是对原有数据进行一次复制，将修改的内容写入副本。写完之后，再将修改完的副本替换原来的数据，这样就可以保证写操作不会影响读操作了
 
-BlockingQueue : 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。
+- ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。Java 提供的线程安全的 Queue 可以分为阻塞队列和非阻塞队列，其中阻塞队列的典型例子是 BlockingQueue，非阻塞队列的典型例子是 ConcurrentLinkedQueue，在实际应用中要根据实际需要选用阻塞队列或者非阻塞队列。 阻塞队列可以通过加锁来实现，非阻塞队列可以通过 CAS 操作实现。
 
-ConcurrentSkipListMap : 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+- BlockingQueue: 上面我们己经提到了 ConcurrentLinkedQueue 作为高性能的非阻塞队列。下面我们要讲到的是阻塞队列——BlockingQueue。阻塞队列（BlockingQueue）被广泛使用在“生产者-消费者”问题中，其原因是 BlockingQueue 提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。
 
-CopyOnWriteArrayList
+- ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁 ReentrantLock ，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。当队列容量满时，尝试将元素放入队列将导致操作阻塞;尝试从一个空队列中取一个元素也会同样阻塞。
 
-CopyOnWriteArrayList 类的所有可变操作（add，set 等等）都是通过创建底层数组的新副本来实现的。当 List 需要被修改的时候，我并不修改原有内容，而是对原有数据进行一次复制，将修改的内容写入副本。写完之后，再将修改完的副本替换原来的数据，这样就可以保证写操作不会影响读操作了
+- LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。通常在创建 LinkedBlockingQueue 对象时，会指定其大小，如果未指定，容量等于 Integer.MAX_VALUE 。
 
-ConcurrentLinkedQueue
+- PriorityBlockingQueue 是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
 
-Java 提供的线程安全的 Queue 可以分为阻塞队列和非阻塞队列，其中阻塞队列的典型例子是 BlockingQueue，非阻塞队列的典型例子是 ConcurrentLinkedQueue，在实际应用中要根据实际需要选用阻塞队列或者非阻塞队列。 阻塞队列可以通过加锁来实现，非阻塞队列可以通过 CAS 操作实现。
+  PriorityBlockingQueue 并发控制采用的是可重入锁 ReentrantLock，队列为无界队列（ArrayBlockingQueue 是有界队列，LinkedBlockingQueue 也可以通过在构造函数中传入 capacity 指定队列最大的容量，但是 PriorityBlockingQueue 只能指定初始的队列大小，后面插入元素的时候，如果空间不够的话会自动扩容）。
 
-BlockingQueue
+  简单地说，它就是 PriorityQueue 的线程安全版本。不可以插入 nul值，同时，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。它的插入操作 put 方法不会 block，因为它是无界队列（take 方法在队列为空的时候会阻塞）。
 
-上面我们己经提到了 ConcurrentLinkedQueue 作为高性能的非阻塞队列。下面我们要讲到的是阻塞队列——BlockingQueue。阻塞队列（BlockingQueue）被广泛使用在“生产者-消费者”问题中，其原因是 BlockingQueue 提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。
 
-ArrayBlockingQueue
-
-ArrayBlockingQueue 一旦创建，容量不能改变。其并发控制采用可重入锁 ReentrantLock ，不管是插入操作还是读取操作，都需要获取到锁才能进行操作。当队列容量满时，尝试将元素放入队列将导致操作阻塞;尝试从一个空队列中取一个元素也会同样阻塞。
-
-LinkedBlockingQueue
-
-LinkedBlockingQueue 底层基于单向链表实现的阻塞队列，可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性，与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。通常在创建 LinkedBlockingQueue 对象时，会指定其大小，如果未指定，容量等于 Integer.MAX_VALUE 。
-
-PriorityBlockingQueue
-
-PriorityBlockingQueue 是一个支持优先级的无界阻塞队列。默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 compareTo() 方法来指定元素排序规则，或者初始化时通过构造器参数 Comparator 来指定排序规则。
-
-PriorityBlockingQueue 并发控制采用的是可重入锁 ReentrantLock，队列为无界队列（ArrayBlockingQueue 是有界队列，LinkedBlockingQueue 也可以通过在构造函数中传入 capacity 指定队列最大的容量，但是 PriorityBlockingQueue 只能指定初始的队列大小，后面插入元素的时候，如果空间不够的话会自动扩容）。
-
-简单地说，它就是 PriorityQueue 的线程安全版本。不可以插入 nul值，同时，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。它的插入操作 put 方法不会 block，因为它是无界队列（take 方法在队列为空的时候会阻塞）。
-
-#### 1.8.9. CAS详解
+##  CAS详解
 
 CAS叫做CompareAndSwap，比较并交换，主要是通过处理器的指令来保证操作的原子性，它包含三个操作数：
 
-变量内存地址，V表示
+- 变量内存地址，V表示
 
-旧的预期值，A表示
+- 旧的预期值，A表示
 
-准备设置的新值，B表示
+- 准备设置的新值，B表示
+
 
 当执行CAS指令时，只有当V等于A时，才会用B去更新V的值，否则就不会执行更新操作。
 
-CAS缺点
+### CAS缺点
 
-ABA问题：ABA的问题指的是在CAS更新的过程中，当读取到的值是A，然后准备赋值的时候仍然是A，但是实际上有可能A的值被改成了B，然后又被改回了A，这个CAS更新的漏洞就叫做ABA。只是ABA的问题大部分场景下都不影响并发的最终效果。
+- ABA问题：ABA的问题指的是在CAS更新的过程中，当读取到的值是A，然后准备赋值的时候仍然是A，但是实际上有可能A的值被改成了B，然后又被改回了A，这个CAS更新的漏洞就叫做ABA。只是ABA的问题大部分场景下都不影响并发的最终效果。
+
+  Java中有AtomicStampedReference来解决这个问题，他加入了预期标志和更新后标志两个字段，更新时不光检查值，还要检查当前的标志是否等于预期标志，全部相等的话才会更新。
+
+- 循环时间长开销大：自旋CAS的方式如果长时间不成功，会给CPU带来很大的开销。
+
+- 只能保证一个共享变量的原子操作：只对一个共享变量操作可以保证原子性，但是多个则不行，多个可以通过AtomicReference来处理或者使用锁synchronized实现。
+
 
  
 
-Java中有AtomicStampedReference来解决这个问题，他加入了预期标志和更新后标志两个字段，更新时不光检查值，还要检查当前的标志是否等于预期标志，全部相等的话才会更新。
-
-循环时间长开销大：自旋CAS的方式如果长时间不成功，会给CPU带来很大的开销。
-
-只能保证一个共享变量的原子操作：只对一个共享变量操作可以保证原子性，但是多个则不行，多个可以通过AtomicReference来处理或者使用锁synchronized实现。
-
- 
 
 
 
-
-#### 1.8.10. AQS详解
+## AQS详解
 
 AQS 的全称为（AbstractQueuedSynchronizer），这个类在java.util.concurrent.locks包下面。
 
 AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出大量应用广泛的同步器，比如我们提到的 ReentrantLock，Semaphore，其他的诸如 ReentrantReadWriteLock，SynchronousQueue，FutureTask 等等皆是基于 AQS 的。当然，我们自己也能利用 AQS 非常轻松容易地构造出符合我们自己需求的同步器。
 
-AQS 原理分析
+### AQS 原理分析
 
 AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
 
@@ -806,17 +789,18 @@ CLH(Craig,Landin and Hagersten)队列是一个虚拟的双向队列（虚拟的�
 
 AQS 使用一个 int 成员变量来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。AQS 使用 CAS 对该同步状态进行原子操作实现对其值的修改。
 
-AQS 对资源的共享方式
+### AQS 对资源的共享方式
 
 Exclusive（独占）：只有一个线程能执行，如 ReentrantLock。又可分为公平锁和非公平锁：
 
-公平锁：按照线程在队列中的排队顺序，先到者先拿到锁
+- 公平锁：按照线程在队列中的排队顺序，先到者先拿到锁
 
-非公平锁：当线程要获取锁时，无视队列顺序直接去抢锁，谁抢到就是谁的
+- 非公平锁：当线程要获取锁时，无视队列顺序直接去抢锁，谁抢到就是谁的
+
 
 Share（共享）：多个线程可同时执行，如 CountDownLatch、Semaphore、 CyclicBarrier、ReadWriteLock 我们都会在后面讲到。
 
-AQS 底层使用了模板方法模式
+### AQS 底层使用了模板方法模式
 
 同步器的设计是基于模板方法模式的，如果需要自定义同步器一般的方式是这样（模板方法模式很经典的一个应用）：
 
@@ -826,25 +810,27 @@ AQS 底层使用了模板方法模式
 
 这和我们以往通过实现接口的方式有很大区别，这是模板方法模式很经典的一个运用。
 
-AQS 组件总结
+### AQS 组件总结
 
-Semaphore(信号量)-允许多个线程同时访问： synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。
+- Semaphore(信号量)-允许多个线程同时访问： synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。
 
-CountDownLatch （倒计时器）： CountDownLatch 是一个同步工具类，用来协调多个线程之间的同步。这个工具通常用来控制线程等待，它可以让某一个线程等待直到倒计时结束，再开始执行。
+- CountDownLatch （倒计时器）： CountDownLatch 是一个同步工具类，用来协调多个线程之间的同步。这个工具通常用来控制线程等待，它可以让某一个线程等待直到倒计时结束，再开始执行。
 
-CyclicBarrier(循环栅栏)： CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的技术等待，但是它的功能比 CountDownLatch 更加复杂和强大。主要应用场景和 CountDownLatch 类似。CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await() 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。
+- CyclicBarrier(循环栅栏)： CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的技术等待，但是它的功能比 CountDownLatch 更加复杂和强大。主要应用场景和 CountDownLatch 类似。CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 CyclicBarrier(int parties)，其参数表示屏障拦截的线程数量，每个线程调用 await() 方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。
 
-用过 CountDownLatch 么？什么场景下用的？
+
+#### 用过 CountDownLatch 么？什么场景下用的？
 
 CountDownLatch 的作用就是 允许 count 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。之前在项目中，有一个使用多线程读取多个文件处理的场景，我用到了 CountDownLatch 。具体场景是下面这样的：
 
-我们要读取处理 6 个文件，这 6 个任务都是没有执行顺序依赖的任务，但是我们需要返回给用户的时候将这几个文件的处理的结果进行统计整理。
+1. 我们要读取处理 6 个文件，这 6 个任务都是没有执行顺序依赖的任务，但是我们需要返回给用户的时候将这几个文件的处理的结果进行统计整理。
 
-为此我们定义了一个线程池和 count 为 6 的CountDownLatch对象 。使用线程池处理读取任务，每一个线程处理完之后就将 count-1，调用CountDownLatch对象的 await()方法，直到所有文件读取完之后，才会接着执行后面的逻辑。
+2. 为此我们定义了一个线程池和 count 为 6 的CountDownLatch对象 。使用线程池处理读取任务，每一个线程处理完之后就将 count-1，调用CountDownLatch对象的 await()方法，直到所有文件读取完之后，才会接着执行后面的逻辑。
+
 
  
 
-CountDownLatch 的两种典型用法
+#### CountDownLatch 的两种典型用法
 
 1、某一线程在开始运行前等待 n 个线程执行完毕。
 
@@ -856,11 +842,11 @@ CountDownLatch 的两种典型用法
 
  
 
-CountDownLatch 的不足
+#### CountDownLatch 的不足
 
 CountDownLatch 是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当 CountDownLatch 使用完毕后，它不能再次被使用。
 
-CyclicBarrier 和 CountDownLatch 的区别
+#### CyclicBarrier 和 CountDownLatch 的区别
 
 CountDownLatch 是计数器，只能使用一次，而 CyclicBarrier 的计数器提供 reset 功能，可以多次使用。
 
@@ -872,62 +858,61 @@ CountDownLatch 是计数器，线程完成一个记录一个，只不过计数�
 
  
 
-#### 1.8.11. JUC详解 
+## JUC详解 
 
 ![img](../_media/analysis/netty/wps151B.tmp.jpg) 
 
-JUC包含哪几部分：
+### JUC包含哪几部分
 
-Lock框架和Tools类(把图中这两个放到一起理解)
+- Lock框架和Tools类(把图中这两个放到一起理解)
 
-Collections: 并发集合
+- Collections: 并发集合
 
-Atomic: 原子类
+- Atomic: 原子类
 
-Executors: 线程池
+- Executors: 线程池
 
-#### 1.8.12. JUC原子类详解 
+
+### JUC原子类详解 
 
 JUC 包中的原子类是哪 4 类?
 
-基本类型
+基本类型 使用原子的方式更新基本类型
 
-使用原子的方式更新基本类型
+- AtomicInteger：整型原子类
 
-AtomicInteger：整型原子类
+- AtomicLong：长整型原子类
 
-AtomicLong：长整型原子类
+- AtomicBoolean：布尔型原子类
 
-AtomicBoolean：布尔型原子类
 
-数组类型
+数组类型 使用原子的方式更新数组里的某个元素
 
-使用原子的方式更新数组里的某个元素
+- AtomicIntegerArray：整型数组原子类
 
-AtomicIntegerArray：整型数组原子类
+- AtomicLongArray：长整型数组原子类
 
-AtomicLongArray：长整型数组原子类
+- AtomicReferenceArray：引用类型数组原子类
 
-AtomicReferenceArray：引用类型数组原子类
 
 引用类型
 
- 
+- AtomicReference：引用类型原子类
 
-AtomicReference：引用类型原子类
+- AtomicStampedReference：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
 
-AtomicStampedReference：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。
+- AtomicMarkableReference ：原子更新带有标记位的引用类型对象的属性修改类型
 
-AtomicMarkableReference ：原子更新带有标记位的引用类型对象的属性修改类型
+- AtomicIntegerFieldUpdater：原子更新整型字段的更新器
 
-AtomicIntegerFieldUpdater：原子更新整型字段的更新器
+- AtomicLongFieldUpdater：原子更新长整型字段的更新器
 
-AtomicLongFieldUpdater：原子更新长整型字段的更新器
+- AtomicReferenceFieldUpdater：原子更新引用类型字段的更新器
 
-AtomicReferenceFieldUpdater：原子更新引用类型字段的更新器
 
-讲讲 AtomicInteger 的使用
+### 讲讲 AtomicInteger 的使用
 
+```java
 public finaint get() //获取当前的值
 
 public finaint getAndSet(int newValue)//获取当前的值，并设置新的值
@@ -941,8 +926,9 @@ public finaint getAndAdd(int delta) //获取当前的值，并加上预期的值
 boolean compareAndSet(int expect, int update) //如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）
 
 public finavoid lazySet(int newValue)//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。
+```
 
-能不能给我简单介绍一下 AtomicInteger 类的原理
+### 能不能给我简单介绍一下 AtomicInteger 类的原理
 
 AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方法来保证原子操作，从而避免 synchronized 的高开销，执行效率大为提升。
 
@@ -954,7 +940,7 @@ AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方�
 
 3. 无同步方案: 栈封闭，Thread Local，可重入代码
 
-JUC原子类: CAS, Unsafe和原子类详解
+### JUC原子类:   CAS, Unsafe和原子类详解
 
 什么是CAS：
 
@@ -992,7 +978,7 @@ CAS 保证数据更新的原子性。
 
 AtomicMarkableReference，它不是维护一个版本号，而是维护一个boolean类型的标记，标记值有修改，了解一下。
 
-#### 1.8.13. JUC LockSupport详解
+### JUC LockSupport详解
 
 LockSupport是锁中的基础，是一个提供锁机制的工具类，用来创建锁和其他同步类的基本线程阻塞原语。简而言之，当调用LockSupport.park时，表示当前线程将会等待，直至获得许可，当调用LockSupport.unpark时，必须把等待获得许可的线程作为参数进行传递，好让此线程继续运行。
 
@@ -1104,6 +1090,6 @@ ReentrantReadWriteLock底层是基于ReentrantLock和AbstractQueuedSynchronizer�
 
  
 
-### 1.9. 零拷贝
+## 零拷贝
 
 [傻瓜三歪让我教他「零拷贝」 (qq.com)](https://mp.weixin.qq.com/s/FgBCop2zFfcX5ZszE0NoCQ)

@@ -1,4 +1,4 @@
-### 算法分类
+## 算法分类
 
 比较类排序：通过比较来决定元素间的相对次序，由于其时间复杂度不能突破O(nlogn)，因此也称为非线性时间比较类排序。  
 
@@ -27,8 +27,9 @@
 
 ```java
     public static void bubbleSort(int[] nums) {
-        for (int i = 0; i < nums.length - 1; i++) {
-            for (int j = 0; j < nums.length - i - 1; j++) {
+        int n=nums.length;
+        for (int i=n-1;i>0;i--) {
+            for(int j=0;j<i;j++){
                 if (nums[j] > nums[j + 1]) {
                     int temp = nums[j];
                     nums[j] = nums[j + 1];
@@ -175,6 +176,8 @@
 2. 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
 3. 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
 
+#### 快速
+
 ```java
     public static void quickSort(int[] nums, int left, int right) {
         if (left < right) {
@@ -184,20 +187,169 @@
         }
     }
 
-    public static int pivot(int[] nums, int left, int right) {
-        int pivot = left;
-        int index = pivot + 1;
-        for (int i = index; i <= right; i++) {
-            if (nums[i] < nums[pivot]) {
-                swap(nums, i, index++);
+   private static int selectionKey(int[] array, int start, int end){
+        //先设置为第一个元素
+        int key = array[start];
+        //[start,j]是<key的区域
+        int j = start;
+        //[j+1,i]是>key的区域
+        int i = start+1;
+        while(i <= end){
+            //大于key不动 小于key跟array[j]交换
+            if(array[i] <key){
+                swap(array,j+1,i);
+                j++;
             }
+            i++;
         }
-        swap(nums, pivot, index - 1);
-        return index - 1;
+        //当遍历完之后把key放在j处 也就是最终位置处
+       swap(array,start,j);
+       return j;
+    }
+
+
+    // public static int pivot(int[] nums, int left, int right) {
+    //    int pivot = left;
+    //    int index = pivot + 1;
+    //    for (int i = index; i <= right; i++) {
+    //        if (nums[i] < nums[pivot]) {
+    //            swap(nums, i, index++);
+     //       }
+    //    }
+      //  swap(nums, pivot, index - 1);
+   //     return index - 1;
+   // }
+```
+
+存在优化
+
+- 1.当数组中元素基本上有序，每次取得第一个元素都是最大或最小值，会导致元素左右个数分布不不均匀，当完全有序时近似于一个O（n^2）的排序。
+
+  解决：随机选取val值，在与第一个元素交换，让递归顺利进行。
+
+- 2.当数组中存在大量重复元素，无论是小于等于交换，还是小于交换，都会导致一边区域数据远大于另一半，当重复量很大时近似于一个O（n^2）的排序。
+
+  解决：运用双路快排，把等于val的大量元素均匀的分在两个区域里。****
+
+#### 二路快排
+
+思想
+把等于val的元素均匀分布在小于、大于区域内。
+
+代码实现
+
+- 1.避免数组近乎有序，先随机取出一个val，和第一个元素交换。
+- 2.定义两个指针，i从头开始指向小于val的区域后一个元素，j从尾开始指向大于val的第一个元素。
+- 3.当i所指向的值小于等于val，i++，否则暂停。当j所指向的值大于等于val，j--，否则暂停。当i和j都暂停时，交换i和j所指位置的元素。直到i>j结束，让start赋给j所指向的位置，返回j。
+- 4.重复2.3直到start>end，排序完成。
+
+```java
+  public int[] sortArray(int[] nums) {
+        if(nums.length<=1){
+            return nums;
+        }
+        sortArray(nums,0,nums.length-1);
+        return nums;
+    }
+
+    public void sortArray(int[] nums,int start,int end){
+        if(start >end) return;
+        int key = selectKey(nums,start,end);
+        sortArray(nums,start,key-1);
+        sortArray(nums,key+1,end);
+    }
+
+    public int selectKey(int[] nums,int start,int end){
+        int random=(int)Math.random()*(end-start+1)+start;
+        swap(nums,random,start);
+        //找到一个随机key
+        int value = nums[start];
+        //从头开始往后[start+1,i-1]
+        int i = start+1;
+        //从尾开始往前[j+1,end]
+        int j = end;
+        while(true){
+            //相当于把等于key的值均分到两边
+            while (i<=end && nums [i] <value ) i++;
+            while (j>=start+1 &&nums [j] >value ) j--;
+            //交换后两个指针都移动一步
+            if(i>j) break;
+            swap(nums,i,j);
+            i++;j--;
+        }
+        swap(nums,start,j);
+        return j;
+
+    }
+
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[i];
+        nums[i]=nums[j];
+        nums[j]=temp;
     }
 ```
 
+存在优化:
+
+1.当数组重复元素过多时，每次比较==val的元素会浪费时间，虽浪费的时间不足一提，但是还是可以优化的。
+
+解决：三路快排，把等于value的元素放在另一个区间内，不参与下次的排序。
+
+#### 三路快排
+
+思想
+在二路排序的基础上，把等于value的元素放在另一个区间内，不参与下次的排序。
+
+代码实现
+
+- 1.避免数组近乎有序，先随机取出一个val，和第一个元素交换。
+- 2.定义三个指针，lt从头开始指向小于val的区域后一个元素lt = start-1，i指向目前比较的元素i= start，gt从尾开始指向大于val的第一个元素gt = end+1。保证一开始都是空集合。
+
+- 3.当i所指向的值小于等于val，swap（i，lt+1），lt++。当i所指向的值大于等于val，swap（i，gt-1）gt--，否则i++。直到i>=gt排序完成。将start和lt交换。
+
+- 4.[start,lt-1]和[gt,end]重复2.3直到start>end，排序完成。
+
+```java
+  public static void qiuckSort3(int[] array){
+        if(array.length <=1)return;
+        int start = 0;int end = array.length-1;
+        qiuck3(array,start,end);
+    }
+    private static void qiuck3(int[] array ,int start, int end){
+        if(start >end) return;
+        if(end - start <=15){
+            //如果数据量少就使用直接插入
+            insert(array,start,end);
+            return;
+        }
+ 
+        int random = (int)(Math.random()*(end-start+1)+start);
+        swap(array,random,start);
+        //找到一个随机key
+        int value = array[start];
+        int lt = start; int gt = end+1; int i = start+1;
+        for(;i<gt;i++){
+            if(array[i]<value){
+                //放到小于的区域
+                swap(array,lt+1,i);
+                lt++;i++;
+            }else if(array[i]>value){
+                //放到大于区域
+                swap(array,gt-1,i);
+                gt--;
+            }
+        }
+        swap(array,lt,start);
+        // 直接跳过相等元素的比较
+        qiuck3(array,start,lt-1);
+        qiuck3(array,gt,end);
+    }
+```
+
+
+
 ### 堆排序（Heap Sort）
+
 堆排序（Heapsort）是指利用堆这种数据结构所设计的一种排序算法。堆积是一个近似完全二叉树的结构，并同时满足堆积的性质：即子结点的键值或索引总是小于（或者大于）它的父节点。
 
 时间平均n*log2n  时间最坏n*log2n  时间最好n*log2n 空间 1   不稳定
@@ -207,4 +359,50 @@
 3. 由于交换后新的堆顶R[1]可能违反堆的性质，因此需要对当前无序区(R1,R2,……Rn-1)调整为新堆，然后再次将R[1]与无序区最后一个元素交换，得到新的无序区(R1,R2….Rn-2)和新的有序区(Rn-1,Rn)。不断重复此过程直到有序区的元素个数为n-1，则整个排序过程完成。
 
 ![alt 堆排序](../_media/argorithm/sort/849589-20171015231308699-356134237.gif) 
+
+
+
+## 题目
+
+### [215. 数组中的第K个最大元素 - 力扣（Leetcode）](https://leetcode.cn/problems/kth-largest-element-in-an-array/description/)
+
+#### 快速排序
+
+```java
+public int findKthLargest(int[] nums, int k) {
+       sort(nums,0,nums.length-1,k-1);
+       return nums[k-1];
+    }
+
+    public void sort(int[] nums,int start,int end,int k){
+        if(start<end){
+            int pivot = selectKey(nums, start, end);
+            if(pivot>k){
+                sort(nums, start, pivot - 1,k);
+            }else if(pivot < k){
+                sort(nums, pivot + 1, end,k);
+            }
+        }
+    }
+    public int selectKey(int[] nums,int start,int end){
+        int key = nums[start];
+        int j = start;
+        int i = start+1;
+        while(i<=end){
+            if(nums[i]>key){
+                swap(nums,i,j+1);
+                j++;
+            }
+            i++;
+        }
+        swap(nums,start,j);
+        return j;
+    }
+    
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[i];
+        nums[i]=nums[j];
+        nums[j]=temp;
+    }
+```
 
