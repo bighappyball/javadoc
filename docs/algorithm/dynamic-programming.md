@@ -1,4 +1,4 @@
-### 股票买卖
+## 股票买卖
 
 121. 买卖股票的最佳时机
 122. 买卖股票的最佳时机 II
@@ -9,19 +9,68 @@
 
 https://leetcode.cn/circle/article/qiAgHn/
 
-### 回文子串
+## 回文子串
+
+### [5. 最长回文子串 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-palindromic-substring/)
+
+#### 暴力
+
+```java
+  public String longestPalindrome(String s) {
+        String max = s.substring(0,1);
+        for(int i=0;i<s.length();i++){
+            String temp=conut(s,i,i);
+            max=temp.length()>max.length()?temp:max;
+            temp=conut(s,i,i+1);
+            max=temp.length()>max.length()?temp:max;
+        }
+        return max;
+    }
+
+    public String conut(String s, int left,int right){
+        // 注意防止空指针end必须等于left
+        int start=left,end=left;
+        while(left>=0&&right<s.length()&&s.charAt(left)==s.charAt(right)){
+            start=left--;
+            end=right++;
+        }
+        return s.substring(start,end+1);
+    }
+```
+
+#### 动态规划(时间复杂度高)
+
+```java
+  public String longestPalindrome(String s) {
+        boolean[] dp=new boolean[s.length()];
+        String max=s.substring(0,1);
+        for(int i=0;i<s.length();i++){
+            dp[i]=true;
+            for(int j=0;j<i;j++){
+                if(s.charAt(j)==s.charAt(i)&&dp[j+1]){
+                    dp[j]=true;
+                    String temp=s.substring(j,i+1);
+                    max=temp.length()>max.length()?temp:max;
+                }else{
+                    dp[j]=false;
+                }
+            }
+        }
+        return max;
+    }
+```
 
 
 
-### 接雨水问题
+## 接雨水问题
 
 [【Leetcode每日打卡】接雨水问题的超完全手册 (qq.com)](https://mp.weixin.qq.com/s/f9ebzbwymR8jQeUDxjeCDA)
 
-#### [42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)
+### [42. 接雨水 ](https://leetcode.cn/problems/trapping-rain-water/)
 
 <!-- tabs:start -->
 
-##### **暴力**
+#### **暴力**
 
 ```java
 //很明显每个柱子顶部可以储水的高度为：该柱子的左右两侧最大高度的较小者减去此柱子的高度。因此我们只需要遍历每个柱子，累加每个柱子可以储水的高度即可。  
@@ -41,7 +90,7 @@ public int trap(int[] height) {
     }
 ```
 
-##### **动态规划**
+#### **动态规划**
 
 在上述的暴力法中，对于每个柱子，我们都需要从两头重新遍历一遍求出左右两侧的最大高度，这里是有很多重复计算的，很明显最大高度是可以记忆化的，具体在这里可以用数组边递推边存储，也就是常说的动态规划，DP。
 
@@ -80,7 +129,7 @@ public int trap(int[] height) {
     }
 ```
 
-##### **双指针**
+#### **双指针**
 
 在上述的动态规划方法中，我们用二维数组来存储每个柱子左右两侧的最大高度，但我们递推累加每个柱子的储水高度时其实只用到了 dp[i][0]和 dp[i][1] 两个值，因此我们递推的时候只需要用 int leftMax 和 int rightMax 两个变量就行了。
 
@@ -114,9 +163,9 @@ res += Math.min(leftMax, rightMax) - height[i];
 
 <!-- tabs:end -->
 
-### 最长/最小问题
+## 最长/最小问题
 
-#### [300. 最长上升子序列](https://leetcode.cn/problems/longest-increasing-subsequence)
+### [300. 最长上升子序列](https://leetcode.cn/problems/longest-increasing-subsequence)
 
 ```java
     public int lengthOfLIS(int[] nums) {
@@ -135,7 +184,7 @@ res += Math.min(leftMax, rightMax) - height[i];
     }
 ```
 
-#### [72. 编辑距离](https://leetcode.cn/problems/edit-distance)
+### [72. 编辑距离](https://leetcode.cn/problems/edit-distance)
 
 ```java
 /**
@@ -172,9 +221,9 @@ public int minDistance(String word1, String word2) {
     }
 ```
 
-### 打家劫舍问题
+## 打家劫舍问题
 
-#### [198. 打家劫舍 ](https://leetcode.cn/problems/house-robber/submissions/392381996/)
+### [198. 打家劫舍 ](https://leetcode.cn/problems/house-robber/submissions/392381996/)
 
 ```java
    public int rob(int[] nums) {
@@ -191,7 +240,7 @@ public int minDistance(String word1, String word2) {
     }
 ```
 
-#### [213. 打家劫舍 II ](https://leetcode.cn/problems/house-robber-ii/submissions/392382785/)
+### [213. 打家劫舍 II ](https://leetcode.cn/problems/house-robber-ii/submissions/392382785/)
 
 ```java
 // 要么第一个不偷,要不最后一个不偷
@@ -216,11 +265,11 @@ public int robOne(int[] nums) {
 }
 ```
 
-#### [337. 打家劫舍 III ](https://leetcode.cn/problems/house-robber-iii/solutions/)
+### [337. 打家劫舍 III ](https://leetcode.cn/problems/house-robber-iii/solutions/)
 
 <!-- tabs:start -->
 
-##### **动态规划**
+#### **动态规划**
 
 ```java
     
@@ -247,7 +296,7 @@ Map<TreeNode,Integer> g=new HashMap();
     }
 ```
 
-##### **优化**
+#### **优化**
 
 ```java
 public int rob(TreeNode root) {
@@ -269,13 +318,13 @@ public int[] dfs(TreeNode node) {
 
 <!-- tabs:end -->
 
-### 最小/最大路径和
+## 最小/最大路径和
 
-#### [120. 三角形最小路径和 - 力扣（Leetcode）](https://leetcode.cn/problems/triangle/)
+### [120. 三角形最小路径和 - 力扣（Leetcode）](https://leetcode.cn/problems/triangle/)
 
 <!-- tabs:start -->
 
-##### **动态规划**
+#### **动态规划**
 
 ```java
     // 我们用 dp[i][j]表示从三角形顶部走到位置 (i,j)的最小路径和
@@ -305,7 +354,7 @@ public int[] dfs(TreeNode node) {
     }
 ```
 
-##### **空间优化**
+#### **空间优化**
 
 ```java
 从最后一层开始算最小路径，然后当前数为最后一层到此的最小路径
@@ -323,7 +372,7 @@ public int[] dfs(TreeNode node) {
 ```
 
 
-### 二叉树问题
+## 二叉树问题
 
 ```java
 思路:
@@ -360,9 +409,9 @@ class Solution {
 }
 ```
 
-### 不同路径
+## 不同路径
 
-#### [63. 不同路径 II - 力扣（Leetcode）](https://leetcode.cn/problems/unique-paths-ii/submissions/394526301/)
+### [63. 不同路径 II - 力扣（Leetcode）](https://leetcode.cn/problems/unique-paths-ii/submissions/394526301/)
 
 ```java
 public int uniquePathsWithObstacles(int[][] obstacleGrid) {
@@ -383,4 +432,39 @@ public int uniquePathsWithObstacles(int[][] obstacleGrid) {
         return dp[m-1][n-1];
     }
 ```
+
+## 连续数组和最大问题
+
+### [53. 最大子数组和 - 力扣（Leetcode）](https://leetcode.cn/problems/maximum-subarray/)
+
+#### 动态规划
+
+```java
+    public int maxSubArray(int[] nums) {
+        int[] dp=new int[nums.length];
+        dp[0]=nums[0];
+        int res=dp[0];
+        for(int i=1;i<nums.length;i++){
+            dp[i] = Math.max(dp[i-1]+nums[i],nums[i]);
+            res=Math.max(dp[i],res);
+        }
+        return res;
+    }
+```
+
+#### 优化
+
+```java
+    public int maxSubArray(int[] nums) {
+        int res=nums[0];
+        int sum=nums[0];
+        for(int i=1;i<nums.length;i++){
+            sum=Math.max(sum+nums[i],nums[i]);
+            res=Math.max(sum,res);
+        }
+        return res;
+    }
+```
+
+
 

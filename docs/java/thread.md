@@ -766,7 +766,7 @@ CAS叫做CompareAndSwap，比较并交换，主要是通过处理器的指令来
 - 只能保证一个共享变量的原子操作：只对一个共享变量操作可以保证原子性，但是多个则不行，多个可以通过AtomicReference来处理或者使用锁synchronized实现。
 
 
- 
+
 
 
 
@@ -828,7 +828,7 @@ CountDownLatch 的作用就是 允许 count 个线程阻塞在一个地方，直
 2. 为此我们定义了一个线程池和 count 为 6 的CountDownLatch对象 。使用线程池处理读取任务，每一个线程处理完之后就将 count-1，调用CountDownLatch对象的 await()方法，直到所有文件读取完之后，才会接着执行后面的逻辑。
 
 
- 
+
 
 #### CountDownLatch 的两种典型用法
 

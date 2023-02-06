@@ -1,6 +1,6 @@
-### 相交链表
+## 相交链表
 
-#### [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/)
+### [160. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/)
 
 思路:
 
@@ -12,15 +12,34 @@ B走路径b->c-a
 
 最终A和B再c1相遇
 
-### 环形链表
+## 环形链表
 
-#### [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle)
+### [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle)
 
-### 反转链表
+#### 快慢指针
 
-#### [206. 反转链表 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-linked-list/)
+```java
+   public boolean hasCycle(ListNode head) {
+        ListNode slow=head;
+        ListNode fast=head;
+        while(fast!=null&&fast.next!=null){
+            fast=fast.next.next;
+            slow=slow.next;
+            if(fast==slow){
+                return true;
+            }
+        }
+        return false;
+    }
+```
 
-##### **迭代**
+
+
+## 反转链表
+
+### [206. 反转链表 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-linked-list/)
+
+#### **迭代**
 
 ```java
  public ListNode reverseList(ListNode head) {
@@ -36,7 +55,7 @@ B走路径b->c-a
     }
 ```
 
-##### 递归
+#### 递归
 
 ```java
    public ListNode reverseList(ListNode head) {
@@ -52,15 +71,55 @@ B走路径b->c-a
 
 
 
-#### [206.反转链表](https://leetcode.cn/problems/reverse-linked-list)
+### [206.反转链表](https://leetcode.cn/problems/reverse-linked-list)
 
-#### [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii)
+### [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii)
 
-#### [143. 重排链表](https://leetcode.cn/problems/reorder-list)
+### [143. 重排链表](https://leetcode.cn/problems/reorder-list)
 
-#### [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group)
+### [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group)
 
-### 合并排序
+#### 迭代
+
+```java
+public ListNode reverseKGroup(ListNode head, int k) {
+  ListNode res=new ListNode(0);
+  res.next=head;
+  ListNode pre=res;
+  ListNode end=res;
+  while(end.next!=null){
+      for(int i=0;i<k&&end!=null;i++){
+          end=end.next;
+      }
+      if(end==null){
+          break;
+      }
+      ListNode start=pre.next;
+      ListNode next=end.next;
+      end.next=null;
+      pre.next=reverse(start);
+      start.next=next;
+      pre=start;
+      end=pre;
+  }
+  return res.next;
+}
+public ListNode reverse(ListNode head){
+  ListNode temp=head;
+  ListNode node=null;
+  while(temp!=null){
+      ListNode next=temp.next;
+      temp.next=node;
+      node=temp;
+      temp=next;
+  }
+  return node;
+}
+```
+
+
+
+## 合并排序
 
 思路:
 
@@ -68,13 +127,32 @@ B走路径b->c-a
 2.  分治 
 3.  最小堆
 
-#### [ 21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists)
+### [ 21. 合并两个有序链表](https://leetcode.cn/problems/merge-two-sorted-lists)
 
-#### [23. 合并K个排序链表](https://leetcode.cn/problems/merge-k-sorted-lists)
+#### 递归
 
-### 排序
+```java
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        while(list1!=null&&list2!=null){
+            if(list1.val>list2.val){
+              list2.next=mergeTwoLists(list1,list2.next);
+              return list2;
+            }else{
+              list1.next=mergeTwoLists(list1.next,list2);
+              return list1;
+            }
+        }
+        return list1!=null?list1:list2;
+    }
+```
 
-#### [148. 排序链表](https://leetcode.cn/problems/sort-list)
+
+
+### [23. 合并K个排序链表](https://leetcode.cn/problems/merge-k-sorted-lists)
+
+## 排序
+
+### [148. 排序链表](https://leetcode.cn/problems/sort-list)
 
 思路:
 
@@ -86,7 +164,7 @@ B走路径b->c-a
 
 <!-- tabs:start -->
 
-##### **递归归并**
+#### **递归归并**
 
 ```java
  public ListNode sortList(ListNode head) {
@@ -124,7 +202,7 @@ B走路径b->c-a
 
 
 
-##### **迭代版归并**
+#### **迭代版归并**
 
 ```java
   public ListNode sortList(ListNode head) {
@@ -161,7 +239,7 @@ B走路径b->c-a
 
 
 
-##### **快排**
+#### **快排**
 
 ```java
   public ListNode sortList(ListNode head) {
@@ -207,11 +285,11 @@ B走路径b->c-a
 
 <!-- tabs:end -->
 
-### 快慢指针
+## 快慢指针
 
-#### [19. 删除链表的倒数第N个节点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list)
+### [19. 删除链表的倒数第N个节点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list)
 
-#### [剑指 Offer 22. 链表中倒数第k个节点 ](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/submissions/389911593/)
+### [剑指 Offer 22. 链表中倒数第k个节点 ](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/submissions/389911593/)
 
 ```java
  public ListNode getKthFromEnd(ListNode head, int k) {
@@ -229,7 +307,7 @@ B走路径b->c-a
     }
 ```
 
-#### [234. 回文链表 ](https://leetcode.cn/problems/palindrome-linked-list/description/)
+### [234. 回文链表 ](https://leetcode.cn/problems/palindrome-linked-list/description/)
 
 ```java
  public boolean isPalindrome(ListNode head) {
@@ -262,7 +340,7 @@ B走路径b->c-a
     }
 ```
 
-#### [876. 链表的中间结点 - 力扣（Leetcode）](https://leetcode.cn/problems/middle-of-the-linked-list/description/)
+### [876. 链表的中间结点 - 力扣（Leetcode）](https://leetcode.cn/problems/middle-of-the-linked-list/description/)
 
 ```java
     public ListNode middleNode(ListNode head) {
@@ -278,19 +356,19 @@ B走路径b->c-a
 
 
 
-### 删除重复节点
+## 删除重复节点
 
 [83. 删除排序链表中的重复元素](https://leetcode.cn/problems/remove-duplicates-from-sorted-list/)
 
 
 
-#### [82. 删除排序链表中的重复元素 II ](https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/description/?languageTags=java)
+### [82. 删除排序链表中的重复元素 II ](https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/description/?languageTags=java)
 
 思路:
 
 <!-- tabs:start -->
 
-##### **迭代**
+#### **迭代**
 
 ```java
  public ListNode deleteDuplicates(ListNode head) {
@@ -310,7 +388,7 @@ B走路径b->c-a
     }
 ```
 
-##### **递归**
+#### **递归**
 
 ```java
 ```
@@ -319,13 +397,13 @@ B走路径b->c-a
 
 <!-- tabs:end -->
 
-### 两两交换
+## 两两交换
 
-#### [ 24. 两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs)
+### [ 24. 两两交换链表中的节点](https://leetcode.cn/problems/swap-nodes-in-pairs)
 
 <!-- tabs:start -->
 
-##### **迭代**
+#### **迭代**
 
 具体而言，交换之前的节点关系是 temp -> node1 -> node2，交换之后的节点关系要变成 temp -> node2 -> node1，因此需要进行如下操作。
 完成上述操作之后，节点关系即变成 temp -> node2 -> node1。再令 temp = node1，对链表中的其余节点进行两两交换，直到全部节点都被两两交换。
@@ -350,7 +428,7 @@ B走路径b->c-a
     }
 ```
 
-##### **递归**
+#### **递归**
 
 ```java
     public ListNode swapPairs(ListNode head) {
@@ -366,7 +444,7 @@ B走路径b->c-a
 
 <!-- tabs:end -->
 
-#### [328. 奇偶链表](https://leetcode.cn/problems/odd-even-linked-list)
+### [328. 奇偶链表](https://leetcode.cn/problems/odd-even-linked-list)
 
 ```java
   public ListNode oddEvenList(ListNode head) {
@@ -389,13 +467,13 @@ B走路径b->c-a
 
 
 
-### 二叉搜索树与双向链表
+## 二叉搜索树与双向链表
 
-#### [114. 二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list)
+### [114. 二叉树展开为链表](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list)
 
 <!-- tabs:start-->
 
-##### **递归**
+#### **递归**
 
 ```java
   TreeNode pre = null;
@@ -421,7 +499,7 @@ B走路径b->c-a
 
 <!-- tabs:end -->
 
-#### 剑指 Offer 36. 二叉搜索树与双向链表
+### 剑指 Offer 36. 二叉搜索树与双向链表
 
 ```java
 Node pre, head;
@@ -451,9 +529,9 @@ void dfs(Node cur) {
 }
 ```
 
-### 补充题
+## 补充题
 
-#### 字节跳动高频题——排序奇升偶降链表
+### 字节跳动高频题——排序奇升偶降链表
 
 给定一个奇数位升序，偶数位降序的链表，将其重新排序。
 
@@ -476,9 +554,9 @@ void dfs(Node cur) {
 
 第2步和第3步分别对应的力扣206. 反转链表和21. 合并两个有序链表，而第1步的解法与328. 奇偶链表差不多。如果搞懂这3道leetcode，那么本篇文章的这道题肯定不在话下了。
 
-### 旋转链表
+## 旋转链表
 
-#### [61. 旋转链表](https://leetcode.cn/problems/rotate-list)
+### [61. 旋转链表](https://leetcode.cn/problems/rotate-list)
 
 ```java
  public ListNode rotateRight(ListNode head, int k) {
@@ -514,9 +592,9 @@ void dfs(Node cur) {
     }
 ```
 
-### 两数相加
+## 两数相加
 
-#### [2. 两数相加 ](https://leetcode.cn/problems/add-two-numbers/submissions/391191673/)
+### [2. 两数相加 ](https://leetcode.cn/problems/add-two-numbers/submissions/391191673/)
 
 ```java
   public ListNode addTwoNumbers(ListNode l1, ListNode l2) {

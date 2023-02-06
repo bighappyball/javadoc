@@ -1,34 +1,150 @@
+二叉树
 
-## 二叉树
+## 层序遍历
 
-### 层序遍历
+### [102.二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/) 
 
-#### [102.二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/) 
+#### 递归
 
-#### [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+```java
+ public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res=new ArrayList();
+        dfs(root,res,0);
+        return res;
+    }
 
-### 前中后序遍历
+    public void dfs(TreeNode root,List<List<Integer>> res,int level){
+        if(root==null){
+            return;
+        }
+        if(res.size()<=level){
+            res.add(new ArrayList());
+        }
+        List<Integer> list=res.get(level);
+        list.add(root.val);
+        dfs(root.left,res,level+1);
+        dfs(root.right,res,level+1);
+    }
+```
+
+#### 队列+迭代
+
+```java
+public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res=new ArrayList<>();
+        if(root==null){
+            return res;
+        }
+        Queue<TreeNode> queue=new LinkedList<TreeNode>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            int size=queue.size();
+            List<Integer> res1=new ArrayList<>();
+            while(size>0){
+               TreeNode temp= queue.poll();
+               if(temp.left!=null){
+                   queue.add(temp.left);
+               }
+               if(temp.right!=null){
+                   queue.add(temp.right);
+               }
+               res1.add(temp.val);
+               size--;
+            }
+            res.add(res1);
+        }
+        return res;
+    }
+```
+
+### [103. 二叉树的锯齿形层序遍历 - 力扣（Leetcode）](https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/)
+
+#### 队列
+
+```java
+  public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        LinkedList<TreeNode> queue=new LinkedList();
+        queue.add(root);
+        List<List<Integer>> res=new ArrayList();
+        if(root==null){
+            return res;
+        }
+        boolean isleft=true;
+        while(queue.size()>0){
+            int size=queue.size();
+            List<Integer> list=new ArrayList();
+            while(size>0){
+                TreeNode node=queue.poll();
+                if(node.left!=null){
+                    queue.add(node.left);
+                }
+                if(node.right!=null){
+                    queue.add(node.right);
+                }
+                if(isleft){
+                    list.add(node.val);
+                }else{
+                    list.add(0,node.val);
+                }
+                size--;
+            }
+             res.add(list);
+             isleft=!isleft;
+        }
+        return res;
+    }
+```
+
+####  递归
+
+```java
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res=new ArrayList();
+        dfs(root,res,0);
+        return res;
+    }
+public void dfs(TreeNode root,List<List<Integer>> res,int level){
+    if(root==null){
+        return;
+    }
+    if(res.size()<=level){
+        res.add(new ArrayList());
+    }
+    List<Integer> list = res.get(level);
+    if(level%2==0){
+        list.add(root.val);
+    }else{
+        list.add(0,root.val);
+    }
+    dfs(root.left,res,level+1);
+    dfs(root.right,res,level+1);
+}
+```
+
+### [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+
+## 前中后序遍历
 
 思路:
 1. 前序遍历的方式是：首先访问根节点，然后访问左子树，最后访问右子树。
 2. 中序遍历的方式是：首先访问左子树，接着访问根结点，最后访问右子树。
 3. 后序遍历的方式是：首先访问左子树，接着访问右子树，最后访问根结点。
 
-#### [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
+### [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
 
-### 二叉树翻转
+## 二叉树翻转
 
-#### [27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
+### [27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
 
-### 二叉树转链表
+## 二叉树转链表
 
-#### [114. 二叉树展开为链表 - 力扣（Leetcode）](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
+### [114. 二叉树展开为链表 - 力扣（Leetcode）](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
 
 [思路](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
 
 <!-- tabs:start -->
 
-##### **迭代**
+#### **迭代**
 
 ```java
    public void flatten(TreeNode root) {
@@ -53,7 +169,7 @@
     }
 ```
 
-##### **递归**
+#### **递归**
 
 ```java
     TreeNode pre=null;
@@ -69,9 +185,9 @@
 
 <!-- tabs:end -->
 
-### 二叉树相同问题
+## 二叉树相同问题
 
-#### [572. 另一棵树的子树 - 力扣（Leetcode）](https://leetcode.cn/problems/subtree-of-another-tree/submissions/393152860/)
+### [572. 另一棵树的子树 - 力扣（Leetcode）](https://leetcode.cn/problems/subtree-of-another-tree/submissions/393152860/)
 
 ```java
 public boolean isSubtree(TreeNode root, TreeNode subRoot) {
@@ -98,26 +214,26 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
 
 
-### 构造二叉树
+## 构造二叉树
 
 前序找根，中序来分。意思是每次都可以通过前序找到根节点，再用中序遍历确定新的左右子树的范围，最后递归这个过程就可以了。
 
 
-### 平衡二叉树
+## 平衡二叉树
 
 一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1 。
 
-#### [110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)  
+### [110. 平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)  
 
 用递归方法和后序遍历写
 
-### 完全二叉树
+## 完全二叉树
 
 在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2h 节点之间的最后一级 h 。
 
-#### [222. 完全二叉树的节点个数 - 力扣（Leetcode）](https://leetcode.cn/problems/count-complete-tree-nodes/description/)
+### [222. 完全二叉树的节点个数 - 力扣（Leetcode）](https://leetcode.cn/problems/count-complete-tree-nodes/description/)
 
-##### 二分查找 + 位运算
+#### 二分查找 + 位运算
 
 ```java
  public int countNodes(TreeNode root) {
@@ -160,7 +276,7 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
 
 
-### 二叉搜索树
+## 二叉搜索树
 
 **有效** 二叉搜索树定义如下：
 
@@ -168,7 +284,7 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 - 节点的右子树只包含 **大于** 当前节点的数。
 - 所有左子树和右子树自身必须也是二叉搜索树。
 
-#### [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree)
+### [98. 验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree)
 
 ```java
  public boolean isValidBST(TreeNode root) {
@@ -185,7 +301,7 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
         return isValidBST(node.left, lower, node.val) && isValidBST(node.right, node.val, upper);
     }
 ```
-#### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/description/)
+### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/description/)
 ```java
 class Solution {
     int res,k;
@@ -209,9 +325,9 @@ class Solution {
 }
 ```
 
-#### [230. 二叉搜索树中第K小的元素 - 力扣（Leetcode）](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/submissions/392807490/)
+### [230. 二叉搜索树中第K小的元素 - 力扣（Leetcode）](https://leetcode.cn/problems/kth-smallest-element-in-a-bst/submissions/392807490/)
 
-#### [450. 删除二叉搜索树中的节点 - 力扣（Leetcode）](https://leetcode.cn/problems/delete-node-in-a-bst/submissions/393132436/)
+### [450. 删除二叉搜索树中的节点 - 力扣（Leetcode）](https://leetcode.cn/problems/delete-node-in-a-bst/submissions/393132436/)
 
 ```java
   public TreeNode deleteNode(TreeNode root, int key) {
@@ -246,15 +362,15 @@ class Solution {
 
 
 
-### 最大/最小问题
+## 最大/最小问题
 
-#### [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
+### [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 
-#### [111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
+### [111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
 
-### 路径和问题
+## 路径和问题
 
-#### [112. 路径总和](https://leetcode.cn/problems/path-sum)
+### [112. 路径总和](https://leetcode.cn/problems/path-sum)
 
 ```java
     public boolean hasPathSum(TreeNode root, int targetSum) {
@@ -270,13 +386,13 @@ class Solution {
 
 
 
-### 回溯算法
+## 回溯算法
 
-#### [二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
+### [二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/description/)
 
-#### [二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
+### [二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
 
-#### [路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
+### [路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
 
 ```java
   List<List<Integer>> res=new ArrayList();
@@ -300,7 +416,7 @@ class Solution {
     }
 ```
 
-#### [863. 二叉树中所有距离为 K 的结点 - 力扣（Leetcode）](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/description/)
+### [863. 二叉树中所有距离为 K 的结点 - 力扣（Leetcode）](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/description/)
 
 ```java
  Map<Integer, TreeNode> parents = new HashMap<Integer, TreeNode>();
@@ -350,9 +466,9 @@ class Solution {
 
 
 
-### 构造二叉树
+## 构造二叉树
 
-#### [思路](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
+### [思路](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/15244/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by--22/)
 
 解法一、递归  
 先序遍历的顺序是根节点，左子树，右子树。中序遍历的顺序是左子树，根节点，右子树。
@@ -455,34 +571,49 @@ class Solution {
     }
 ```
 
-#### [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
+### [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
 
-###  最近的共同祖先
+##  最近的共同祖先
 
-思路: 
+> 思路: 
+>
+> 考虑通过递归对二叉树进行先序遍历，当遇到节点 p 或 q时返回。从底至顶回溯，当节点 p,q 在节点 root的异侧时，节点 root 即为最近公共祖先，则向上返回 root 。递归解析：
+>
+> 终止条件：  
+> 1. 当越过叶节点，则直接返回 null ；
+> 2. 当 root 等于 p,q ，则直接返回 root；
+> 递推工作：
+> 1. 开启递归左子节点，返回值记为 left ；
+> 2. 开启递归右子节点，返回值记为 right ；
+> 返回值： 根据 开启递归左子节点，返回值记为 left ；和 right ，可展开为四种情况；
+> 1. 当 left 和 right同时为空 ：说明 root 的左 / 右子树中都不包含 p,q ，返回 null；
+> 2. 当 left 和 right同时不为空 ：说明 p,q分列在 root 的 异侧 （分别在 左 / 右子树），因此 rootrootroot 为最近公共祖先，返回 root；
+> 3. 当 left 为空 ，right 不为空 ：p,q 都不在 root的左子树中，直接返回 right。具体可分为两种情况：
+>     1. p,q其中一个在 root 的 右子树 中，此时 right 指向 p（假设为 p ）； p,q两节点都在 root的 右子树 中，此时的 right指向 最近公共祖先节点 ；
+>     2. 当 left 不为空 ， right为空 ：与情况 3. 同理；
+>
 
-考虑通过递归对二叉树进行先序遍历，当遇到节点 p 或 q时返回。从底至顶回溯，当节点 p,q 在节点 root的异侧时，节点 root 即为最近公共祖先，则向上返回 root 。
+```java
+ public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+         if(root==null||root==p||root==q){
+             return root;
+         }
+         TreeNode left=lowestCommonAncestor(root.left,p,q);
+         TreeNode right=lowestCommonAncestor(root.right,p,q);
+         if(left!=null&&right!=null){
+            return root;
+         }
+        return left!=null?left:right;
+    }
+```
 
-递归解析：
 
-终止条件：  
-1. 当越过叶节点，则直接返回 null ；
-2. 当 root 等于 p,q ，则直接返回 root；
-递推工作：
-1. 开启递归左子节点，返回值记为 left ；
-2. 开启递归右子节点，返回值记为 right ；
-返回值： 根据 开启递归左子节点，返回值记为 left ；和 right ，可展开为四种情况；
-1. 当 left 和 right同时为空 ：说明 root 的左 / 右子树中都不包含 p,q ，返回 null；
-2. 当 left 和 right同时不为空 ：说明 p,q分列在 root 的 异侧 （分别在 左 / 右子树），因此 rootrootroot 为最近公共祖先，返回 root；
-3. 当 left 为空 ，right 不为空 ：p,q 都不在 root的左子树中，直接返回 right。具体可分为两种情况：
-    1. p,q其中一个在 root 的 右子树 中，此时 right 指向 p（假设为 p ）； p,q两节点都在 root的 右子树 中，此时的 right指向 最近公共祖先节点 ；
-    2. 当 left 不为空 ， right为空 ：与情况 3. 同理；
 
-#### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
+### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
 
-### 前缀树
+## 前缀树
 
-#### [208. 实现 Trie (前缀树) - 力扣（Leetcode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+### [208. 实现 Trie (前缀树) - 力扣（Leetcode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
 
 ```java
 class Trie {

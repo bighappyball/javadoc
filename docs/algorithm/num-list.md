@@ -119,24 +119,62 @@ Boyer-Moore 算法的本质和方法四中的分治十分类似。我们首先�
 
 ## 二分查找
 
-### [704. 二分查找 ](https://leetcode.cn/problems/binary-search/)
+### [16. 最接近的三数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/3sum-closest/submissions/393761930/)
 
 ```java
- public int search(int[] nums, int target) {
+// 思路 : 排序加二分查找  
+public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int closestNum = nums[0] + nums[1] + nums[2];
+        for(int i=0;i<nums.length-2;i++){
+            int left=i+1,right=nums.length-1;
+            while(left<right){
+                int sum=nums[i]+nums[left]+nums[right];
+                if (Math.abs(sum - target) < Math.abs(closestNum - target)) {
+                    closestNum = sum;
+                }
+                if(sum>target){
+                    right--;
+                }else if(sum<target){
+                    left++;
+                }else{
+                    return sum;
+                }
+            }
+        }
+        return closestNum;
+
+    }
+```
+
+### [33. 搜索旋转排序数组 - 力扣（Leetcode）](https://leetcode.cn/problems/search-in-rotated-sorted-array/)
+
+```java
+public int search(int[] nums, int target) {
         int left=0,right=nums.length-1;
         while(left<=right){
-            int mid=left+(right-left)/2;
+            int mid=(left+right)/2;
             if(nums[mid]==target){
                 return mid;
-            }else if(nums[mid]>target){
-                right=mid-1;
-            }else{
-                left=mid+1;
+            }else if(nums[mid]<nums[right]){
+                if(nums[mid]<target&&target<=nums[right]){
+                    left=mid+1;
+                }else{
+                    right=mid-1;
+                }
+            }else {
+                if(nums[mid]>target&&target>=nums[left]){
+                    right=mid-1;
+                }else{
+                    left=mid+1;
+                }
             }
         }
         return -1;
     }
 ```
+
+
 
 ### [69. x 的平方根 ](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
 
@@ -173,60 +211,10 @@ Boyer-Moore 算法的本质和方法四中的分治十分类似。我们首先�
         return x1;
     }    
 ```
-
-### [153. 寻找旋转排序数组中的最小值 ](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
-
-```java
-  public int findMin(int[] nums) {
-        int left=0,right=nums.length-1;
-        while(left<right){
-            int mid=left+(right-left)/2;
-            if(nums[mid]<nums[right]){
-                right=mid;
-            }else {
-                left=mid+1;
-            }
-        }
-        return nums[left];
-    }
-```
-
 ### [74. 搜索二维矩阵 - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix/submissions/392791330/)
-### [16. 最接近的三数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/3sum-closest/submissions/393761930/)
 
 ```java
-// 思路 : 排序加二分查找  
-public int threeSumClosest(int[] nums, int target) {
-        Arrays.sort(nums);
-        int closestNum = nums[0] + nums[1] + nums[2];
-        for(int i=0;i<nums.length-2;i++){
-            int left=i+1,right=nums.length-1;
-            while(left<right){
-                int sum=nums[i]+nums[left]+nums[right];
-                if (Math.abs(sum - target) < Math.abs(closestNum - target)) {
-                    closestNum = sum;
-                }
-                if(sum>target){
-                    right--;
-                }else if(sum<target){
-                    left++;
-                }else{
-                    return sum;
-                }
-            }
-        }
-        return closestNum;
-
-    }
-```
-
-
-
-
-
-
-```java
-   public boolean searchMatrix(int[][] matrix, int target) {
+ public boolean searchMatrix(int[][] matrix, int target) {
         int index=searchColumn(matrix,target);
         System.out.println(index);
         if(index<0){
@@ -263,6 +251,31 @@ public int threeSumClosest(int[] nums, int target) {
         return false;
     }
 ```
+
+
+
+### [153. 寻找旋转排序数组中的最小值 ](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
+
+```java
+  public int findMin(int[] nums) {
+        int left=0,right=nums.length-1;
+        while(left<right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]<nums[right]){
+                right=mid;
+            }else {
+                left=mid+1;
+            }
+        }
+        return nums[left];
+    }
+```
+
+
+
+
+
+
 
 ### [400. 第 N 位数字 - 力扣（Leetcode）](https://leetcode.cn/problems/nth-digit/solutions/1128000/di-n-wei-shu-zi-by-leetcode-solution-mdl2/)
 
@@ -324,7 +337,24 @@ public int threeSumClosest(int[] nums, int target) {
     }
 ```
 
+### [704. 二分查找 ](https://leetcode.cn/problems/binary-search/)
 
+```java
+ public int search(int[] nums, int target) {
+        int left=0,right=nums.length-1;
+        while(left<=right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]==target){
+                return mid;
+            }else if(nums[mid]>target){
+                right=mid-1;
+            }else{
+                left=mid+1;
+            }
+        }
+        return -1;
+    }
+```
 
 
 
@@ -368,6 +398,24 @@ public int threeSumClosest(int[] nums, int target) {
         nums[b]=temp;
     }
 ```
+
+### [88. 合并两个有序数组 - 力扣（Leetcode）](https://leetcode.cn/problems/merge-sorted-array/)
+
+```java
+   public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int len=m+n-1;
+        m--;n--;
+        while(n>=0){
+            if(m>=0&&nums1[m]>nums2[n]){
+                nums1[len--]=nums1[m--];
+            }else{
+                nums1[len--]=nums2[n--];
+            }
+        }
+    }
+```
+
+
 
 ### [344. 反转字符串 - 力扣（Leetcode）](https://leetcode.cn/problems/reverse-string/submissions/394527384/)
 
@@ -453,6 +501,42 @@ public int threeSumClosest(int[] nums, int target) {
  }
 ```
 
+## 岛屿问题
+
+### [200. 岛屿数量 - 力扣（Leetcode）](https://leetcode.cn/problems/number-of-islands/)
+
+> 思路：遍历岛这个二维数组，如果当前数为1，则进入感染函数并将岛个数+1
+> 感染函数：其实就是一个递归标注的过程，它会将所有相连的1都标注成2。为什么要标注？
+> 这样就避免了遍历过程中的重复计数的情况，一个岛所有的1都变成了2后，遍历的时候就不会重复遍历了。
+> 建议没想明白的同学画个图看看。
+
+```java
+ public int numIslands(char[][] grid) {
+        int islandNum = 0;
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid[0].length; j++){
+                if(grid[i][j] == '1'){
+                    infect(grid, i, j);
+                    islandNum++;
+                }
+            }
+        }
+        return islandNum;
+    }
+    //感染函数
+    public void infect(char[][] grid, int i, int j){
+        if(i < 0 || i >= grid.length ||
+           j < 0 || j >= grid[0].length || grid[i][j] != '1'){
+            return;
+        }
+        grid[i][j] = '2';
+        infect(grid, i + 1, j);
+        infect(grid, i - 1, j);
+        infect(grid, i, j + 1);
+        infect(grid, i, j - 1);
+    }
+```
+
 ### [59. 螺旋矩阵 II ](https://leetcode.cn/problems/spiral-matrix-ii/description/)
 
 ```java
@@ -528,6 +612,35 @@ public int threeSumClosest(int[] nums, int target) {
 
 
 ## 栈或队列
+
+### [20. 有效的括号 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-parentheses/)
+
+#### 栈
+
+```java
+    public boolean isValid(String s) {
+        LinkedList<Character> stack=new LinkedList();
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(c=='('){
+                stack.push(')');
+            }
+            else if(c=='{'){
+                stack.push('}');
+            }
+            else if(c=='['){
+                stack.push(']');
+            }else{
+                if(stack.isEmpty()||!stack.pop().equals(c)){
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+```
+
+
 
 ### [232. 用栈实现队列 ](https://leetcode.cn/problems/implement-queue-using-stacks/)
 
@@ -1299,6 +1412,37 @@ public int lengthOfLongestSubstring(String s) {
 
 
 ## 双指针问题
+
+### [15. 三数之和 - 力扣（Leetcode）](https://leetcode.cn/problems/3sum/)
+
+#### 双指针去重
+
+```java
+public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        for(int k = 0; k < nums.length - 2; k++){
+            if(nums[k] > 0) break;
+            if(k > 0 && nums[k] == nums[k - 1]) continue;
+            int i = k + 1, j = nums.length - 1;
+            while(i < j){
+                int sum = nums[k] + nums[i] + nums[j];
+                if(sum < 0){
+                    while(i < j && nums[i] == nums[++i]);
+                } else if (sum > 0) {
+                    while(i < j && nums[j] == nums[--j]);
+                } else {
+                    res.add(new ArrayList<Integer>(Arrays.asList(nums[k], nums[i], nums[j])));
+                    while(i < j && nums[i] == nums[++i]);
+                    while(i < j && nums[j] == nums[--j]);
+                }
+            }
+        }
+        return res;
+    }
+```
+
+
 
 ### [349. 两个数组的交集 - 力扣（Leetcode）](https://leetcode.cn/problems/intersection-of-two-arrays/description/)
 
