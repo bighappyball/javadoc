@@ -692,18 +692,17 @@ protected MultithreadEventExecutorGroup(int nThreads, Executor executor, Object.
  72: }
 ```
 
-- 每个属性的定义，胖友直接看代码注释。
-- 方法参数`executor`，执行器。详细解析，见「5.2 ThreadPerTaskExecutor」
+每个属性的定义，胖友直接看代码注释。方法参数`executor`，执行器。详细解析，见「5.2 ThreadPerTaskExecutor」
   - 第 6 至 9 行：若 `executor` 为空，则创建执行器。
-- 第 12 行：创建 EventExecutor 数组。
+  - 第 12 行：创建 EventExecutor 数组。
   - 第 18 行：调用 `#newChild(Executor executor, Object... args)` 方法，创建 EventExecutor 对象，然后设置到数组中。
   - 第 21 至 24 行：创建失败，抛出 IllegalStateException 异常。
   - 第 25 至 45 行：创建失败，关闭所有已创建的 EventExecutor 。
-- 第 50 行：调用 `EventExecutorChooserFactory#newChooser(EventExecutor[] executors)` 方法，创建 EventExecutor 选择器。详细解析，见 [「5.3 EventExecutorChooserFactory」](http://svip.iocoder.cn/Netty/EventLoop-2-EventLoopGroup/#) 。
-- 第 52 至 62 行：创建监听器，用于 EventExecutor 终止时的监听。
+  - 第 50 行：调用 `EventExecutorChooserFactory#newChooser(EventExecutor[] executors)` 方法，创建 EventExecutor 选择器。详细解析，见 [「5.3 EventExecutorChooserFactory」](http://svip.iocoder.cn/Netty/EventLoop-2-EventLoopGroup/#) 。
+  - 第 52 至 62 行：创建监听器，用于 EventExecutor 终止时的监听。
   - 第 55 至 60 行：回调的具体逻辑是，当所有 EventExecutor 都终止完成时，通过调用 `Future#setSuccess(V result)` 方法，通知监听器们。至于为什么设置的值是 `null` ，因为监听器们不关注具体的结果。
   - 第 63 至 66 行：设置监听器到每个 EventExecutor 上。
-- 第 68 至 71 行：创建不可变( 只读 )的 EventExecutor 数组。
+  - 第 68 至 71 行：创建不可变( 只读 )的 EventExecutor 数组。
 
 #### 5.2 ThreadPerTaskExecutor
 
@@ -1013,14 +1012,7 @@ protected MultithreadEventLoopGroup(int nThreads, Executor executor, EventExecut
 }
 ```
 
-- ```
-  DEFAULT_EVENT_LOOP_THREADS
-  ```
-
-   
-
-  属性，EventLoopGroup 默认拥有的 EventLoop 数量。因为一个 EventLoop 对应一个线程，所以为 CPU 数量 * 2 。
-
+- DEFAULT_EVENT_LOOP_THREADS 属性，EventLoopGroup 默认拥有的 EventLoop 数量。因为一个 EventLoop 对应一个线程，所以为 CPU 数量 * 2 。
   - 为什么会 * 2 呢？因为目前 CPU 基本都是超线程，**一个 CPU 可对应 2 个线程**。
   - 在构造方法未传入 `nThreads` 方法参数时，使用 `DEFAULT_EVENT_LOOP_THREADS` 。
 
@@ -1144,17 +1136,7 @@ public NioEventLoopGroup(int nThreads, Executor executor, EventExecutorChooserFa
 }
 ```
 
-- 构造方法比较多，主要是明确了父构造方法的
-
-   
-
-  ```
-  Object ... args
-  ```
-
-   
-
-  方法参数：
+- 构造方法比较多，主要是明确了父构造方法的`Object ... args` 方法参数：
 
   - 第一个参数，`selectorProvider` ，`java.nio.channels.spi.SelectorProvider` ，用于创建 Java NIO Selector 对象。
   - 第二个参数，`selectStrategyFactory` ，`io.netty.channel.SelectStrategyFactory` ，选择策略工厂。详细解析，见后续文章。
@@ -1689,13 +1671,7 @@ protected SingleThreadEventExecutor(EventExecutorGroup parent, Executor executor
 
 - 属性比较多，我们耐心往下看。
 
-- ```
-  taskQueue
-  ```
-
-   
-
-  属性，任务队列。
+- `taskQueue`属性，任务队列。
 
   - `addTaskWakesUp` 属性，添加任务到 `taskQueue` 队列时，是否唤醒 `thread` 线程。详细解析，见 [「8.11 execute」](http://svip.iocoder.cn/Netty/EventLoop-3-EventLoop-init/#) 。
   - `maxPendingTasks` 属性，最大等待执行任务数量，即 `taskQueue` 队列大小。
@@ -1713,7 +1689,7 @@ protected SingleThreadEventExecutor(EventExecutorGroup parent, Executor executor
 
   - `state` 属性，线程状态。SingleThreadEventExecutor 在实现上，`thread` 的初始化采用延迟启动的方式，只有在第一个任务时，`executor` 才会执行并创建该线程，从而节省资源。目前 `thread` 线程有 5 种状态，代码如下：
 
-    ```
+    ```java
     private static final int ST_NOT_STARTED = 1; // 未开始
     private static final int ST_STARTED = 2; // 已开始
     private static final int ST_SHUTTING_DOWN = 3; // 正在关闭中
@@ -1965,60 +1941,23 @@ public static RejectedExecutionHandler backoff(final int retries, long backoffAm
 
 - 第 11 行：非 EventLoop 的线程
 
-  - 第 13 行：调用 `#startThread()` 方法，启动 EventLoop **独占**的线程，即 `thread` 属性。详细解析，见 [「8.12 startThread」](http://svip.iocoder.cn/Netty/EventLoop-3-EventLoop-init/#) 。
-  - 第 14 至 17 行：若已经关闭，则移除任务，并拒绝执行。
+- 第 13 行：调用 `#startThread()` 方法，启动 EventLoop **独占**的线程，即 `thread` 属性。详细解析，见 [「8.12 startThread」](http://svip.iocoder.cn/Netty/EventLoop-3-EventLoop-init/#) 。
+
+- 第 14 至 17 行：若已经关闭，则移除任务，并拒绝执行。
 
 - 第 20 至 23 行：调用 `#wakeup(boolean inEventLoop)` 方法，唤醒线程。详细解析，见 [「8.13 wakeup」](http://svip.iocoder.cn/Netty/EventLoop-3-EventLoop-init/#) 。
 
-  - 等等，第 21 行的
+- 等等，第 21 行的 `!addTaskWakesUp`有点奇怪，不是说好的`addTaskWakesUp`表示“添加任务时，是否唤醒线程”？！但是，怎么使用
 
-     
+   `!`取反了。这样反倒变成了，“添加任务时，是否【不】唤醒线程”。具体的原因是为什么呢？笔者 Google、Github Netty Issue、和基佬讨论，都未找到解答。目前笔者的理解是：
 
-    ```
-    !addTaskWakesUp
-    ```
+  `addTaskWakesUp`真正的意思是，“添加任务后，任务是否会自动导致线程唤醒”。为什么呢？
 
-     
-
-    有点奇怪，不是说好的
-
-     
-
-    ```
-    addTaskWakesUp
-    ```
-
-     
-
-    表示“添加任务时，是否唤醒线程”？！但是，怎么使用
-
-     
-
-    ```
-    !
-    ```
-
-     
-
-    取反了。这样反倒变成了，“添加任务时，是否【
-
-    不
-
-    】唤醒线程”。具体的原因是为什么呢？笔者 Google、Github Netty Issue、和基佬讨论，都未找到解答。目前笔者的理解是：
-
-    ```
-    addTaskWakesUp
-    ```
-
-     
-
-    真正的意思是，“添加任务后，任务是否会自动导致线程唤醒”。为什么呢？
-
-    - 对于 Nio 使用的 NioEventLoop ，它的线程执行任务是基于 Selector 监听感兴趣的事件，所以当任务添加到 `taskQueue` 队列中时，线程是无感知的，所以需要调用 `#wakeup(boolean inEventLoop)` 方法，进行**主动**的唤醒。
-    - 对于 Oio 使用的 ThreadPerChannelEventLoop ，它的线程执行是基于 `taskQueue` 队列监听( **阻塞拉取** )事件和任务，所以当任务添加到 `taskQueue` 队列中时，线程是可感知的，相当于说，进行**被动**的唤醒。
-    - 感谢闪电侠，证实我的理解是正确的。参见：
-      - https://github.com/netty/netty/commit/23d017849429c18e1890b0a5799e5262df4f269f
-        - ![image-20230111174711997](../../_media/analysis/netty/image-20230111174711997.png)
+  - 对于 Nio 使用的 NioEventLoop ，它的线程执行任务是基于 Selector 监听感兴趣的事件，所以当任务添加到 `taskQueue` 队列中时，线程是无感知的，所以需要调用 `#wakeup(boolean inEventLoop)` 方法，进行**主动**的唤醒。
+  - 对于 Oio 使用的 ThreadPerChannelEventLoop ，它的线程执行是基于 `taskQueue` 队列监听( **阻塞拉取** )事件和任务，所以当任务添加到 `taskQueue` 队列中时，线程是可感知的，相当于说，进行**被动**的唤醒。
+  - 感谢闪电侠，证实我的理解是正确的。参见：
+    - https://github.com/netty/netty/commit/23d017849429c18e1890b0a5799e5262df4f269f
+      - ![image-20230111174711997](../../_media/analysis/netty/image-20230111174711997.png)
 
   - 调用 `#wakesUpForTask(task)` 方法，判断该任务是否需要唤醒线程。代码如下：
 
@@ -2235,15 +2174,15 @@ protected void interruptThread() {
 
 - 第 2 至 3 行：获得 ThreadProperties 对象。若不存在，则进行创建 ThreadProperties 对象。
 
-  - 第 4 至 5 行：获得 EventLoop 的线程。因为线程是延迟启动的，所以会出现线程为空的情况。若线程为空，则需要进行创建。
+- 第 4 至 5 行：获得 EventLoop 的线程。因为线程是延迟启动的，所以会出现线程为空的情况。若线程为空，则需要进行创建。
 
-    - 第 8 行：调用 `#submit(Runnable)` 方法，提交任务，就能促使 `#execute(Runnable)` 方法执行。如下图所示：
+- 第 8 行：调用 `#submit(Runnable)` 方法，提交任务，就能促使 `#execute(Runnable)` 方法执行。如下图所示：
 
-      ![image-20230111174751293](../../_media/analysis/netty/image-20230111174751293.png)
+  ![image-20230111174751293](../../_media/analysis/netty/image-20230111174751293.png)
 
-    - 第 8 行：调用 `Future#syncUninterruptibly()` 方法，保证 `execute()` 方法中**异步**创建 `thread` 完成。
+  - 第 8 行：调用 `Future#syncUninterruptibly()` 方法，保证 `execute()` 方法中**异步**创建 `thread` 完成。
 
-    - 第 10 至 11 行：获得线程，并断言保证线程存在。
+  - 第 10 至 11 行：获得线程，并断言保证线程存在。
 
   - 第 15 行：调用 DefaultThreadProperties 对象。
 
@@ -2338,7 +2277,7 @@ private static final class DefaultThreadProperties implements ThreadProperties {
 
 `#run()` 方法，它是一个**抽象方法**，由子类实现，如何执行 `taskQueue` 队列中的任务。代码如下：
 
-```
+```java
 protected abstract void run();
 ```
 
@@ -2603,19 +2542,9 @@ public int pendingTasks() {
 
 - 第 4 至 7 行：SingleThreadEventLoop 关闭时，拒绝任务。
 
-- 第 10 行：调用
+- 第 10 行：调用`Queue#offer(E e)`方法，添加任务到队列中。
 
-   
-
-  ```
-  Queue#offer(E e)
-  ```
-
-   
-
-  方法，添加任务到队列中。
-
-  - 第 12 行：若添加失败，调用 `#reject(Runnable task)` 方法，拒绝任务。
+- 第 12 行：若添加失败，调用 `#reject(Runnable task)` 方法，拒绝任务。
 
 - 第 15 至 18 行：唤醒线程。
 
@@ -2763,16 +2692,9 @@ static {
 
 - `DISABLE_KEYSET_OPTIMIZATION` 属性，是否禁用 SelectionKey 的优化，默认开启。详细解析，见 [《精尽 Netty 源码解析 —— EventLoop（五）之 EventLoop 处理 IO 事件》](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event?self) 。
 
-- ```
-  SELECTOR_AUTO_REBUILD_THRESHOLD
-  ```
-
-   
-
-  属性，NIO Selector 空轮询该 N 次后，重建新的 Selector 对象，用以解决 JDK NIO 的 epoll 空轮询 Bug 。
-
+- `SELECTOR_AUTO_REBUILD_THRESHOLD`属性，NIO Selector 空轮询该 N 次后，重建新的 Selector 对象，用以解决 JDK NIO 的 epoll 空轮询 Bug 。
   - `MIN_PREMATURE_SELECTOR_RETURNS` 属性，少于该 N 值，不开启空轮询重建新的 Selector 对象的功能。
-
+  
 - `<1>` 处，解决 `Selector#open()` 方法，发生 NullPointException 异常。详细解析，见 http://bugs.sun.com/view_bug.do?bug_id=6427854 和 https://github.com/netty/netty/issues/203 。
 
 - `<2>` 处，初始化 `SELECTOR_AUTO_REBUILD_THRESHOLD` 属性。默认 512 。
@@ -3060,163 +2982,43 @@ protected void wakeup(boolean inEventLoop) {
 
 - 第 3 行：“死”循环，直到 NioEventLoop 关闭，即【第 78 至 89 行】的代码。
 
-- 第 5 行：调用
-
-   
-
-  ```
-  SelectStrategy#calculateStrategy(IntSupplier selectSupplier, boolean hasTasks)
-  ```
-
-   
-
-  方法，获得使用的 select 策略。详细解析，胖友先跳到
-
-   
-
-  「2.10 SelectStrategy」
-
-   
-
-  中研究。😈 看完回来。
+- 第 5 行：调用`SelectStrategy#calculateStrategy(IntSupplier selectSupplier, boolean hasTasks)`方法，获得使用的 select 策略。详细解析，胖友先跳到「2.10 SelectStrategy」中研究。😈 看完回来。
 
   - 我们知道 `SelectStrategy#calculateStrategy(...)` 方法，有 3 种返回的情况。
 
   - 第 6 至 7 行：第一种，`SelectStrategy.CONTINUE` ，默认实现下，不存在这个情况。
-
-  - 第 8 至 44 行：第二种，
-
-    ```
-    SelectStrategy.SELECT
-    ```
-
-     
-
-    ，进行 Selector
-
-     
-
-    阻塞
-
-     
-
-    select 。
+  
+  - 第 8 至 44 行：第二种，`SelectStrategy.SELECT`，进行 Selector阻塞select 。
 
     - 第 11 行：重置 `wakeUp` 标识为 `false` ，并返回修改前的值。
-
+  
     - 第 11 行：调用 `#select(boolean oldWakeUp)` 方法，选择( 查询 )任务。直接看这个方法不能完全表达出该方法的用途，所以详细解析，见 [「2.12 select」](http://svip.iocoder.cn/Netty/EventLoop-4-EventLoop-run/#) 。
 
-    - 第 41 至 44 行：若唤醒标识
-
-       
-
-      ```
-      wakeup
-      ```
-
-       
-
-      为
-
-       
-
-      ```
-      true
-      ```
-
-       
-
-      时，调用
-
-       
-
-      ```
-      Selector#wakeup()
-      ```
-
-       
-
-      方法，唤醒 Selector 。可能看到此处，很多胖友会和我一样，一脸懵逼。实际上，
-
-      耐下性子
-
-      ，答案在上面的
-
-      英文注释
-
-      中。笔者来简单解析下：
+    - 第 41 至 44 行：若唤醒标识`wakeup`为`true`时，调用`Selector#wakeup()`方法，唤醒 Selector 。可能看到此处，很多胖友会和我一样，一脸懵逼。实际上，耐下性子，答案在上面英文注释中。笔者来简单解析下：
 
       - 1）在 `wakenUp.getAndSet(false)` 和 `#select(boolean oldWakeUp)` 之间，在标识 `wakeUp` 设置为 `false` 时，在 `#select(boolean oldWakeUp)` 方法中，正在调用 `Selector#select(...)` 方法，处于**阻塞**中。
-      - 2）此时，有另外的线程调用了 `#wakeup()` 方法，会将标记 `wakeUp` 设置为 `true` ，并**唤醒** `Selector#select(...)` 方法的阻塞等待。
+  - 2）此时，有另外的线程调用了 `#wakeup()` 方法，会将标记 `wakeUp` 设置为 `true` ，并**唤醒** `Selector#select(...)` 方法的阻塞等待。
       - 3）标识 `wakeUp` 为 `true` ，所以再有另外的线程调用 `#wakeup()` 方法，都无法唤醒 `Selector#select(...)` 。为什么呢？因为 `#wakeup()` 的 CAS 修改 `false => true` 会**失败**，导致无法调用 `Selector#wakeup()` 方法。
-      - 解决方式：所以在 `#select(boolean oldWakeUp)` 执行完后，增加了【第 41 至 44 行】来解决。
+  - 解决方式：所以在 `#select(boolean oldWakeUp)` 执行完后，增加了【第 41 至 44 行】来解决。
       - 😈😈😈 整体比较绕，胖友结合实现代码 + 英文注释，再好好理解下。
 
   - 第 46 行：第三种，`>= 0` ，已经有可以处理的任务，直接向下。
 
 - 第 49 至 51 行：TODO 1007 NioEventLoop cancel 方法
 
-- 第 53 至 74 行：根据
+- 第 53 至 74 行：根据`ioRatio`的配置不同，分成略有差异的 2 种：
 
-   
-
-  ```
-  ioRatio
-  ```
-
-   
-
-  的配置不同，分成
-
-  略有差异
-
-  的 2 种：
-
-  - 第一种，
-
-    ```
-    ioRatio
-    ```
-
-     
-
-    为 100 ，则
-
-    不考虑
-
-    时间占比的分配。
+  - 第一种，`ioRatio`为 100 ，则不考虑时间占比的分配。
 
     - 第 57 行：调用 `#processSelectedKeys()` 方法，处理 Channel 感兴趣的就绪 IO 事件。详细解析，见 [《精尽 Netty 源码解析 —— EventLoop（五）之 EventLoop 处理 IO 事件》](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event?self) 。
     - 第 58 至 62 行：调用 `#runAllTasks()` 方法，运行所有普通任务和定时任务，**不限制时间**。详细解析，见 [《精尽 Netty 源码解析 —— EventLoop（五）之 EventLoop 处理 IO 事件》](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event?self) 。
-
-  - 第二种，
-
-    ```
-    ioRatio
-    ```
-
-     
-
-    为
-
-     
-
-    ```
-    < 100
-    ```
-
-     
-
-    ，则
-
-    考虑
-
-    时间占比的分配。
-
-    - 第 64 行：记录当前时间。
+    
+- 第二种，`ioRatio`为`< 100`，则考虑时间占比的分配。
+  
+  - 第 64 行：记录当前时间。
     - 第 67 行：和【第 57 行】的代码**一样**。
-    - 第 71 至 72 行：🙂 比较巧妙的方式，是不是和胖友之前认为的不太一样。它是以 `#processSelectedKeys()` 方法的执行时间作为**基准**，计算 `#runAllTasks(long timeoutNanos)` 方法可执行的时间。
-    - 第 72 行：调用 #runAllTasks(long timeoutNanos)` 方法，运行所有普通任务和定时任务，**限制时间**。
+  - 第 71 至 72 行：🙂 比较巧妙的方式，是不是和胖友之前认为的不太一样。它是以 `#processSelectedKeys()` 方法的执行时间作为**基准**，计算 `#runAllTasks(long timeoutNanos)` 方法可执行的时间。
+  - 第 72 行：调用 #runAllTasks(long timeoutNanos)` 方法，运行所有普通任务和定时任务，**限制时间**。
 
 - 第 75 至 77 行：当发生异常时，调用 `#handleLoopException(Throwable t)` 方法，处理异常。代码如下：
 
@@ -3273,22 +3075,7 @@ public interface SelectStrategy {
 }
 ```
 
-- ```
-  calculateStrategy(IntSupplier selectSupplier, boolean hasTasks)
-  ```
-
-   
-
-  接口方法有
-
-   
-
-  3
-
-   
-
-  种返回的情况：
-
+- `calculateStrategy(IntSupplier selectSupplier, boolean hasTasks)`接口方法有3种返回的情况：
   - `SELECT`，`-1` ，表示使用阻塞 **select** 的策略。
   - `CONTINUE`，`-2`，表示需要进行重试的策略。实际上，默认情况下，不会返回 `CONTINUE` 的策略。
   - `>= 0` ，表示不需要 select ，目前已经有可以执行的任务了。
@@ -3498,20 +3285,12 @@ int selectNow() throws IOException {
 
   - `#delayNanos(currentTimeNanos)` 方法返回的为下一个定时任务距离现在的时间，如果不存在定时任务，则默认返回 1000 ms 。该方法的详细解析，见后续文章。
 
-- 第 12 行：“死”循环，直到符合如下
-
-  任一
-
-  一种情况后
-
-  结束
-
-  ：
+- 第 12 行：“死”循环，直到符合如下任一一种情况后结束：
 
   1. select 操作超时，对应【第 18 至 24 行】。
-  2. 若有新的任务加入，对应【第 26 至 37 行】。
+2. 若有新的任务加入，对应【第 26 至 37 行】。
   3. 查询到任务或者唤醒，对应【第 45 至 51 行】。
-  4. 线程被异常打断，对应【第 52 至 66 行】。
+4. 线程被异常打断，对应【第 52 至 66 行】。
   5. 发生 NIO 空轮询的 Bug 后重建 Selector 对象后，对应【第 75 至 93 行】。
 
 - 第 16 行：计算本次 select 的**超时时长**，单位：毫秒。因为【第 40 行】的 `Selector#select(timeoutMillis)` 方法，可能因为**各种情况结束**，所以需要循环，并且每次**重新**计算超时时间。至于 `+ 500000L` 和 `/ 1000000L` 的用途，看下代码注释。
@@ -3524,105 +3303,29 @@ int selectNow() throws IOException {
 
   - 第一种，提交的任务的类型是 NonWakeupRunnable ，那么它并不会调用 `#wakeup()` 方法，原因胖友自己看 `#execute(Runnable task)` 思考下。Netty 在 `#select()` 方法的设计上，**能尽快执行任务**。此时如果标记 `wakeup` 为 `false` ，说明符合这种情况，直接结束 select 。
 
-  - 第二种，提交的任务的类型
+  - 第二种，提交的任务的类型不是NonWakeupRunnable ，那么在`#run()`方法的【第 8 至 11 行】的`wakenUp.getAndSet(false)`
 
-    不是
+     之前，发起了一次`#wakeup()`方法，那么因为`wakenUp.getAndSet(false)`会将标记`wakeUp`设置为`false`，所以就能满足
 
-     
-
-    NonWakeupRunnable ，那么在
-
-     
-
-    ```
-    #run()
-    ```
-
-     
-
-    方法的【第 8 至 11 行】的
-
-     
-
-    ```
-    wakenUp.getAndSet(false)
-    ```
-
-     
-
-    之前，发起了一次
-
-     
-
-    ```
-    #wakeup()
-    ```
-
-     
-
-    方法，那么因为
-
-     
-
-    ```
-    wakenUp.getAndSet(false)
-    ```
-
-     
-
-    会将标记
-
-     
-
-    ```
-    wakeUp
-    ```
-
-     
-
-    设置为
-
-     
-
-    ```
-    false
-    ```
-
-     
-
-    ，所以就能满足
-
-     
-
-    ```
-    hasTasks() && wakenUp.compareAndSet(false, true)
-    ```
-
-     
-
-    的条件。
+     `hasTasks() && wakenUp.compareAndSet(false, true)`的条件。
 
     - 这个解释，就和【第 27 至 28 行】的英文注释 `So we need to check task queue again before executing select operation.If we don't, the task might be pended until select operation was timed out.` 有出入了？这是为什么呢？因为 Selector 被提前 wakeup 了，所以下一次 Selector 的 select 是被直接唤醒结束的。
 
   - 第 33 行：虽然已经发现任务，但是还是调用 `Selector#selectNow()` 方法，**非阻塞**的获取一次 Channel 新增的就绪的 IO 事件。
 
   - 对应 Github 的代码提交为 https://github.com/lightningMan/netty/commit/f44f3e7926f1676315ae86d0f18bdd9b95681d9f 。
-
+  
 - 第 40 行：调用 `Selector#select(timeoutMillis)` 方法，**阻塞** select ，获得 Channel 新增的就绪的 IO 事件的数量。
 
 - 第 42 行：select 计数器加 1 。
 
-- 第 44 至 51 行：如果满足下面
-
-  任一
-
-  一个条件，结束 select ：
+- 第 44 至 51 行：如果满足下面任一一个条件，结束 select ：
 
   1. `selectedKeys != 0` 时，表示有 Channel 新增的就绪的 IO 事件，所以结束 select ，很好理解。
   2. `oldWakenUp || wakenUp.get()` 时，表示 Selector 被唤醒，所以结束 select 。
   3. `hasTasks() || hasScheduledTasks()` ，表示有普通任务或定时任务，所以结束 select 。
   4. 那么剩余的情况，主要是 select **超时**或者发生**空轮询**，即【第 68 至 93 行】的代码。
-
+  
 - 第 52 至 66 行：线程被打断。一般情况下不会出现，出现基本是 **bug** ，或者错误使用。感兴趣的胖友，可以看看 https://github.com/netty/netty/issues/2426 。
 
 - 第 69 行：记录当前时间。
@@ -3795,37 +3498,7 @@ private static final class SelectorTuple {
 
 - 第 10 至 13 行：禁用 SelectionKey 的优化，则直接返回 SelectorTuple 对象。即，`selector` 也使用 `unwrappedSelector` 。
 
-- 第 15 至 28 行：获得 SelectorImpl 类。胖友可以自动过滤掉
-
-   
-
-  ```
-  AccessController#.doPrivileged(...)
-  ```
-
-   
-
-  外层代码。在方法内部，调用
-
-   
-
-  ```
-  Class#forName(String name, boolean initialize, ClassLoader loader)
-  ```
-
-   
-
-  方法，加载
-
-   
-
-  ```
-  sun.nio.ch.SelectorImpl
-  ```
-
-   
-
-  类。加载成功，则返回该类，否则返回异常。
+- 第 15 至 28 行：获得 SelectorImpl 类。胖友可以自动过滤掉`AccessController#.doPrivileged(...)`外层代码。在方法内部，调用`Class#forName(String name, boolean initialize, ClassLoader loader)`方法，加载`sun.nio.ch.SelectorImpl`类。加载成功，则返回该类，否则返回异常。
 
   - 第 30 至 39 行： 获得 SelectorImpl 类失败，则直接返回 SelectorTuple 对象。即，`selector` 也使用 `unwrappedSelector` 。
 
@@ -4137,49 +3810,23 @@ public void rebuildSelector() {
 
 - 第 7 行：调用 `#openSelector()` 方法，创建新的 Selector 对象。
 
-- 第 16 至 52 行：遍历
+- 第 16 至 52 行：遍历老的 Selector 对象的`selectionKeys`，将注册在 NioEventLoop 上的所有 Channel ，注册到新
 
-  老
-
-  的 Selector 对象的
-
-   
-
-  ```
-  selectionKeys
-  ```
-
-   
-
-  ，将注册在 NioEventLoop 上的所有 Channel ，注册到
-
-  新
-
-  创建 Selector 对象上。
+  创建 Selector 对象上
 
   - 第 22 至 24 行：校验 SelectionKey 有效，并且 Java NIO Channel 并未注册在**新**的 Selector 对象上。
 
   - 第 28 行：调用 `SelectionKey#cancel()` 方法，取消**老**的 SelectionKey 。
 
   - 第 30 行：将 Java NIO Channel 注册到**新**的 Selector 对象上，返回**新**的 SelectionKey 对象。
-
+  
   - 第 31 至 35 行：修改 Channel 的 `selectionKey` 指向**新**的 SelectionKey 对象
 
-  - 第 39 至 51 行：当发生异常时候，根据不同的 SelectionKey 的
-
-     
-
-    ```
-    attachment
-    ```
-
-     
-
-    来判断处理方式：
+  - 第 39 至 51 行：当发生异常时候，根据不同的 SelectionKey 的`attachment`来判断处理方式：
 
     - 第 41 至 44 行：当 `attachment` 是 Netty NIO Channel 时，调用 `Unsafe#close(ChannelPromise promise)` 方法，**关闭**发生异常的 Channel 。
-    - 第 45 至 50 行：当 `attachment` 是 Netty NioTask 时，调用 `#invokeChannelUnregistered(NioTask<SelectableChannel> task, SelectionKey k, Throwable cause)` 方法，通知 Channel 取消注册。详细解析，见 [「8. NioTask」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
-
+  - 第 45 至 50 行：当 `attachment` 是 Netty NioTask 时，调用 `#invokeChannelUnregistered(NioTask<SelectableChannel> task, SelectionKey k, Throwable cause)` 方法，通知 Channel 取消注册。详细解析，见 [「8. NioTask」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
+  
 - 第 54 至 56 行：修改 `selector` 和 `unwrappedSelector` 指向**新**的 Selector 对象。
 
 - 第 58 至 66 行：调用 `Selector#close()` 方法，关闭**老**的 Selector 对象。
@@ -4242,17 +3889,7 @@ private void processSelectedKeys() {
 31: }
 ```
 
-- 第 3 行：循环
-
-   
-
-  ```
-  selectedKeys
-  ```
-
-   
-
-  数组。
+- 第 3 行：循环`selectedKeys`数组。
 
   - 第 4 至 7 行：置空，原因见 https://github.com/netty/netty/issues/2363 。
   - 第 11 至 13 行：当 `attachment` 是 Netty NIO Channel 时，调用 `#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 方法，处理一个 Channel 就绪的 IO 事件。详细解析，见 [「7.3 processSelectedKey」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
@@ -4314,18 +3951,12 @@ private void processSelectedKeys() {
 46: }
 ```
 
-- 第 10 至 11 行：遍历 SelectionKey
-
-   
-
-  迭代器
-
-  。
+- 第 10 至 11 行：遍历 SelectionKey迭代器
 
   - 第 12 至 15 行：获得下一个 SelectionKey 对象，并从迭代器中移除。
-  - 第 18 至 20 行：当 `attachment` 是 Netty NIO Channel 时，调用 `#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 方法，处理一个 Channel 就绪的 IO 事件。详细解析，见 [「7.3 processSelectedKey」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
+- 第 18 至 20 行：当 `attachment` 是 Netty NIO Channel 时，调用 `#processSelectedKey(SelectionKey k, AbstractNioChannel ch)` 方法，处理一个 Channel 就绪的 IO 事件。详细解析，见 [「7.3 processSelectedKey」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
   - 第 21 至 26 行：当 `attachment` 是 Netty NioTask 时，调用 `#processSelectedKey(SelectionKey k, NioTask<SelectableChannel> task)` 方法，使用 NioTask 处理一个 Channel 的 IO 事件。详细解析，见 [「8. NioTask」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 。
-  - 第 33 至 44 行：TODO 1007 NioEventLoop cancel 方法
+- 第 33 至 44 行：TODO 1007 NioEventLoop cancel 方法
 
 #### 7.3 processSelectedKey
 
@@ -4399,21 +4030,11 @@ private void processSelectedKeys() {
 
 - 第 2 至 24 行：如果 SelectionKey 是不合法的，则关闭 Channel 。
 
-- 第 30 至 42 行：如果对
-
-   
-
-  ```
-  OP_CONNECT
-  ```
-
-   
-
-  事件就绪：
+- 第 30 至 42 行：如果对`OP_CONNECT`事件就绪：
 
   - 第 34 至 39 行：移除对 `OP_CONNECT` 的感兴趣，即不再监听连接事件。
   - 【重要】第 41 行：调用 `Unsafe#finishConnect()` 方法，完成连接。后续的逻辑，对应 [《精尽 Netty 源码分析 —— 启动（二）之客户端》](http://svip.iocoder.cn/Netty/bootstrap-2-client/) 的 [「3.6.4 finishConnect」](http://svip.iocoder.cn/Netty/EventLoop-5-EventLoop-handle-io-event/#) 小节。
-
+  
 - 第 44 至 50 行：如果对 `OP_WRITE` 事件就绪，调用 `Unsafe#forceFlush()` 方法，向 Channel 写入数据。在完成写入数据后，会移除对 `OP_WRITE` 的感兴趣。想要提前了解的胖友，可以自己看下 `AbstractNioByteChannel#clearOpWrite()` 和 `AbstractNioMessageChannel#doWrite(ChannelOutboundBuffer in)` 方法。
 
 - 第 52 至 58 行：如果对 `OP_READ` 或 `OP_ACCEPT` 事件就绪：调用 `Unsafe#read()` 方法，处理读**或者**者接受客户端连接的事件。
@@ -4539,17 +4160,9 @@ private static void processSelectedKey(SelectionKey k, NioTask<SelectableChannel
 }
 ```
 
-- 代码比较简单，胖友自己看中文注释。主要是看懂
+- 代码比较简单，胖友自己看中文注释。主要是看懂`state`
 
-   
-
-  ```
-  state
-  ```
-
-   
-
-  有 3 种情况：
+   有 3 种情况：
 
   - `0` ：未执行。
   - `1` ：执行成功。
@@ -4639,105 +4252,31 @@ EventLoop 执行的任务分成**普通**任务和**定时**任务，考虑到�
 
 - 第 3 行：调用 `#fetchFromScheduledTaskQueue()` 方法，将定时任务队列 `scheduledTaskQueue` 到达可执行的任务，添加到任务队列 `taskQueue` 中。通过这样的方式，定时任务得以被执行。详细解析，见 [《精尽 Netty 源码解析 —— EventLoop（七）之 EventLoop 处理定时任务》](http://svip.iocoder.cn/Netty/EventLoop-7-EventLoop-handle-schedule-task) 。
 
-- 第 5 行：
+- 第 5 行：首次调用`#pollTask()`方法，获得队头的任务。详细解析，胖友先跳到「4. pollTask」。
 
-  首次
-
-  调用
-
-   
-
-  ```
-  #pollTask()
-  ```
-
-   
-
-  方法，获得队头的任务。详细解析，胖友先跳到
-
-   
-
-  「4. pollTask」
-
-   
-
-  。
-
-  - 第 6 至 11 行：获取不到任务，结束执行，并返回
-
-     
-
-    ```
-    false
-    ```
-
-     
-
-    。
+  - 第 6 至 11 行：获取不到任务，结束执行，并返回`false`。
 
     - 第 9 行：调用 `#afterRunningAllTasks()` 方法，执行所有任务完成的**后续**方法。详细解析，见 [「5. afterRunningAllTasks」](http://svip.iocoder.cn/Netty/EventLoop-6-EventLoop-handle-normal-task/#) 。
 
 - 第 14 行：计算执行任务截止时间。其中，`ScheduledFutureTask#nanoTime()` 方法，我们可以暂时理解成，获取当前的时间，单位为**纳秒**。详细解析，见 [《精尽 Netty 源码解析 —— EventLoop（七）之 EventLoop 处理定时任务》](http://svip.iocoder.cn/Netty/EventLoop-7-EventLoop-handle-schedule-task) 。
 
-- 第 17 至 46 行：
-
-  循环
-
-  执行任务。
+- 第 17 至 46 行：循环执行任务。
 
   - 第 20 行：【重要】调用 `#safeExecute(Runnable task)` 方法，执行任务。
 
   - 第 23 行：计算 `runTasks` **加一**。
 
-  - 第 29 至 36 行：每隔
+  - 第 29 至 36 行：每隔64个任务检查一次时间，因为`System#nanoTime()`是相对费时的操作。也因此，超过执行时间上限是“
 
-     
-
-    64
-
-     
-
-    个任务检查一次时间，因为
-
-     
-
-    ```
-    System#nanoTime()
-    ```
-
-     
-
-    是
-
-    相对费时
-
-    的操作。也因此，超过执行时间上限是“
-
-    近似的
-
-    ”，而不是绝对准确。
+    近似的”，而不是绝对准确。
 
     - 第 31 行：调用 `ScheduledFutureTask#nanoTime()` 方法，获取当前的时间。
-    - 第 32 至 35 行：超过执行时间上限，结束执行。
-
-  - 第 39 行：
-
-    再次
-
-    调用
-
-     
-
-    ```
-    #pollTask()
-    ```
-
-     
-
-    方法，获得队头的任务。
-
-    - 第 41 至 45 行：获取不到，结束执行。
-    - 第 43 行：调用 `ScheduledFutureTask#nanoTime()` 方法，获取当前的时间，作为**最终**的 `.lastExecutionTime` ，即【第 52 行】的代码。
+  - 第 32 至 35 行：超过执行时间上限，结束执行。
+    
+- 第 39 行：再次调用`#pollTask()`方法，获得队头的任务。
+  
+  - 第 41 至 45 行：获取不到，结束执行。
+  - 第 43 行：调用 `ScheduledFutureTask#nanoTime()` 方法，获取当前的时间，作为**最终**的 `.lastExecutionTime` ，即【第 52 行】的代码。
 
 - 第 49 行：调用 `#afterRunningAllTasks()` 方法，执行所有任务完成的**后续**方法。
 

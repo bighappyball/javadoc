@@ -371,6 +371,56 @@ public int[] dfs(TreeNode node) {
     }
 ```
 
+### 路径和
+
+#### [494. 目标和 - 力扣（Leetcode）](https://leetcode.cn/problems/target-sum/description/)
+
+##### **深度优先**
+
+```java
+  int res=0;
+    public int findTargetSumWays(int[] nums, int target) {
+        findTargetSumWays(nums,0,target);
+        return res;
+    }
+
+    public void findTargetSumWays(int[] nums,int start,int target){
+        if(start==nums.length){
+            if(target==0){
+                res++;
+            }
+            return; 
+        }
+        findTargetSumWays(nums,start+1,target-nums[start]);
+        findTargetSumWays(nums,start+1,target+nums[start]);
+    }
+```
+
+##### **动态规划**
+
+```java
+ public int findTargetSumWays(int[] nums, int target) {
+         int sum=0;
+         for(int num:nums){
+            sum+=num;
+         }
+         // 如果和为奇数或者小于target返回0；
+        if((sum+target)%2==1||sum<target){
+            return 0;
+        }
+        int mid = Math.abs((sum+target)/2);
+        int[] dp = new int[mid+1];
+        dp[0]=1;
+        for(int num:nums){
+            for(int i=mid;i>=num;i--){
+                dp[i]=dp[i-num]+dp[i];
+            }
+        }
+        return dp[mid];
+    }
+```
+
+
 
 ## 二叉树问题
 

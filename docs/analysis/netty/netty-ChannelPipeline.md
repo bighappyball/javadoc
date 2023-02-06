@@ -473,33 +473,13 @@ private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HA
 private volatile int handlerState = INIT;
 ```
 
-- ```
-  handlerState
-  ```
-
-   
-
-  属性(
-
-   
-
-  非静态
-
-  属性，放这里主要是为了统一讲 )，处理器状态。共有
-
-   
-
-  4
-
-   
-
-  种状态。状态变迁如下图：
-
+- `handlerState`属性(非静态属性，放这里主要是为了统一讲 )，处理器状态。共有4种状态。状态变迁如下图：
+  
   ![image-20230113151507965](../../_media/analysis/netty/image-20230113151507965.png)
 
   
 
-  `handlerState` 变迁
+  ​																				`handlerState` 变迁
 
   - 详细解析，见 [「4.1.3 setAddComplete」](http://svip.iocoder.cn/Netty/ChannelPipeline-1-init/#)、[「4.1.4 setRemoved」](http://svip.iocoder.cn/Netty/ChannelPipeline-1-init/#)、[「4.1.5 setAddPending」](http://svip.iocoder.cn/Netty/ChannelPipeline-1-init/#) 中。
 
@@ -592,16 +572,9 @@ AbstractChannelHandlerContext(DefaultChannelPipeline pipeline, EventExecutor exe
   - `name` 属性，处理器名字。
   - `handlerState` 属性，处理器状态，初始为 `INIT` 。
 
-- ```
-  executor
-  ```
-
-   
-
-  属性，EventExecutor 对象
-
+- `executor`属性，EventExecutor 对象
   - `ordered` 属性，是否使用有序的 `executor`，即 OrderedEventExecutor ，在构造方法的 `<1>` 处理的初始化。
-
+  
 - `pipeline` 属性，所属 DefaultChannelPipeline 对象。
 
 ##### 4.1.3 setAddComplete
@@ -1020,21 +993,7 @@ private String filterName(String name, ChannelHandler handler) {
 27: }
 ```
 
-- 第 2 至 5 行：从缓存
-
-   
-
-  ```
-  nameCaches
-  ```
-
-   
-
-  中，查询是否已经生成
-
-  默认
-
-  名字。
+- 第 2 至 5 行：从缓存`nameCaches`中，查询是否已经生成默认名字。
 
   - 若未生成过，调用 `#generateName0(ChannelHandler)` 方法，进行生成。而后，添加到缓存 `nameCaches` 中。
 
@@ -1201,15 +1160,7 @@ private void addLast0(AbstractChannelHandlerContext newCtx) {
 
 - 第 9 行：发生异常。
 
-  - 第 10 至 24 行：移除该节点( ChannelHandler )。详细解析，见
-
-     
-
-    《精尽 Netty 源码解析 —— ChannelPipeline（三）之移除 ChannelHandler》
-
-     
-
-    。
+  - 第 10 至 24 行：移除该节点( ChannelHandler )。详细解析，见《精尽 Netty 源码解析 —— ChannelPipeline（三）之移除 ChannelHandler》
 
     - 😈 所以，`ChannelHandler#handlerAdded(AbstractChannelHandlerContext)` 方法的执行**异常**时，将被移除。
 
@@ -1374,13 +1325,7 @@ private PendingHandlerCallback pendingHandlerCallbackHead;
 
   - [![register0](http://static.iocoder.cn/images/Netty/2018_06_04/03.png)](http://static.iocoder.cn/images/Netty/2018_06_04/03.png)register0
 
-- ```
-  HeadContext#channelRegistered(ChannelHandlerContext ctx)
-  ```
-
-   
-
-  方法。
+  `HeadContext#channelRegistered(ChannelHandlerContext ctx)`方法。
 
   - 笔者调试下来，对于 Netty NIO Server 和 NIO Client 貌似没啥作用，因为已经在 `AbstractUnsafe#register0(ChannelPromise promise)` 中触发。胖友也可以自己调试下。
   - 调用栈如下图：
@@ -1414,34 +1359,8 @@ final void invokeHandlerAddedIfNeeded() {
 }
 ```
 
-- ```
-  <1>
-  ```
-
-   
-
-  处，仅有首次注册有效(
-
-   
-
-  ```
-  firstRegistration = true
-  ```
-
-   
-
-  ) 时。而后，标记
-
-   
-
-  ```
-  firstRegistration = false
-  ```
-
-   
-
-  。
-
+- `<1>`处，仅有首次注册有效(`firstRegistration = true`) 时。而后，标记`firstRegistration = false`
+  
   - 这也就是笔者为什么说，`HeadContext#channelRegistered(ChannelHandlerContext ctx)` 方法对这个方法的调用，是没有效果的。
 
 - `<2>` 处，调用 `#callHandlerAddedForAllHandlers()` 方法，执行**在 PendingHandlerCallback 中**的 ChannelHandler 添加完成( added )事件。代码如下：
@@ -1473,33 +1392,13 @@ final void invokeHandlerAddedIfNeeded() {
   24: }
   ```
 
-  - 第 3 至 13 行：获得
-
-     
-
-    ```
-    pendingHandlerCallbackHead
-    ```
-
-     
-
-    变量。
+  - 第 3 至 13 行：获得`pendingHandlerCallbackHead`变量。
 
     - 第 8 行：标记 `registered = true` ，表示已注册。
     - 第 10 至 12 行：置空对象的 `pendingHandlerCallbackHead` 属性，help GC 。
     - 使用 `synchronized` 的原因，和 `#addLast(EventExecutorGroup group, String name, ChannelHandler handler)` 的【第 16 至 26 行】的代码需要对 `pendingHandlerCallbackHead` 互斥，避免并发修改的问题。
-
-  - 第 15 至 23 行：顺序循环向下，调用
-
-     
-
-    ```
-    PendingHandlerCallback#execute()
-    ```
-
-     
-
-    方法，执行 PendingHandlerCallback 的回调，从而将 ChannelHandler 添加到 pipeline 中。
+    
+  - 第 15 至 23 行：顺序循环向下，调用`PendingHandlerCallback#execute()`方法，执行 PendingHandlerCallback 的回调，从而将 ChannelHandler 添加到 pipeline 中。
 
     - 这里不适用 `synchronized` 的原因，看英文注释哈。
 
@@ -1511,7 +1410,6 @@ final void invokeHandlerAddedIfNeeded() {
 
 - 闪电侠 [《Netty 源码分析之 pipeline(一)》](https://www.jianshu.com/p/6efa9c5fa702)
 - Hypercube [《自顶向下深入分析 Netty（七）–ChannelPipeline 源码实现》](https://www.jianshu.com/p/0e15165714fc)
-- 
 
 ## 精尽 Netty 源码解析 —— ChannelPipeline（三）之移除 ChannelHandler
 
@@ -1817,32 +1715,16 @@ ChannelFuture writeAndFlush(Object msg);
   }
   ```
 
-  - ```
-    AbstractChannel#bind(SocketAddress localAddress, ChannelPromise promise)
-    ```
-
-     
-
-    方法，实现的自 ChannelOutboundInvoker 接口。
-
+  - `AbstractChannel#bind(SocketAddress localAddress, ChannelPromise promise)`方法，实现的自 ChannelOutboundInvoker 接口。
+    
     - Channel 是 **bind** 的发起者，**这符合 Outbound 事件的定义 A02** 。
 
-  - 在方法内部，会调用
-
-     
-
-    ```
-    ChannelPipeline#bind(SocketAddress localAddress, ChannelPromise promise)
-    ```
-
-     
-
-    方法，而这个方法，也是实现的自 ChannelOutboundInvoker 接口。
+  - 在方法内部，会调用`ChannelPipeline#bind(SocketAddress localAddress, ChannelPromise promise)`方法，而这个方法，也是实现的自 ChannelOutboundInvoker 接口。
 
     从这里可以看出，对于 ChannelOutboundInvoker 接口方法的实现，Channel 对它的实现，会调用 ChannelPipeline 的对应方法
 
     ( ( 有一点绕，胖友理解下 ) )。
-
+    
     - 那么接口下，让我们看看 `ChannelPipeline#bind(SocketAddress localAddress, ChannelPromise promise)` 方法的具体实现。
 
 ### 3. DefaultChannelPipeline
@@ -1856,23 +1738,9 @@ public final ChannelFuture bind(SocketAddress localAddress, ChannelPromise promi
 }
 ```
 
-- 在方法内部，会调用
-
-   
-
-  ```
-  TailContext#bind(SocketAddress localAddress, ChannelPromise promise)
-  ```
-
-   
-
-  方法。
+- 在方法内部，会调用`TailContext#bind(SocketAddress localAddress, ChannelPromise promise)`方法。
 
   这符合 Outbound 事件的定义 A04
-
-   
-
-  。
 
   - 实际上，TailContext 的该方法，继承自 AbstractChannelHandlerContext 抽象类，而 AbstractChannelHandlerContext 实现了 ChannelOutboundInvoker 接口。*从这里可以看出，对于 ChannelOutboundInvoker 接口方法的实现，ChannelPipeline 对它的实现，会调用 AbstractChannelHandlerContext 的对应方法*( 有一点绕，胖友理解下 )。
 
@@ -2020,11 +1888,7 @@ public final ChannelFuture bind(SocketAddress localAddress, ChannelPromise promi
     }
     ```
 
-    - x
-
-------
-
-`AbstractChannelHandlerContext#invokeBind(SocketAddress localAddress, ChannelPromise promise)` 方法，代码如下：
+    - `AbstractChannelHandlerContext#invokeBind(SocketAddress localAddress, ChannelPromise promise)` 方法，代码如下：
 
 ```java
  1: private void invokeBind(SocketAddress localAddress, ChannelPromise promise) {
@@ -2230,30 +2094,10 @@ ChannelInboundInvoker fireChannelWritabilityChanged();
   }
   ```
 
-  - 在
-
-     
-
-    ```
-    <1>
-    ```
-
-     
-
-    处，调用
-
-     
-
-    ```
-    ChannelPipeline#fireChannelActive()
-    ```
-
-     
-
-    方法。
+  - 在`<1>`处，调用`ChannelPipeline#fireChannelActive()`方法。
 
     - Unsafe 是 **fireChannelActive** 的发起者，**这符合 Inbound 事件的定义 B02** 。
-    - 那么接口下，让我们看看 `ChannelPipeline#fireChannelActive()` 方法的具体实现。
+- 那么接口下，让我们看看 `ChannelPipeline#fireChannelActive()` 方法的具体实现。
 
 ### 3. DefaultChannelPipeline
 
@@ -2267,33 +2111,7 @@ public final ChannelPipeline fireChannelActive() {
 }
 ```
 
-- 在方法内部，会调用
-
-   
-
-  ```
-  AbstractChannelHandlerContext#invokeChannelActive(final AbstractChannelHandlerContext next)
-  ```
-
-   
-
-  方法，而方法参数是
-
-   
-
-  ```
-  head
-  ```
-
-   
-
-  ，
-
-  这符合 Inbound 事件的定义 B04
-
-   
-
-  。
+- 在方法内部，会调用`AbstractChannelHandlerContext#invokeChannelActive(final AbstractChannelHandlerContext next)`方法，而方法参数是`head，这符合 Inbound 事件的定义 B04
 
   - 实际上，HeadContext 的该方法，继承自 AbstractChannelHandlerContext 抽象类，而 AbstractChannelHandlerContext 实现了 ChannelInboundInvoker 接口。*从这里可以看出，对于 ChannelInboundInvoker 接口方法的实现，ChannelPipeline 对它的实现，会调用 AbstractChannelHandlerContext 的对应方法*( 有一点绕，胖友理解下 )。
 
@@ -2654,18 +2472,12 @@ private void invokeChannelActive() {
 
 - 在 `<1>` 处，调用 `ChannelInboundHandler#channelActive(ChannelHandlerContext ctx)` 方法**发生异常**时，会在 `<2>` 处调用 `AbstractChannelHandlerContext#notifyHandlerException(Throwable cause)` 方法，通知 Inbound 事件的传播，发生异常。
 
-- 其他 Inbound 事件，大体的代码也是和
-
-   
-
-  ```
-  #invokeChannelActive()
-  ```
+- 其他 Inbound 事件，大体的代码也是和`#invokeChannelActive()`
 
    
 
   是一致的。如下图所示：
-
+  
   ![image-20230113152221415](../../_media/analysis/netty/image-20230113152221415.png)
 
   类图

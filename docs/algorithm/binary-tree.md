@@ -212,6 +212,20 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
     }
 ```
 
+#### [100. 相同的树 - 力扣（Leetcode）](https://leetcode.cn/problems/same-tree/description/)
+
+```java
+ public boolean isSameTree(TreeNode p, TreeNode q) {
+        if(p==null&&q==null){
+            return true;
+        }
+        if(p==null||q==null||q.val!=p.val){
+            return false;
+        }
+        return isSameTree(p.left,q.left)&&isSameTree(p.right,q.right);
+    }
+```
+
 
 
 ## 构造二叉树

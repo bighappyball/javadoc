@@ -115,6 +115,103 @@ Boyer-Moore 算法的本质和方法四中的分治十分类似。我们首先�
 
 
 
+### [260. 只出现一次的数字 III - 力扣（Leetcode）](https://leetcode.cn/problems/single-number-iii/description/)
+
+#### **哈希表**
+
+```java
+```
+
+#### **位运算**
+
+```java
+```
+
+
+
+### [268. 丢失的数字 - 力扣（Leetcode）](https://leetcode.cn/problems/missing-number/description/)
+
+**排序**
+
+```java
+  public int missingNumber(int[] nums) {
+        int n = nums.length;
+        Arrays.sort(nums);
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i) return i;
+        }
+        return n;
+    }
+
+```
+
+**数组哈希**
+
+```java
+ public int missingNumber(int[] nums) {
+        int n = nums.length;
+        boolean[] hash = new boolean[n + 1];
+        for (int i = 0; i < n; i++) hash[nums[i]] = true;
+        for (int i = 0; i < n; i++) {
+            if (!hash[i]) return i;
+        }
+        return n;
+    }
+```
+
+#### **原地哈希**
+
+```java
+ public int missingNumber(int[] nums) {
+        int len=nums.length;
+        for(int i=0;i<nums.length;i++){
+            int num=nums[i];
+            if(num<len&&num != i ){
+                swap(nums,num,i--);
+            }
+        }
+        System.out.println(Arrays.toString(nums));
+        for(int i=0;i<nums.length;i++){
+            int num=nums[i];
+            if(num!=i){
+                return i;
+            }
+        }
+        return len;
+    }
+
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[i];
+        nums[i]=nums[j];
+        nums[j]=temp;
+    }
+```
+
+#### **作差法**
+
+```java
+    public int missingNumber(int[] nums) {
+        int n = nums.length;
+        int cur = 0, sum = n * (n + 1) / 2;
+        for (int i : nums) cur += i;
+        return sum - cur;
+    }
+```
+
+#### **异或**
+
+```java
+ public int missingNumber(int[] nums) {
+        int n = nums.length;
+        int ans = 0;
+        for (int i = 0; i <= n; i++) ans ^= i;
+        for (int i : nums) ans ^= i;
+        return ans;
+    }
+```
+
+
+
 
 
 ## 二分查找
@@ -788,6 +885,26 @@ class MyStack {
     }
 ```
 
+### [503. 下一个更大元素 II - 力扣（Leetcode）](https://leetcode.cn/problems/next-greater-element-ii/solutions/)
+
+#### **单调栈**
+
+```java
+   public int[] nextGreaterElements(int[] nums) {
+        int n = nums.length;
+        int[] ret = new int[n];
+        Arrays.fill(ret, -1);
+        Deque<Integer> stack = new LinkedList<Integer>();
+        for (int i = 0; i < n * 2 - 1; i++) {
+            while(!stack.isEmpty()&&nums[stack.peek()]<nums[i%n]){
+                ret[stack.pop()]=nums[i%n];
+            }
+            stack.push(i%n);
+        }
+        return ret;
+    }
+```
+
 
 
 ## 括号问题
@@ -1049,6 +1166,25 @@ class Solution {
         return true;
     }
 }
+```
+
+### [面试题45. 把数组排成最小的数 - 力扣（Leetcode）](https://leetcode.cn/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/submissions/395884898/)
+
+思路:  此题求拼接起来的最小数字，本质上是一个排序问题。设数组 nums 中任意两数字的字符串为 x和 y ，则规定 排序判断规则 为：
+
+若拼接字符串 x+y>y+x ，则 x “大于” y ；
+反之，若 x+y<y+x ，则 x “小于” y ；
+x “小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
+
+```java
+ public String minNumber(int[] nums) {
+        List<String> list = new ArrayList<>();
+        for(int num:nums){
+            list.add(String.valueOf(num));
+        }
+        list.sort((o1,o2)->(o1+o2).compareTo(o2+o1));
+        return String.join("",list);
+    }
 ```
 
 
@@ -1551,6 +1687,24 @@ public List<List<Integer>> threeSum(int[] nums) {
             }
         }
         return res;
+### [167. 两数之和 II - 输入有序数组 - 力扣（Leetcode）](https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/description/)
+
+#### **双指针**
+
+```java
+    public int[] twoSum(int[] numbers, int target) {
+        int left=0,right=numbers.length-1;
+        while(left<right){
+            int sum=numbers[left]+numbers[right];
+            if(sum<target){
+                left++;
+            }else if(sum>target){
+                right--;
+            }else{
+                return new int[]{left+1,right+1};
+            }
+        }
+        return new int[2];
     }
 ```
 
@@ -1637,3 +1791,49 @@ public List<List<Integer>> threeSum(int[] nums) {
         }
     }
 ```
+### [242. 有效的字母异位词 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-anagram/description/)
+
+思路: 遍历s,在数组对应的索引+1,再遍历t,再数组对应的索引-1
+
+```java
+ public boolean isAnagram(String s, String t) {
+        if(s.length()!=t.length()){
+            return false;
+        }
+        int[] res=new int[26];
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            res[c-'a']++;
+        }
+        for(int i=0;i<t.length();i++){
+            char c=t.charAt(i);
+            if(--res[c-'a']<0){
+                return false;
+            }
+        }
+        return true;
+    }
+```
+
+
+
+## &运算
+
+### [191. 位1的个数 - 力扣（Leetcode）](https://leetcode.cn/problems/number-of-1-bits/discussion/)
+
+思路: n & (n - 1)   最小一位1开始，后面全部取反。与一下，取最小一位1前面的值，继续循环执行了几次，说明就有几个1
+
+```java
+ // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int max=0;
+        while(n!=0){
+            //不断的对二进制n进行减1的操作，然后记录count
+            n=n&(n-1);
+            max++;
+        }
+        return max;
+    }
+}
+```
+

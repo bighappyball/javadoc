@@ -622,3 +622,32 @@ void dfs(Node cur) {
        return res.next;
     }
 ```
+
+### 分隔链表
+
+#### [86. 分隔链表 - 力扣（Leetcode）](https://leetcode.cn/problems/partition-list/description/)
+
+思路: 创建两个链表,分别存放小于或大于对节点,最后合并两节点
+
+```java
+ public ListNode partition(ListNode head, int x) {
+        ListNode small =new ListNode(-1);
+        ListNode smallHeader=small;
+        ListNode large=new ListNode(-1);
+        ListNode largeHeader=large;
+        while(head!=null){
+            if(head.val<x){
+                smallHeader.next=head;
+                smallHeader=smallHeader.next;
+            }else{
+                largeHeader.next=head;
+                largeHeader=largeHeader.next;
+            }
+            head=head.next;
+        }
+        smallHeader.next=large.next;
+        largeHeader.next=null;
+        return small.next;
+    }
+```
+
