@@ -576,4 +576,125 @@ XX:TargetSurvivorRatio表示，当经历Minor GC后，survivor空间占有量(�
 
 垃圾回收参数
 
+## 问题排查
+
+### 线上服务的FGC问题排查
+
+[线上服务的FGC问题排查，看这篇就够了！](https://mp.weixin.qq.com/s/P8s3kuceBNovUP5adXpFCQ)
+
+去年10月份，我们的广告召回系统在程序上线后收到了FGC频繁的系统告警，通过下面的监控图可以看到：平均每35分钟就进行了一次FGC。而程序上线前，我们的FGC频次大概是2天一次。下面，详细介绍下该问题的排查过程。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kbo3d18WZsey7GqTSBxR7OfI15BdBhQPy2Q7Zd0k1S5drjWQFk59fte4mMyRXaHOIPnOZwYyfb8cQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+**1. 检查JVM配置**
+
+通过以下命令查看JVM的启动参数：
+
+`ps aux | grep "java"` 
+
+![image-20230207150519007](../_media/analysis/netty/image-20230207150519007.png)
+
+> -Xms4g -Xmx4g -Xmn2g -Xss1024K 
+>
+> -XX:ParallelGCThreads=5 
+>
+> -XX:+UseConcMarkSweepGC 
+>
+> -XX:+UseParNewGC 
+>
+> -XX:+UseCMSCompactAtFullCollection 
+>
+> -XX:CMSInitiatingOccupancyFraction=80
+
+可以看到堆内存为4G，新生代为2G，老年代也为2G，新生代采用ParNew收集器，老年代采用并发标记清除的CMS收集器，当老年代的内存占用率达到80%时会进行FGC。
+
+进一步通过 jmap -heap 7276 | head -n20 可以得知新生代的Eden区为1.6G，S0和S1区均为0.2G。
+
+**2. 观察老年代的内存变化**
+
+通过观察老年代的使用情况，可以看到：每次FGC后，内存都能回到500M左右，因此我们排除了内存泄漏的情况。
+
+**3. 通过jmap命令查看堆内存中的对象**
+
+通过命令 jmap -histo 7276 | head -n20
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kaC5QYpq19F4wmibn6r3RnsHryPDnC3BgqsfYZIDc9ag1ksiaAnKZTDU373Ew4Z5wawEj7Ym2AaKHyQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+上图中，按照对象所占内存大小排序，显示了存活对象的实例数、所占内存、类名。可以看到排名第一的是：int[]，而且所占内存大小远远超过其他存活对象。至此，我们将怀疑目标锁定在了 int[] .
+
+**4. 进一步dump堆内存文件进行分析**
+
+锁定 int[] 后，我们打算dump堆内存文件，通过可视化工具进一步跟踪对象的来源。考虑堆转储过程中会暂停程序，因此我们先从服务管理平台摘掉了此节点，然后通过以下命令dump堆内存：
+
+jmap -dump:format=b,file=heap 7276
+
+通过JVisualVM工具导入dump出来的堆内存文件，同样可以看到各个对象所占空间，其中int[]占到了50%以上的内存，进一步往下便可以找到 int[] 所属的业务对象，发现它来自于架构团队提供的codis基础组件。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kbo3d18WZsey7GqTSBxR7Of8ywpnt4SVicaWAONmkaHicf6neDIQTIC4GPepa1ic0ibaLIf2PUwiazSLqQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+**5.** **通过代码分析可疑对象**
+
+通过代码分析，codis基础组件每分钟会生成约40M大小的int数组，用于统计TP99 和 TP90，数组的生命周期是一分钟。而根据第2步观察老年代的内存变化时，发现老年代的内存基本上也是每分钟增加40多M，因此推断：这40M的int数组应该是从新生代晋升到老年代。
+
+我们进一步查看了YGC的频次监控，通过下图可以看到大概1分钟有8次左右的YGC，这样基本验证了我们的推断：因为CMS收集器默认的分代年龄是6次，即YGC 6次后还存活的对象就会晋升到老年代，而codis组件中的大数组生命周期是1分钟，刚好满足这个要求。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kaC5QYpq19F4wmibn6r3RnsH2o7bIKqUJqM3IkMbTVQlnO1Oo1YYcK4oAJUuShsEYdwRNyOzY60gfg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+至此，整个排查过程基本结束了，那为什么程序上线前没出现此问题呢？通过上图可以看到：程序上线前YGC的频次在5次左右，此次上线后YGC频次变成了8次左右，从而引发了此问题。
+
+**6. 解决方案**
+
+为了快速解决问题，我们将CMS收集器的分代年龄改成了15次，改完后FGC频次恢复到了2天一次，后续如果YGC（Minor GC）的频次超过每分钟15次还会再次触发此问题。当然，我们最根本的解决方案是：优化程序以降低YGC的频率，同时缩短codis组件中int数组的生命周期，这里就不做展开了。
+
+
+
+### JVM堆外内存泄漏故障排查
+
+[记一次大促期间JVM堆外内存泄漏故障排查记录](https://mp.weixin.qq.com/s/yutHXOi6Xl3-Qn91Pvg9wA)
+
+8月12日中午午休时间，我们商业服务收到告警，服务进程占用容器的物理内存（16G）超过了80%的阈值，并且还在不断上升。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVGNZU4PNE8IyLXPlnT9B4icsRia2FicnOgiaSTribIh3B2U6XnO6nrOkPopw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+监控系统调出图表查看：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVSbysHEE3jGh45w7eJeEfH1icJpPVlUdDUqm9ZJgd0AQmBC8IEgtskbQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+像是Java进程发生了内存泄漏，而我们堆内存的限制是4G，这种大于4G快要吃满内存应该是JVM堆外内存泄漏。
+
+确认了下当时服务进程的启动配置：
+
+```
+-Xms4g -Xmx4g -Xmn2g -Xss1024K -XX:PermSize=256m -XX:MaxPermSize=512m -XX:ParallelGCThreads=20 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=80
+```
+
+虽然当天没有上线新代码，但是**「当天上午我们正在使用消息队列推送历史数据的修复脚本，该任务会大量调用我们服务其中的某一个接口」**，所以初步怀疑和该接口有关。
+
+下图是该调用接口当天的访问量变化：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVaXpaQEDFvRibmmiaZc1dibZ1MRwjll8MKjDV5fficektTExF67z7BHTTzQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+可以看到案发当时调用量相比正常情况（每分钟200+次）提高了很多（每分钟5000+次）。
+
+**「我们暂时让脚本停止发送消息，该接口调用量下降到每分钟200+次，容器内存不再以极高斜率上升，一切似乎恢复了正常。」**
+
+接下来排查这个接口是不是发生了内存泄漏。
+
+**排查过程**
+
+**堆内存分析**
+
+虽说一开始就基本确认与堆内存无关，因为泄露的内存占用超过了堆内存限制4G，但是我们为了保险起见先看下堆内存有什么线索。
+
+我们观察了新生代和老年代内存占用曲线以及回收次数统计，和往常一样没有大问题，我们接着在事故现场的容器上dump了一份JVM堆内存的日志。
+
+
+
+[怎么排查堆内存溢出啊？](https://mp.weixin.qq.com/s/7XGD-Z3wrThv5HyoK3B8AQ)
+
+[CPU100%，排查](https://mp.weixin.qq.com/s/roEMz-5tzBZvGxbjq8NhOQ)
+
+[排查YGC问题](https://mp.weixin.qq.com/s/LRx9tLtx1tficWPvUWUTuQ)
+
+[CPU飙高排查](https://mp.weixin.qq.com/s/nWghy4McYx6Ix3QPSLSmkQ)
 

@@ -12,6 +12,20 @@ B走路径b->c-a
 
 最终A和B再c1相遇
 
+```java
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode tempA=headA;
+        ListNode tempB=headB;
+        while(tempA!=tempB){
+            tempA=tempA!=null?tempA.next:headB;
+            tempB=tempB!=null?tempB.next:headA;
+        }
+        return tempA;
+    }
+```
+
+
+
 ## 环形链表
 
 ### [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle)
@@ -30,6 +44,30 @@ B走路径b->c-a
             }
         }
         return false;
+    }
+```
+
+### [142. 环形链表 II - 力扣（Leetcode）](https://leetcode.cn/problems/linked-list-cycle-ii/)
+
+#### 快慢指针
+
+```java
+    public ListNode detectCycle(ListNode head) {
+        ListNode fast=head;
+        ListNode slow=head;
+        while(fast!=null&&fast.next!=null){
+            slow=slow.next;
+            fast=fast.next.next;
+            if(fast==slow){
+                fast=head;
+                while(fast!=slow){
+                    fast=fast.next;
+                    slow=slow.next;
+                }
+                return fast;
+            }
+        }
+        return null;
     }
 ```
 
@@ -69,13 +107,88 @@ B走路径b->c-a
     }
 ```
 
-
-
-### [206.反转链表](https://leetcode.cn/problems/reverse-linked-list)
-
 ### [92. 反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii)
 
+```java
+   public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummy=new ListNode(-1);
+        dummy.next=head;
+        ListNode pre=dummy;
+        for(int i=1;i<left;i++){
+            pre=pre.next;
+        }
+        head = pre.next;
+        for(int i=left;i<right;i++){
+            ListNode next=head.next;
+            head.next=next.next;
+            next.next=pre.next;
+            pre.next=next;
+        }
+        return dummy.next;
+    }
+```
+
+
+
 ### [143. 重排链表](https://leetcode.cn/problems/reorder-list)
+
+#### 中间点+反转+合并
+
+```java
+   public void reorderList(ListNode head) {
+        if(head==null||head.next==null){
+            return;
+        }
+        ListNode mid = middleNode(head);
+        ListNode l1 = head;
+        ListNode l2 = mid.next;
+        mid.next = null;
+        l2=reverse(l2);
+        mergeList(l1,l2);
+    }
+
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+
+  public void mergeList(ListNode l1, ListNode l2) {
+        ListNode l1_tmp;
+        ListNode l2_tmp;
+        while (l1 != null && l2 != null) {
+            l1_tmp = l1.next;
+            l2_tmp = l2.next;
+
+            l1.next = l2;
+            l1 = l1_tmp;
+
+            l2.next = l1;
+            l2 = l2_tmp;
+        }
+    }
+
+
+   public ListNode reverse(ListNode head) {
+       ListNode res=null;
+        ListNode temp=head;
+        while(temp!=null){
+            ListNode next=temp.next;
+            temp.next=res;
+            res=temp;
+            temp=next;
+        }
+        return res;
+    }
+
+```
+
+
 
 ### [25. K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group)
 
@@ -150,17 +263,57 @@ public ListNode reverse(ListNode head){
 
 ### [23. 合并K个排序链表](https://leetcode.cn/problems/merge-k-sorted-lists)
 
-## 排序
+#### 归并排序
+
+```java
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists.length==0){
+            return null;
+        }
+        if(lists.length==1){
+            return lists[0];
+        }
+    
+        int len=lists.length;
+        int mid=len/2;
+        ListNode[] a = new ListNode[mid];
+        for(int i=0;i<mid;i++){
+            a[i]=lists[i];
+        } 
+        ListNode[] b = new ListNode[len-mid];
+        for(int i=mid;i<len;i++){
+            b[i-mid] = lists[i];
+        } 
+        return merge(mergeKLists(a),mergeKLists(b));
+
+    }
+
+    public ListNode merge(ListNode list1,ListNode list2){
+        if(list1==null&&list2==null){
+            return null;
+        }
+        if(list1!=null&&list2!=null){
+            if(list1.val<list2.val){
+                list1.next=merge(list1.next,list2);
+                return list1;
+            }else{
+                list2.next=merge(list1,list2.next);
+                return list2;
+            }
+        } 
+        return list1!=null?list1:list2;
+    }
+```
 
 ### [148. 排序链表](https://leetcode.cn/problems/sort-list)
 
 思路:
 
 1. 快排需要懂，以防面试官提问（易超时） 
+2. 最常规的递归版归并排序 
 
-​	2、最常规的递归版归并排序 
+3. 迭代版归并排序
 
-​	3、迭代版归并排序
 
 <!-- tabs:start -->
 
@@ -252,7 +405,7 @@ public ListNode reverse(ListNode head){
         //返回头结点
         return pre.next;
     }
-    //输入时伪头结点和尾节点null
+    // 输入时伪头结点和尾节点null
     void quickSort(ListNode pre,ListNode end){
         //如果节点数小于1就返回
         if(pre==end||pre.next==end||pre.next.next==end) return;
@@ -288,6 +441,29 @@ public ListNode reverse(ListNode head){
 ## 快慢指针
 
 ### [19. 删除链表的倒数第N个节点](https://leetcode.cn/problems/remove-nth-node-from-end-of-list)
+
+```java
+  public ListNode removeNthFromEnd(ListNode head, int n) {
+        // 解决删除头节点问题
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode pre = dummy;
+        ListNode slow = head;
+        ListNode fast = head;
+        for(int i=0;i<n;i++){
+            fast = fast.next;
+        }
+        while(fast!=null){
+            pre = pre.next;
+            slow = slow.next;
+            fast = fast.next;
+        }
+        pre.next = slow.next;
+        return dummy.next;
+    }
+```
+
+
 
 ### [剑指 Offer 22. 链表中倒数第k个节点 ](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/submissions/389911593/)
 

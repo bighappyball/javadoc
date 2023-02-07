@@ -1,4 +1,7 @@
+[敖丙肝了一个月的Netty知识点 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453149075&idx=1&sn=97fce87e5784823ad3ac9141292faf09&chksm=8cfd3710bb8abe06e767f7f81d97951a676d4ea68863b825ef91eab1ba822931b2d9f160073f&cur_album_id=1508169304872108033&scene=189#wechat_redirect)
+
 ### 简介
+
 Netty 是 JBOSS 提供的一个 Java 开源框架，是基于 NIO 的客户端/服务器编程框架，它既能快速开发高并发、高可用、高可靠性的网络服务器程序，也能开发高可用、高可靠的客户端程序。  
 Netty 之所以受青睐，是因为 **Netty 提供异步的、事件驱动的网络应用程序框架和工具**。作为一个异步框架，Netty 的所有 IO 操作都是异步非阻塞的，通过 Future-Listener 机制，用户可以方便地主动获取或者通过通知机制获得 IO 操作结果
 
@@ -231,7 +234,7 @@ FileChannelinChannel = fis.getChannel();
 FileOutputStreamfos = new FileOutputStream(destFile);
 //获取文件流的通道
 FileChanneloutchannel = fos.getChannel();
-````
+ ````
 或者  
 ````java
 // 创建 RandomAccessFile 随机访问对象
@@ -558,7 +561,7 @@ dispatch(sk);
 不同之处在于：在反应器模式中， Handler 处理器实例和 IO 事件（选择键）的订阅关系，基本上是一个事件绑定到一个 Handler 处理器；每一个 IO 事件（选择键）被查询后，反应器会将事件分发给所绑定的 Handler 处理器；而在观察者模式中，同一个时刻，同一个主题可以被订阅过的多个观察者处理。
 
 总结一下反应器模式的优点和缺点。作为高性能的 IO 模式，反应器模式的优点如下： 
- 
+
 ⚫ 响应快，虽然同一反应器线程本身是同步的，但不会被单个连接的同步 IO 所阻塞；  
 ⚫ 编程相对简单，最大程度避免了复杂的多线程同步，也避免了多线程的各个进程之间切换的开销；  
 ⚫ 可扩展，可以方便地通过增加反应器线程的个数来充分利用 CPU 资源。  
@@ -631,7 +634,6 @@ Netty 和 Guava 一样，实现了自己的异步回调体系：Netty 继承和�
 ⚫ Netty 的 GenericFutureListener 接口，可以对应到 Guava 的 FutureCallback 接口。  
 
 ### Netty 原理与基础
-
 
 
 

@@ -1,10 +1,22 @@
-### Dubbo
+# Dubbo
+
+> Dubbo 是阿里巴巴 2011年开源的一个基于 Java 的 RPC 框架，中间沉寂了一段时间，不过其他一些企业还在用 Dubbo 并自己做了扩展，比如当当网的 Dubbox，还有网易考拉的 Dubbok。
+>
+> 但是在 2017 年阿里巴巴又重启了对 Dubbo 维护。在 2017 年荣获了开源中国 2017 最受欢迎的中国开源软件 Top 3。
+>
+> 在 2018 年和 Dubbox 进行了合并，并且进入 Apache 孵化器，在 2019 年毕业正式成为 Apache 顶级项目。
+>
+> 目前 Dubbo 社区主力维护的是 2.6.x 和 2.7.x 两大版本，2.6.x 版本主要是 bug 修复和少量功能增强为准，是稳定版本。
+>
+> 而 2.7.x 是主要开发版本，更新和新增新的 feature 和优化，并且 2.7.5 版本的发布被 Dubbo 认为是里程碑式的版本发布，之后我们再做分析。
+>
+> 它实现了面向接口的代理 RPC 调用，并且可以配合 ZooKeeper 等组件实现服务注册和发现功能，并且拥有负载均衡、容错机制等。
 
 ## RPC
 
 RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能看出 RPC 关注的是远程调用而非本地调用。RPC 目的就是让我们使用远程调用像本地调用一样简单方便，并且解决一些远程调用会发生的一些问题
 
-### 如何设计一个 RPC 框架
+## 如何设计一个 RPC 框架
 
 服务消费者
 
@@ -47,8 +59,6 @@ RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能�
 
 6. 监控运维
 
-
-
 ## Dubbo总体架构
 
 目前 Dubbo 社区主力维护的是 2.6.x 和 2.7.x 两大版本，2.6.x 版本主要是 bug 修复和少量功能增强为准，是稳定版本。
@@ -68,7 +78,7 @@ RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能�
 - Monitor	监控中心
 
 
-### 整体的流程
+## 整体的流程
 
 1. 首先服务提供者 Provider 启动然后向注册中心注册自己所能提供的服务。
 
@@ -78,7 +88,6 @@ RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能�
 
 4. 服务提供者和消费者都会在内存中记录着调用的次数和时间，然后定时的发送统计数据到监控中心。
 
-
 **其他**
 
 1. 首先注册中心和监控中心是可选的，你可以不要监控，也不要注册中心，直接在配置文件里面写然后提供方和消费方直连。
@@ -87,8 +96,7 @@ RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能�
 
 3. 就算注册中心和监控中心宕机了也不会影响到已经正常运行的提供者和消费者，因为消费者有本地缓存提供者的信息。
 
-
-### Dubbo分层架构
+## Dubbo分层架构
 
 总的而言 Dubbo 分为三层，如果每一层再细分下去，一共有十层。
 
@@ -119,7 +127,7 @@ RPC（Remote Procedure Call） 即远程过程调用，通过名字我们就能�
 - Serialize，序列化层，将数据序列化成二进制流，当然也做反序列化。
 
 
-### Dubbo 调用过程
+## Dubbo 调用过程
 
 ![img](../_media/analysis/netty/wpsC602.tmp.jpg)
 
@@ -143,7 +151,11 @@ Proxy 持有一个 Invoker 对象，调用 invoke 之后需要通过 Cluster 先
 
 服务提供者接收到之后也会进行 Codec 协议处理，然后反序列化后将请求扔到线程池处理。某个线程会根据请求找到对应的 Exporter ，而找到 Exporter 其实就是找到了 Invoker，但是还会有一层层 Filter，经过一层层过滤链之后最终调用实现类然后原路返回结果。
 
-### Dubbo的服务暴露过程
+## SPI机制
+
+[三歪问我Dubbo的SPI机制是啥？ (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453145662&idx=1&sn=0ba56d58eedca7f04b4d013b84080f31&chksm=8cfd2abdbb8aa3ab58c635d161a1040a762605afd0e2bc4c53b986fe328b9f447c657d94be33&cur_album_id=1508169304872108033&scene=189#wechat_redirect)
+
+## Dubbo的服务暴露过程
 
 [堂妹问我：Dubbo的服务暴露过程 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453145897&idx=1&sn=0a5896cac1b3f0347220e9d27118fc9e&scene=21#wechat_redirect)
 
@@ -311,7 +323,7 @@ registry://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application
 
 其实上面的 protoco是个代理类，在内部会通过 SPI 机制找到具体的实现类。
 
-#### 1.1.5.Dubbo的服务引用过程
+## Dubbo的服务引用过程
 
 Provider将自己的服务暴露出来，注册到注册中心，而 Consumer无非就是通过一波操作从注册中心得知 Provider 的信息，然后自己封装一个调用类和 Provider 进行深入地交流。
 
@@ -351,8 +363,14 @@ ObjectFactory 这个是用于延迟查找的场景，它就是一个普通工厂
 
 本地引入、直接连接引入远程服务、通过注册中心引入远程服务。
 
- 
+##  Dubbo服务调用过程
 
- 
+ [帅地问我：Dubbo服务调用过程 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453146350&idx=1&sn=059e12e95c2866e54d714012bc4f7d10&chksm=8cfd286dbb8aa17b87342c0c634e0deee9a0b86d7689db241c9f9a3009886accf089d6a8a530&cur_album_id=1508169304872108033&scene=189#wechat_redirect)
 
-***
+## Dubbo集群容错负载均衡
+
+[妹妹问我：Dubbo集群容错负载均衡 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453146754&idx=1&sn=09b152f913dd30702de0be8ba81c8fca&chksm=8cfd2e01bb8aa71712f194be79d2123dda33e1b0f1b1bb09eb3e75c142fa2b6989c21687ed39&cur_album_id=1508169304872108033&scene=189#wechat_redirect)
+
+[绯闻女友想看很久的Dubbo面试题 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453146800&idx=1&sn=f37dcf0b4f5a07910efe529634a9ac62&chksm=8cfd2e33bb8aa725ef5677c1bf76150f351d14c2bad23c3ca2d9ea0ca2296f23ad42cc224c93&cur_album_id=1508169304872108033&scene=189#wechat_redirect)
+
+[1w+字的 Dubbo 面试题/知识点总结！（2021 最新版） (qq.com)](https://mp.weixin.qq.com/s/2qSA6aJn6KRXrATVE44k0w)

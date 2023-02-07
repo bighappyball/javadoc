@@ -1,4 +1,27 @@
+l 熟练掌握计算机网络，数据结构与算法，操作系统。
+
+l 熟练使用Linux，有Linux下开发的实际经验。
+
+l 熟练掌握Java 基础知识、Java 并发、JVM，有过 JVM 排查问题经历。
+
+l 熟练掌握 MySQL 数据库以及常见优化手段(比如索引、SQL 优化、读写分离&分库分表)，Redis 使用经验丰富，熟悉MongoDB。
+
+l 熟练掌握 Elasticsearch 的使用及原理。
+
+l 熟练掌握Spring、Spring MVC、SpringBoot、MyBatis、Spring Security 、Netty 等主流开发框架。
+
+l 熟练掌握分布式下的常见理论 CAP、BASE，熟悉 Paxos 算法和 Raft 算法
+
+l 熟练掌握 RPC (Dubbo)、分布式事务(Seata、 2PC、3PC、TCC) 、分布式链路追踪(SkyWalking)、分布式锁(Zookeeper、 Redis、Redisson)、分布式 id(UUID、Snowflake) 的使用及原理。
+
+l 熟悉 Spring Cloud 全家桶常见组件的使用。
+
+l 熟练掌握消息队列 Kafka 的使用及原理、有限流、降级、熔断的实战经验。
+
+l 熟练掌握 Git、Maven、Docker。
+
 ## 闵行全专结合门诊平台
+
 2022.06 - 2023.01   创业慧康远程医疗事业部                    
 ### 项目简介
 闵行全专结合门诊平台是一个线上门诊服务平台，包含挂号付费、咨询问诊、复诊等功能，该项目已由闵行卫健委在全区推广使用，旨意是借助互联网优势快速实现传统门诊服务，解决挂号难、看病难、医疗资源分布不平衡等问题。
@@ -67,3 +90,7 @@ Spring Boot、MySQL、Redis、Mybatis、Rabbit MQ、MongoDB。
 3.负责部分前端页面的实现。
 4.项目环境安装、部署及维护。
 5.编写用户手册以及技术
+
+## 加分项
+
+[【SPI】定制按需加载的SPI - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/571244036)

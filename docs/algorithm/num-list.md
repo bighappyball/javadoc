@@ -116,6 +116,69 @@ Boyer-Moore 算法的本质和方法四中的分治十分类似。我们首先�
 
 
 ### [260. 只出现一次的数字 III - 力扣（Leetcode）](https://leetcode.cn/problems/single-number-iii/description/)
+## 下一个排序
+
+### [31. 下一个排列 - 力扣（Leetcode）](https://leetcode.cn/problems/next-permutation/solutions/)
+
+思路: [31. 下一个排列 - 力扣（Leetcode）](https://leetcode.cn/problems/next-permutation/solutions/80560/xia-yi-ge-pai-lie-suan-fa-xiang-jie-si-lu-tui-dao-/)
+
+定义是：给定数字序列的字典序中下一个更大的排列。如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。我们可以将该问题形式化地描述为：给定若干个数字，将其组合为一个整数。如何将这些数字重新排列，以得到下一个更大的整数。如 123 下一个更大的数为 132。如果没有更大的整数，则输出最小的整数。
+
+算法推导: 
+
+1. 我们希望下一个数 比当前数大，这样才满足 “下一个排列” 的定义。因此只需要 将后面的「大数」与前面的「小数」交换，就能得到一个更大的数。比如 123456，将 5 和 6 交换就能得到一个更大的数 123465。
+
+2. 我们还希望下一个数 增加的幅度尽可能的小，这样才满足“下一个排列与当前排列紧邻“的要求。为了满足这个要求，我们需要：
+
+   - 在 尽可能靠右的低位 进行交换，需要 从后向前 查找
+
+   - 将一个 尽可能小的「大数」 与前面的「小数」交换。比如 123465，下一个排列应该把 5 和 4 交换而不是把 6 和 4 交换
+   - 将「大数」换到前面后，需要将「大数」后面的所有数 重置为升序，升序排列就是最小的排列。以 123465 为例：首先按照上一步，交换 5 和 4，得到 123564；然后需要将 5 之后的数重置为升序，得到 123546。显然 123546 比 123564 更小，123546 就是 123465 的下一个排列
+
+算法过程: 
+
+1. 从后向前 查找第一个 相邻升序 的元素对 (i,j)，满足 A[i] < A[j]。此时 [j,end) 必然是降序
+
+2. 在 [j,end) 从后向前 查找第一个满足 A[i] < A[k] 的 k。A[i]、A[k] 分别就是上文所说的「小数」、「大数」
+3. 将 A[i] 与 A[k] 交换
+4. 可以断定这时 [j,end) 必然是降序，逆置 [j,end)，使其升序
+5. 如果在步骤 1 找不到符合的相邻元素对，说明当前 [begin,end) 为一个降序顺序，则直接跳到步骤 4
+
+```java
+  public void nextPermutation(int[] nums) {
+        if(nums.length<2){
+            return;
+        }
+        int len=nums.length;
+        int i=len-2,j=len-1,k=len-1;
+        // find: A[i]<A[j]
+        while(i>=0&&nums[i]>=nums[j]){
+            i--;
+            j--;
+        }
+        // 不是最后一个排列
+        if(i>=0){
+            // find: A[i]<A[k]
+            while(nums[i]>=nums[k]){
+                k--;
+            }
+            // swap A[i], A[k]
+            swap(nums,i,k);
+        }
+        // reverse A[j:end]
+        for(i=j,j=len-1;i<j;i++,j--){
+            swap(nums,i,j);
+        }
+    }
+
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[i];
+        nums[i]=nums[j];
+        nums[j]=temp;
+
+    }
+```
+
 
 #### **哈希表**
 
@@ -294,18 +357,18 @@ public int search(int[] nums, int target) {
     }
 
 //保留小数
-      public static double mySqrt(int x) {
+   public static double mySqrt(int x) {
         double err = 1e-9;
-        double x0 = 0;
-        double x1 = x;
+        double left = 0;
+        double right = x;
         while(true){
-            x0 = 0.5*x1+0.5*x/x1;
-            if(Math.abs(x1 - x0) < err){
+            left = 0.5*right+0.5*x/right;
+            if(Math.abs(right - left) < err){
                 break;
             }
-            x1 = x0;
+            right = left;
         }
-        return x1;
+        return right;
     }    
 ```
 ### [74. 搜索二维矩阵 - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix/submissions/392791330/)
@@ -885,52 +948,45 @@ class MyStack {
     }
 ```
 
-### [503. 下一个更大元素 II - 力扣（Leetcode）](https://leetcode.cn/problems/next-greater-element-ii/solutions/)
 
-#### **单调栈**
 
 ```java
-   public int[] nextGreaterElements(int[] nums) {
-        int n = nums.length;
-        int[] ret = new int[n];
-        Arrays.fill(ret, -1);
-        Deque<Integer> stack = new LinkedList<Integer>();
-        for (int i = 0; i < n * 2 - 1; i++) {
-            while(!stack.isEmpty()&&nums[stack.peek()]<nums[i%n]){
-                ret[stack.pop()]=nums[i%n];
+  public int[] maxSlidingWindow(int[] nums, int k) {
+        //用双端队列来存储数组的下标，为什么要存下标而不是存数值？
+        //因为存下标可以更方便的来确定元素是否需要移出滑动窗口
+        //判断下标是否合法来确定是否要移出
+        Deque<Integer> q=new LinkedList<>();
+        //搞不清res的size就举个例子来确定
+        int[] res = new int[nums.length - k + 1] ;
+        int index=0;
+        for(int i=0;i<nums.length;i++){
+            //保证队列的单调递减，使队列的出口始终为最大值
+            //注意队列存的是数组下标，所以判断逻辑是nums[i] > nums[q.peekLast()]
+            //容易误写成nums[i] > q.peekLast()
+            while(!q.isEmpty()&&nums[i]>nums[q.peekLast()]){
+                q.pollLast();
             }
-            stack.push(i%n);
+            q.offerLast(i);
+            // 判断队列出口的值是否合法，如果值的下标不在窗口内则要将其移出
+            if(q.peekFirst()<i-k+1){
+                q.pollFirst();
+            }
+            //窗口至少填满一次后才开始放最大值
+            //依然要注意队列存的是下标，所以赋值是赋nums[q.peekFirst()]
+            if(i >= k - 1){
+                res[index++] = nums[q.peekFirst()];
+            }
         }
-        return ret;
-    }
-```
-
-
-
-## 括号问题
-
-### [22. 括号生成 ](https://leetcode.cn/problems/generate-parentheses/submissions/391200454/)
-
-```java
-    // DFS+少量的剪枝，剪枝的条件为：左括号的数目一旦小于右括号的数目，以及，左括号的数目和右括号数目均小于n
-	List<String> res=new ArrayList();
-    public List<String> generateParenthesis(int n) {
-        dfs("",n,0,0);
         return res;
-    }
 
-    public void dfs(String s,int n,int left,int right){
-        if(left>n||right>n||right>left){
-            return;
-        }
-        if(left==n&&right==n){
-            res.add(s);
-            return;
-        }
-        dfs(s+"(",n,left+1,right);
-        dfs(s+")",n,left,right+1);
     }
 ```
+
+
+
+
+
+
 
 ## 两数相加问题
 
@@ -1166,25 +1222,6 @@ class Solution {
         return true;
     }
 }
-```
-
-### [面试题45. 把数组排成最小的数 - 力扣（Leetcode）](https://leetcode.cn/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/submissions/395884898/)
-
-思路:  此题求拼接起来的最小数字，本质上是一个排序问题。设数组 nums 中任意两数字的字符串为 x和 y ，则规定 排序判断规则 为：
-
-若拼接字符串 x+y>y+x ，则 x “大于” y ；
-反之，若 x+y<y+x ，则 x “小于” y ；
-x “小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
-
-```java
- public String minNumber(int[] nums) {
-        List<String> list = new ArrayList<>();
-        for(int num:nums){
-            list.add(String.valueOf(num));
-        }
-        list.sort((o1,o2)->(o1+o2).compareTo(o2+o1));
-        return String.join("",list);
-    }
 ```
 
 
@@ -1791,49 +1828,3 @@ public List<List<Integer>> threeSum(int[] nums) {
         }
     }
 ```
-### [242. 有效的字母异位词 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-anagram/description/)
-
-思路: 遍历s,在数组对应的索引+1,再遍历t,再数组对应的索引-1
-
-```java
- public boolean isAnagram(String s, String t) {
-        if(s.length()!=t.length()){
-            return false;
-        }
-        int[] res=new int[26];
-        for(int i=0;i<s.length();i++){
-            char c=s.charAt(i);
-            res[c-'a']++;
-        }
-        for(int i=0;i<t.length();i++){
-            char c=t.charAt(i);
-            if(--res[c-'a']<0){
-                return false;
-            }
-        }
-        return true;
-    }
-```
-
-
-
-## &运算
-
-### [191. 位1的个数 - 力扣（Leetcode）](https://leetcode.cn/problems/number-of-1-bits/discussion/)
-
-思路: n & (n - 1)   最小一位1开始，后面全部取反。与一下，取最小一位1前面的值，继续循环执行了几次，说明就有几个1
-
-```java
- // you need to treat n as an unsigned value
-    public int hammingWeight(int n) {
-        int max=0;
-        while(n!=0){
-            //不断的对二进制n进行减1的操作，然后记录count
-            n=n&(n-1);
-            max++;
-        }
-        return max;
-    }
-}
-```
-

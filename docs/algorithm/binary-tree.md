@@ -380,6 +380,27 @@ class Solution {
 
 ### [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/)
 
+```java
+   int max=Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        dfs(root);
+        return max;
+    }
+
+    public int dfs(TreeNode root){
+        if(root==null){
+            return 0;
+        }
+        int left=Math.max(0,dfs(root.left));
+        int right=Math.max(0,dfs(root.right));
+        int sum=right+left+root.val;
+        max=Math.max(sum,max);
+        return Math.max(left,right)+root.val;
+    }
+```
+
+
+
 ### [111. 二叉树的最小深度](https://leetcode.cn/problems/minimum-depth-of-binary-tree/)
 
 ## 路径和问题
@@ -406,7 +427,7 @@ class Solution {
 
 ### [二叉树中所有距离为 K 的结点](https://leetcode.cn/problems/all-nodes-distance-k-in-binary-tree/)
 
-### [路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
+### [113.路径和2](https://leetcode.cn/problems/path-sum-ii/submissions/391970172/)
 
 ```java
   List<List<Integer>> res=new ArrayList();
@@ -624,6 +645,24 @@ class Solution {
 
 
 ### [236. 二叉树的最近公共祖先](https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/)  
+
+```java
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root==null||root==q||root==p){
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left,p,q);
+        TreeNode right =  lowestCommonAncestor(root.right,p,q);
+        // 如果left 和 right都不为空，说明此时root就是最近公共节点
+        // 如果left为空，right不为空，就返回right，说明目标节点是通过right返回的，反之亦然。
+        if(left!=null&&right!=null){
+            return root;
+        }
+        return left!=null?left:right;
+    }
+```
+
+
 
 ## 前缀树
 

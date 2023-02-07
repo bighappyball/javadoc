@@ -406,3 +406,28 @@ public int findKthLargest(int[] nums, int k) {
     }
 ```
 
+### [56. 合并区间 - 力扣（Leetcode）](https://leetcode.cn/problems/merge-intervals/)
+
+```java
+   public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) {
+            return new int[0][2];
+        }
+        Arrays.sort(intervals,new Comparator<int[]>(){
+            public int compare(int[] intervals1,int[] intervals2){
+                return intervals1[0]-intervals2[0];
+            }
+        });
+        List<int[]> merged=new ArrayList<int[]>();
+        for(int i=0;i<intervals.length;++i){
+            int L=intervals[i][0],R=intervals[i][1];
+            if(merged.size()==0||merged.get(merged.size()-1)[1]<L){
+                merged.add(new int[]{L,R});
+            }else{
+                merged.get(merged.size()-1)[1]=Math.max(merged.get(merged.size() - 1)[1], R);
+            }
+        }
+        return merged.toArray(new int[merged.size()][]);
+    }
+```
+

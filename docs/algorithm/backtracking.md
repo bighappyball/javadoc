@@ -1,16 +1,110 @@
-## 回溯
+# 回溯
+
+## 全排列
 
 看到 全排列，或者 枚举全部解，等类似的 搜索枚举类型题，基本就是 回溯 没跑了。 因为回溯就是类似枚举的搜索尝试过程，主要是在搜索尝试过程中寻找问题的解，当发现已不满足求解条件时，就“回溯”返回，尝试别的路径。
 
-### 全排列
+### [46. 全排列 - 力扣（Leetcode）](https://leetcode.cn/problems/permutations/description/)
 
-[46. 全排列](https://leetcode.cn/problems/permutations/description/)
+思路: 增加used数组判断是否使用过
 
-[47. 全排列 II](https://leetcode.cn/problems/permutations-ii/)
+```java
 
-### 剪枝
+    List<List<Integer>> res=new ArrayList();
 
-#### [40. 组合总和 II](https://leetcode.cn/problems/combination-sum-ii/submissions/392751218/)
+    public List<List<Integer>> permute(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        back(nums,new ArrayList(),used);
+        return res;
+
+    }
+
+    public void back(int[] nums,List<Integer> list , boolean[] used){
+        if(list.size()==nums.length){
+            res.add(new ArrayList(list));
+            return;
+        }
+        for(int i=0;i<nums.length;i++){
+            if(!used[i]){
+                list.add(nums[i]);
+                used[i] = true;
+                back(nums,list,used);
+                used[i] = false;
+                list.remove(list.size()-1);
+            }
+        }
+    }
+```
+
+
+
+### [47. 全排列 II](https://leetcode.cn/problems/permutations-ii/)
+
+#### 回溯+剪枝
+
+思路:   假设我们有 3 个重复数排完序后相邻，那么我们一定保证每次都是拿从左往右第一个未被填过的数字，即整个数组的状态其实是保证了 [未填入，未填入，未填入] 到 [填入，未填入，未填入]，再到 [填入，填入，未填入]，最后到 [填入，填入，填入]的过程的，因此可以达到去重的目标。
+
+因此剪枝条件 `used[i] || (i > 0 && nums[i] == nums[i - 1] && !used[i - 1])`
+
+```java
+    List<List<Integer>> res=new ArrayList();
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        boolean[] used = new boolean[nums.length];
+        Arrays.sort(nums);
+        back(nums,new ArrayList(),used);
+        return res;
+    }
+
+    public void back(int[] nums,List<Integer> list,boolean[] used){
+        if(list.size()==nums.length){
+            res.add(new ArrayList(list));
+            return;
+        }
+        for(int i=0;i<nums.length;i++){
+            if(used[i] || (i > 0 && nums[i] == nums[i - 1] && !used[i - 1])){
+                continue;
+            }
+            list.add(nums[i]);
+            used[i] = true;
+            back(nums,list,used);
+            used[i] = false;
+            list.remove(list.size()-1);
+        }
+    }
+```
+
+
+
+### [22. 括号生成 ](https://leetcode.cn/problems/generate-parentheses/submissions/391200454/)
+
+#### 回溯+剪枝
+
+```java
+    // DFS+少量的剪枝，剪枝的条件为：左括号的数目一旦小于右括号的数目，以及，左括号的数目和右括号数目均小于n
+	List<String> res=new ArrayList();
+    public List<String> generateParenthesis(int n) {
+        dfs("",n,0,0);
+        return res;
+    }
+
+    public void dfs(String s,int n,int left,int right){
+        if(left>n||right>n||right>left){
+            return;
+        }
+        if(left==n&&right==n){
+            res.add(s);
+            return;
+        }
+        dfs(s+"(",n,left+1,right);
+        dfs(s+")",n,left,right+1);
+    }
+```
+
+### [40. 组合总和 II](https://leetcode.cn/problems/combination-sum-ii/submissions/392751218/)
+
+#### 回溯+剪枝
+
 ```java
  List<List<Integer>> res=new ArrayList();
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
@@ -33,7 +127,9 @@
     }
 ```
 
-#### [17. 电话号码的字母组合 - 力扣（Leetcode）](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/)
+### [17. 电话号码的字母组合 - 力扣（Leetcode）](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/description/)
+
+#### 回溯+剪枝
 
 ```java
  public List<String> letterCombinations(String digits) {

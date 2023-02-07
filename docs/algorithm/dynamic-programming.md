@@ -96,14 +96,9 @@ public int trap(int[] height) {
 
 具体做法：
 
-- 定义二维dp数组 int[][] dp = new int[n][2],
+- 定义二维dp数组 `int[][] dp = new int[n][2]`,其中，`dp[i][0] `表示下标i的柱子左边的最大值，`dp[i][1] `表示下标i的柱子右边的最大值。
 
-  其中，dp[i][0] 表示下标i的柱子左边的最大值，
-
-- dp[i][1] 表示下标i的柱子右边的最大值。
-
-- 分别从两头遍历height数组，为 dp[i][0]和 dp[i][1] 赋值。
-
+- 分别从两头遍历height数组，为 `dp[i][0]`和 `dp[i][1]` 赋值。
 - 同方法1，遍历每个柱子，累加每个柱子可以储水的高度。
 
 ```java
@@ -131,19 +126,13 @@ public int trap(int[] height) {
 
 #### **双指针**
 
-在上述的动态规划方法中，我们用二维数组来存储每个柱子左右两侧的最大高度，但我们递推累加每个柱子的储水高度时其实只用到了 dp[i][0]和 dp[i][1] 两个值，因此我们递推的时候只需要用 int leftMax 和 int rightMax 两个变量就行了。
+在上述的动态规划方法中，我们用二维数组来存储每个柱子左右两侧的最大高度，但我们递推累加每个柱子的储水高度时其实只用到了` dp[i][0]`和 `dp[i][1] `两个值，因此我们递推的时候只需要用 leftMax 和 rightMax 两个变量就行了。
 
-即将上述代码中的递推公式：
+即将上述代码中的递推公式：`res += Math.min(dp[i][0], dp[i][1]) - height[i];`
 
-res += Math.min(dp[i][0], dp[i][1]) - height[i];
+优化成： `res += Math.min(leftMax, rightMax) - height[i];`
 
-优化成：
-
-res += Math.min(leftMax, rightMax) - height[i];
-
-注意这里的 leftMax 是从左端开始递推得到的，而 rightMax 是从右端开始递推得到的。
-
-因此遍历每个柱子，累加每个柱子的储水高度时，也需要用 left 和 right 两个指针从两端开始遍历。
+注意这里的 leftMax 是从左端开始递推得到的，而 rightMax 是从右端开始递推得到的。因此遍历每个柱子，累加每个柱子的储水高度时，也需要用 left 和 right 两个指针从两端开始遍历。
 
 ```java
   public int trap(int[] height) {
@@ -163,9 +152,23 @@ res += Math.min(leftMax, rightMax) - height[i];
 
 <!-- tabs:end -->
 
-## 最长/最小问题
+## 子序列问题
 
 ### [300. 最长上升子序列](https://leetcode.cn/problems/longest-increasing-subsequence)
+
+#### 动态规划
+
+思路: 
+
+- 定义dp[i] 为考虑前 iii 个元素，以第 i 个数字结尾的最长上升子序列的长度，注意 nums[i] 必须被选取。
+
+- 我们从小到大计算 dp 数组的值，在计算 dp[i]之前，我们已经计算出 dp[0…i−1]的值，则状态转移方程为：`dp[i]=max⁡(dp[j])+1,其中 0≤j<i 且 num[j]<num[i] `
+
+- 即考虑往 dp[0…i−1] 中最长的上升子序列后面再加一个 nums[i]。由于 dp[j]代表 nums[0…j]中以 nums[j] 结尾的最长上升子序列，所以如果能从 dp[j]这个状态转移过来，那么 nums[i] 必然要大于 nums[j]，才能将 nums[i]放在 nums[j]后面以形成更长的上升子序列。
+- 最后，整个数组的最长上升子序列即所有 dp[i]中的最大值。`LISlength=max⁡(dp[i]),其中 0≤i<n `
+
+
+
 
 ```java
     public int lengthOfLIS(int[] nums) {
@@ -176,13 +179,38 @@ res += Math.min(leftMax, rightMax) - height[i];
             for(int j=0;j<i;j++){
                 if(nums[i]>nums[j]){
                     dp[i]=Math.max(dp[i],dp[j]+1);
-                    max=Math.max(dp[i],max);
                 }
             }
+            max=Math.max(dp[i],max);
         }
         return max;
     }
 ```
+
+#### 动态规划 + 二分查找
+
+### [1143. 最长公共子序列 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-common-subsequence/solutions/)
+
+#### 动态规划
+
+```java
+    int m = text1.length(), n = text2.length();
+          int[][] dp=new int[m+1][n+1];
+          for(int i=1;i<=m;i++){
+              for(int j=1;j<=n;j++){
+                  if(text1.charAt(i-1)==text2.charAt(j-1)){
+                      dp[i][j]=dp[i-1][j-1]+1;
+                  }
+                  dp[i][j]=Math.max(dp[i-1][j],dp[i][j]);
+                  dp[i][j]=Math.max(dp[i][j-1],dp[i][j]);
+              }
+          }
+          return dp[m][n];
+```
+
+
+
+## 编辑距离
 
 ### [72. 编辑距离](https://leetcode.cn/problems/edit-distance)
 
