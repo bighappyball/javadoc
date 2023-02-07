@@ -94,3 +94,5 @@ Spring Boot、MySQL、Redis、Mybatis、Rabbit MQ、MongoDB。
 ## 加分项
 
 [【SPI】定制按需加载的SPI - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/571244036)
+
+bitmap 统计活跃用户、通过 sorted set 维护排行榜
