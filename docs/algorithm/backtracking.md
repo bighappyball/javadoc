@@ -4,6 +4,28 @@
 
 看到 全排列，或者 枚举全部解，等类似的 搜索枚举类型题，基本就是 回溯 没跑了。 因为回溯就是类似枚举的搜索尝试过程，主要是在搜索尝试过程中寻找问题的解，当发现已不满足求解条件时，就“回溯”返回，尝试别的路径。
 
+### [78. 子集 ](https://leetcode.cn/problems/subsets/submissions/391590993/)
+
+```java
+    List<List<Integer>>  res=new ArrayList();
+    public List<List<Integer>> subsets(int[] nums) {
+        dfs(new ArrayList(),nums,0);
+        return res;
+    }
+
+    public void dfs(List<Integer> list,int[] nums,int start){
+        if(start>nums.length){
+            return;
+        }
+        res.add(new ArrayList(list));
+        for(int i=start;i<nums.length;i++){
+            list.add(nums[i]);
+            dfs(list,nums,i+1);
+            list.remove(list.size()-1);
+        }
+    }
+```
+
 ### [46. 全排列 - 力扣（Leetcode）](https://leetcode.cn/problems/permutations/description/)
 
 思路: 增加used数组判断是否使用过

@@ -541,7 +541,7 @@ class Solution {
 优化 我们可以用一个HashMap把中序遍历数组的每个元素的值和下标存起来，这样寻找根节点的位置就可以直接得到了
 
 ```java
- Map<Integer,Integer> map=new HashMap();
+    Map<Integer,Integer> map=new HashMap();
     public TreeNode buildTree(int[] preorder, int[] inorder) {
         for(int i=0;i<inorder.length;i++){
             map.put(inorder[i],i);
