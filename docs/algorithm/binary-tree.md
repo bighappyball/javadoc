@@ -241,6 +241,26 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
 用递归方法和后序遍历写
 
+```java
+  public boolean isBalanced(TreeNode root) {
+        return dfs(root)==-1?false:true;
+    }
+
+    public int dfs(TreeNode root){
+        if(root==null){
+            return 0;
+        }
+        int left=dfs(root.left);
+        int right=dfs(root.right);
+        if(left>=0&&right>=0&&Math.abs(left-right)<=1){
+            return Math.max(right,left)+1;
+        }
+        return -1;
+    }
+```
+
+
+
 ## 完全二叉树
 
 在一个 完全二叉树 中，除了最后一个关卡外，所有关卡都是完全被填满的，并且最后一个关卡中的所有节点都是尽可能靠左的。它可以包含 1 到 2h 节点之间的最后一级 h 。
