@@ -8,7 +8,7 @@ l 熟练掌握 MySQL 数据库以及常见优化手段(比如索引、SQL 优化
 
 l 熟练掌握 Elasticsearch 的使用及原理。
 
-l 熟练掌握Spring、Spring MVC、SpringBoot、MyBatis、Spring Security 、Netty 等主流开发框架。
+l 熟练掌握Spring、Spring MVC、SpringBoot、MyBatis、Netty 等主流开发框架。
 
 l 熟练掌握分布式下的常见理论 CAP、BASE，熟悉 Paxos 算法和 Raft 算法
 
@@ -96,3 +96,36 @@ Spring Boot、MySQL、Redis、Mybatis、Rabbit MQ、MongoDB。
 [【SPI】定制按需加载的SPI - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/571244036)
 
 bitmap 统计活跃用户、通过 sorted set 维护排行榜
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+匹配算法
+
+1. 就近原则    就近匹配专家,缩短患者就诊距离
+2. 精准匹配    根据关键字精准匹配专家
+3. 自动扩大范围   提高接单效率
+

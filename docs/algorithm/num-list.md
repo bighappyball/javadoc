@@ -852,6 +852,65 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### [32. 最长有效括号 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-valid-parentheses/submissions/)
+
+#### 栈
+
+```java
+   public int longestValidParentheses(String s) {
+        int max=0;
+        Deque<Integer> stack=new LinkedList<Integer>();
+        stack.push(-1);
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)=='('){
+                stack.push(i);
+            }else{
+                stack.pop();
+                if(stack.isEmpty()){
+                    stack.push(i);
+                }else{
+                    max=Math.max(max,i-stack.peek());
+                }
+            }
+        }
+        return max;
+    }
+}
+```
+
+#### 动态规划
+
+思路: 
+
+我们定义 dp[i] 表示以下标 i 字符结尾的最长有效括号的长度。我们将 dp 数组全部初始化为 0 。显然有效的子串一定以 ‘)’ 结尾，因此我们可以知道以 ‘(’结尾的子串对应的 dp 值必定为 0 ，我们只需要求解 ‘)’在 dp 数组中对应位置的值。
+
+我们从前往后遍历字符串求解 dp值，我们每两个字符检查一次：
+
+s[i]=‘)’且 s[i−1]=‘(’，也就是字符串形如 “……()”，我们可以推出：`dp[i]=dp[i−2]+2`
+
+我们可以进行这样的转移，是因为结束部分的 "()" 是一个有效子字符串，并且将之前有效子字符串的长度增加了 2 。
+
+s[i]=‘)’且 s[i−1]=‘)’，也就是字符串形如 “……))”，我们可以推出： 如果 s[i−dp[i−1]−1]=‘(’，那么`dp[i]=dp[i−1]+dp[i−dp[i−1]−2]+2`
+
+```java
+ public int longestValidParentheses(String s) {
+        int maxans = 0;
+        int[] dp = new int[s.length()];
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == ')') {
+                if (s.charAt(i - 1) == '(') {
+                    dp[i] = (i >= 2 ? dp[i - 2] : 0) + 2;
+                } else if (i - dp[i - 1] > 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
+                    dp[i] = dp[i - 1] + ((i - dp[i - 1]) >= 2 ? dp[i - dp[i - 1] - 2] : 0) + 2;
+                }
+                maxans = Math.max(maxans, dp[i]);
+            }
+        }
+        return maxans;
+    }
+
+```
+
 
 
 ### [232. 用栈实现队列 ](https://leetcode.cn/problems/implement-queue-using-stacks/)

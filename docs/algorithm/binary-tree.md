@@ -439,6 +439,34 @@ class Solution {
     }
 ```
 
+### [129. 求根节点到叶节点数字之和 - 力扣（Leetcode）](https://leetcode.cn/problems/sum-root-to-leaf-numbers/description/)
+
+```java
+  int sum=0;
+    public int sumNumbers(TreeNode root) {
+        dfs(root,0);
+        return sum;
+    }
+
+    public void dfs(TreeNode root,int val){
+        if(root==null){
+            sum+=val;
+            return;
+        }
+        val=val*10+root.val;
+        if(root.left==null&&root.right==null){
+            sum+=val;
+            return;
+        }
+        if(root.left!=null){
+            dfs(root.left,val);
+        }
+        if(root.right!=null){
+            dfs(root.right,val);
+        }
+    }
+```
+
 
 
 ## 回溯算法
@@ -684,53 +712,57 @@ class Solution {
 
 
 
-## 前缀树
 
-### [208. 实现 Trie (前缀树) - 力扣（Leetcode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+
+### [101. 对称二叉树 - 力扣（Leetcode）](https://leetcode.cn/problems/symmetric-tree/)
+
+#### 队列
 
 ```java
-class Trie {
-
-    class TrieNode {
-        boolean val;
-        TrieNode[] children=new TrieNode[26];
-    }
-
-    TrieNode root;
-
-    public Trie() {
-        root=new TrieNode();
-    }
-    
-    public void insert(String word) {
-        TrieNode p=root;
-        for(char c:word.toCharArray()){
-            int i=c-'a';
-            if(p.children[i]==null) p.children[i]=new TrieNode();
-            p=p.children[i];
-        }
-        p.val=true;
-    }
-    
-    public boolean search(String word) {
-        TrieNode p=root;
-        for(char c:word.toCharArray()){
-            int i=c-'a';
-            if(p.children[i]==null) return false;
-            p=p.children[i];
-        }
-        return p.val;
-    }
-    
-    public boolean startsWith(String prefix) {
-        TrieNode p=root;
-        for(char c:prefix.toCharArray()){
-            int i=c-'a';
-            if(p.children[i]==null) return false;
-            p=p.children[i];
+ public boolean isSymmetric(TreeNode root) {
+        if(root==null || (root.left==null && root.right==null)) {
+			return true;
+		}
+        LinkedList<TreeNode> queue=new LinkedList();
+        queue.add(root.left);
+        queue.add(root.right);
+        while(queue.size()>0){
+                TreeNode left=queue.poll();
+                TreeNode right=queue.poll();
+                if(left==null&&right==null){
+                     continue;
+                }
+                if(left==null||right==null||left.val!=right.val){
+                    return false;
+                }
+                queue.add(left.right);
+                queue.add(right.left);
+                queue.add(left.left);
+                queue.add(right.right);
         }
         return true;
     }
-}
+```
+
+#### 递归
+
+```java
+   public boolean isSymmetric(TreeNode root) {
+        return isSymmetric(root.left,root.right);
+    }
+
+    public boolean isSymmetric(TreeNode left,TreeNode right){
+        if(left==null&&right==null){
+            return true;
+        }
+        if(left==null||right==null){
+            return false;
+        }
+        if(left.val!=right.val){
+            return false;
+        }
+        return isSymmetric(left.right,right.left)&& isSymmetric(left.left,right.right);
+        
+    }
 ```
 

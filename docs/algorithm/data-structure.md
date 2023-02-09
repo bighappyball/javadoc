@@ -298,5 +298,90 @@ class MyHashMap {
  */
 ```
 
+### [155. 最小栈 - 力扣（Leetcode）](https://leetcode.cn/problems/min-stack/)
+
+```java
+class MinStack {
+
+    Stack<Integer> stack=new Stack();
+    Stack<Integer> minStack=new Stack();
+    
+    public MinStack() {
+
+    }
+    
+    public void push(int val) {
+        if(!minStack.isEmpty()){
+            int min = Math.min(minStack.peek(),val);
+            minStack.push(min);
+        }else{
+            minStack.push(val);
+        }
+        stack.push(val);
+    }
+    
+    public void pop() {
+       minStack.pop();
+       stack.pop();
+    }
+    
+    public int top() {
+        return stack.peek();
+    }   
+    
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+
+### [208. 实现 Trie (前缀树) - 力扣（Leetcode）](https://leetcode.cn/problems/implement-trie-prefix-tree/)
+
+```java
+class Trie {
+
+    class TrieNode {
+        boolean val;
+        TrieNode[] children=new TrieNode[26];
+    }
+
+    TrieNode root;
+
+    public Trie() {
+        root=new TrieNode();
+    }
+    
+    public void insert(String word) {
+        TrieNode p=root;
+        for(char c:word.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) p.children[i]=new TrieNode();
+            p=p.children[i];
+        }
+        p.val=true;
+    }
+    
+    public boolean search(String word) {
+        TrieNode p=root;
+        for(char c:word.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) return false;
+            p=p.children[i];
+        }
+        return p.val;
+    }
+    
+    public boolean startsWith(String prefix) {
+        TrieNode p=root;
+        for(char c:prefix.toCharArray()){
+            int i=c-'a';
+            if(p.children[i]==null) return false;
+            p=p.children[i];
+        }
+        return true;
+    }
+}
+```
+
 ### 
 
