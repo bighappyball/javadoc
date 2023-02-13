@@ -6,7 +6,7 @@ l 熟练掌握Java 基础知识、Java 并发、JVM，有过 JVM 排查问题经
 
 l 熟练掌握 MySQL 数据库以及常见优化手段(比如索引、SQL 优化、读写分离&分库分表)，Redis 使用经验丰富，熟悉MongoDB。
 
-l 熟练掌握 Elasticsearch 的使用及原理。
+<!-- l 熟练掌握 Elasticsearch 的使用及原理。 -->
 
 l 熟练掌握Spring、Spring MVC、SpringBoot、MyBatis、Netty 等主流开发框架。
 
@@ -16,7 +16,7 @@ l 熟练掌握 RPC (Dubbo)、分布式事务(Seata、 2PC、3PC、TCC) 、分布
 
 l 熟悉 Spring Cloud 全家桶常见组件的使用。
 
-l 熟练掌握消息队列 Kafka 的使用及原理、有限流、降级、熔断的实战经验。
+l 熟练掌握消息队列 Rocket 的使用及原理、有限流、降级、熔断的实战经验。
 
 l 熟练掌握 Git、Maven、Docker。
 

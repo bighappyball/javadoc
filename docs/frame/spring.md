@@ -2,7 +2,7 @@
 
 ## 什么是Spring?
 
-Spring 是一个轻量级 Java 开发框架，目的是为了解决企业级应用开发的业务逻辑层和其他各层的耦合问题。Spring 负责基础架构，因此 Java 开发者可以专注于应用程序的开发,Spring 最根本的使命是解决企业级应用开发的复杂性，即简化 Java 开发。
+Spring 是一个轻量级 Java 开发框架，Spring 最根本的使命是解决企业级应用开发的复杂性，Java 开发者可以专注于应用程序的开发,即简化 Java 开发。
 
 **Spring 特性**
 
@@ -126,6 +126,8 @@ Spring AOP 就是基于动态代理的，如果要代理的对象，实现了某
 
 ## Spring 框架中 bean 的生命周期
 
+![流程图](http://static.iocoder.cn/images/Spring/2018-12-24/08.png)
+
 ![img](../_media/analysis/netty/wps7F39.tmp.jpg) 
 
 1. 调用 Bean 构造方法或工厂方法实例化 Bean
@@ -147,6 +149,16 @@ Spring AOP 就是基于动态代理的，如果要代理的对象，实现了某
 - • byType：通过参数的数据类型进行自动装配。
 - • constructor：利用构造函数进行装配，并且构造函数的参数通过 byType 进行装配。
 - • autodetect：自动探测，如果有构造方法，通过 construct 的方式自动装配，否则使用 byType的方式自动装配。
+
+## 循环依赖
+
+[堂妹让我聊：Spring循环依赖 (qq.com)](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
+
+假设只设计二级缓存能否解决循环依赖？
+
+> 只用二级缓存是可以解决缓存依赖的，（废弃第三级，保留第一第二）但是会有一个问题，在配置AOP切面的时候会出错，因为无法生成代理对象。
+>
+> 所以三级缓存是为了处理AOP中的循环依赖。因为当配置了切面之后，在getEarlyBeanReference方法中，有可能会把之前的原始对象替换成代理对象，导致Bean的版本不是最终的版本，所以报错。
 
 ## 详细讲解核心容器（spring context 应用上下文) 模块
 
@@ -176,6 +188,130 @@ spring 有五大隔离级别，默认值为 ISOLATION_DEFAULT（使用数据库�
 4. ISOLATION_REPEATABLE_READ：可重复读，保证多次读取同一个数据时，其值都和事务开始时候的内容是一致，禁止读取到别的事务未提交的数据（会造成幻读），MySQ的默认级别；
 5. ISOLATION_SERIALIZABLE：序列化，代价最高最可靠的隔离级别，该隔离级别能防止脏读、不可重复读、幻读。
 
+**目前 Spring 提供两种类型的事务管理：**
+
+- **声明式**事务：通过使用注解或基于 XML 的配置事务，从而事务管理与业务代码分离。
+- **编程式**事务：通过编码的方式实现事务管理，需要在代码中显式的调用事务的获得、提交、回滚。它为您提供极大的灵活性，但维护起来非常困难。
+
+### **Spring 事务如何和不同的数据持久层框架做集成？**
+
+① 首先，我们先明确下，这里数据持久层框架，指的是 Spring JDBC、Hibernate、Spring JPA、MyBatis 等等。
+
+② 然后，Spring 事务的管理，是通过 `org.springframework.transaction.PlatformTransactionManager` 进行管理，定义如下：
+
+```
+// PlatformTransactionManager.java
+
+public interface PlatformTransactionManager {
+
+    // 根据事务定义 TransactionDefinition ，获得 TransactionStatus 。 
+    TransactionStatus getTransaction(@Nullable TransactionDefinition definition) throws TransactionException;
+
+    // 根据情况，提交事务
+    void commit(TransactionStatus status) throws TransactionException;
+    
+    // 根据情况，回滚事务
+    void rollback(TransactionStatus status) throws TransactionException;
+    
+}
+```
+
+- PlatformTransactionManager 是负责事务管理的接口，一共有三个接口方法，分别负责事务的获得、提交、回滚。
+
+- ```
+  #getTransaction(TransactionDefinition definition)
+  ```
+
+   
+
+  方法，根据事务定义 TransactionDefinition ，获得 TransactionStatus 。
+
+  - 为什么不是创建事务呢？因为如果当前如果已经有事务，则不会进行创建，一般来说会跟当前线程进行绑定。如果不存在事务，则进行创建。
+  - 为什么返回的是 TransactionStatus 对象？在 TransactionStatus 中，不仅仅包含事务属性，还包含事务的其它信息，例如是否只读、是否为新创建的事务等等。😈 下面，也会详细解析 TransactionStatus 。
+  - 事务 TransactionDefinition 是什么？😈 下面，也会详细解析 TransactionStatus 。
+
+- ```
+  #commit(TransactionStatus status)
+  ```
+
+   
+
+  方法，根据 TransactionStatus 情况，提交事务。
+
+  - 为什么根据 TransactionStatus 情况，进行提交？例如说，带
+
+    ```
+    @Transactional
+    ```
+
+     
+
+    注解的的 A 方法，会调用
+
+     
+
+    ```
+    @Transactional
+    ```
+
+     
+
+    注解的的 B 方法。
+
+    - 在 B 方法结束调用后，会执行 `PlatformTransactionManager#commit(TransactionStatus status)` 方法，此处事务**是不能**、**也不会**提交的。
+    - 而是在 A 方法结束调用后，执行 `PlatformTransactionManager#commit(TransactionStatus status)` 方法，提交事务。
+
+- ```
+  #rollback(TransactionStatus status)
+  ```
+
+   
+
+  方法，根据 TransactionStatus 情况，回滚事务。
+
+  - 为什么根据 TransactionStatus 情况，进行回滚？原因同 `#commit(TransactionStatus status)` 方法。
+
+③ 再之后，PlatformTransactionManager 有**抽象子**类 `org.springframework.transaction.support.AbstractPlatformTransactionManager` ，基于 [模板方法模式](https://blog.csdn.net/carson_ho/article/details/54910518) ，实现事务整体逻辑的骨架，而抽象 `#doCommit(DefaultTransactionStatus status)`、`#doRollback(DefaultTransactionStatus status)` 等等方法，交由子类类来实现。
+
+> 前方高能，即将进入关键的 ④ 步骤。
+
+④ 最后，不同的数据持久层框架，会有其对应的 PlatformTransactionManager 实现类，如下图所示：[![事务的特性](http://static.iocoder.cn/images/Spring/2018-12-24/07.png)](http://static.iocoder.cn/images/Spring/2018-12-24/07.png)事务的特性
+
+- 所有的实现类，都基于 AbstractPlatformTransactionManager 这个骨架类。
+- HibernateTransactionManager ，和 Hibernate5 的事务管理做集成。
+- DataSourceTransactionManager ，和 JDBC 的事务管理做集成。所以，它也适用于 MyBatis、Spring JDBC 等等。
+- JpaTransactionManager ，和 JPA 的事务管理做集成。
+
+如下，是一个比较常见的 XML 方式来配置的事务管理器，使用的是 DataSourceTransactionManager 。代码如下：
+
+```
+<!-- 事务管理器 -->
+<bean id="transactionManager"
+class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <!-- 数据源 -->
+    <property name="dataSource" ref="dataSource" />
+</bean>
+```
+
+
+
+### 为什么在 Spring 事务中不能切换数据源？
+
+做过 Spring 多数据源的胖友，都会有个惨痛的经历，为什么在开启事务的 Service 层的方法中，无法切换数据源呢？因为，在 Spring 的事务管理中，**所使用的数据库连接会和当前线程所绑定**，即使我们设置了另外一个数据源，使用的还是当前的数据源连接。
+
+另外，多个数据源且需要事务的场景，本身会带来**多事务一致性**的问题，暂时没有特别好的解决方案。
+
+所以一般一个应用，推荐除非了读写分离所带来的多数据源，其它情况下，建议只有一个数据源。并且，随着微服务日益身形，一个服务对应一个 DB 是比较常见的架构选择。
+
+### 什么是事务的回滚规则？
+
+回滚规则，定义了哪些异常会导致事务回滚而哪些不会。
+
+- 默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚（这一行为与EJB的回滚行为是一致的）。
+- 但是你可以声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，你还可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。
+
+注意，事务的回滚规则，并不是数据库事务规范中的名词，**而是 Spring 自身所定义的**。
+
 
 
 
@@ -189,6 +325,36 @@ spring 有五大隔离级别，默认值为 ISOLATION_DEFAULT（使用数据库�
 @Resource  是默认根据属性名称进行自动装配的，如果有多个类型一样的Bean候选者，则可以通过name进行指定进行注入
 
 @Autowired、@Inject是默认按照类型匹配的，@Resource是按照名称匹配的
+
+### 什么是 Spring 装配？
+
+当 Bean 在 Spring 容器中组合在一起时，它被称为**装配**或 **Bean 装配**。Spring 容器需要知道需要什么 Bean 以及容器应该如何使用依赖注入来将 Bean 绑定在一起，同时装配 Bean 。
+
+> 装配，和上文提到的 DI 依赖注入，实际是一个东西。
+
+### **自动装配有哪些方式？**
+
+Spring 容器能够自动装配 Bean 。也就是说，可以通过检查 BeanFactory 的内容让 Spring 自动解析 Bean 的协作者。
+
+自动装配的不同模式：
+
+- no - 这是默认设置，表示没有自动装配。应使用显式 Bean 引用进行装配。
+- byName - 它根据 Bean 的名称注入对象依赖项。它匹配并装配其属性与 XML 文件中由相同名称定义的 Bean 。
+- 【最常用】**byType** - 它根据类型注入对象依赖项。如果属性的类型与 XML 文件中的一个 Bean 类型匹配，则匹配并装配属性。
+- 构造函数 - 它通过调用类的构造函数来注入依赖项。它有大量的参数。
+- autodetect - 首先容器尝试通过构造函数使用 autowire 装配，如果不能，则尝试通过 byType 自动装配。
+
+**自动装配有什么局限？**
+
+> 艿艿：这个题目，了解下即可，也不是很准确。
+
+- 覆盖的可能性 - 您始终可以使用 `<constructor-arg>` 和 `<property>` 设置指定依赖项，这将覆盖自动装配。
+
+- 基本元数据类型 - 简单属性（如原数据类型，字符串和类）无法自动装配。
+
+  > 这种，严格来说，也不能称为局限。因为可以通过配置文件来解决。
+
+- 令人困惑的性质 - 总是喜欢使用明确的装配，因为自动装配不太精确。
 
 ### 使用@Autowired 注解自动装配的过程是怎样的？
 
@@ -246,6 +412,8 @@ Spring AOP 中的动态代理主要有两种方式，JDK 动态代理和 CGLIB �
 - session：在一个 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web的 Spring ApplicationContext 情形下有效。
 - global-session：在一个全局的 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。
 
+另外，网络上很多文章说有 Global-session 级别，它是 Portlet 模块独有，目前已经废弃，在 Spring5 中是找不到的。
+
 ### Spring 框架中的单例 bean 是线程安全的吗？
 
 不是，Spring 框架中的单例 bean 不是线程安全的。spring 中的 bean 默认是单例模式，spring 框架并没有对单例 bean 进行多线程的封装处理。那就要开发者自己去保证线程安全了，最简单的就是改变 bean 的作用域，把“singleton”变更为“prototype”，这样请求 bean 相当于 new Bean()了，所以就可以保证线程安全了
@@ -260,6 +428,10 @@ Spring AOP 中的动态代理主要有两种方式，JDK 动态代理和 CGLIB �
 
 在类中定义一个 ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal中（推荐的一种方式）
 
+### Spring 中有多少种 IoC 容器？
+
+Spring 提供了两种( 不是“个” ) IoC 容器，分别是 BeanFactory、ApplicationContext 。
+
 ### BeanFactory 和 ApplicationContext 有什么区别？
 
 BeanFactory 和 ApplicationContext 是 Spring 的两大核心接口，都可以当做 Spring 的容器。其中ApplicationContext 是 BeanFactory 的子接口。
@@ -270,11 +442,14 @@ BeanFactory 简单粗暴，可以理解为就是个 HashMap，Key 是 BeanName�
 
 BeanFactory：是 Spring 里面最底层的接口，包含了各种 Bean 的定义，读取 bean 配置文档，管理bean 的加载、实例化，控制 bean 的生命周期，维护 bean 之间的依赖关系。ApplicationContext 接口作为 BeanFactory 的派生，除了提供 BeanFactory 所具有的功能外，还提供了更完整的框架功能：
 
-- 继承 MessageSource，因此支持国际化。
-- • 统一的资源文件访问方式。
-- • 提供在监听器中注册 bean 的事件。
-- • 同时加载多个配置文件。
-- • 载入多个（有继承关系）上下文 ，使得每一个上下文都专注于一个特定的层次，比如应用的web 层。
+- MessageSource ：管理 message ，实现国际化等功能。
+- ApplicationEventPublisher ：事件发布。
+- ResourcePatternResolver ：多资源加载。
+- EnvironmentCapable ：系统 Environment（profile + Properties）相关。
+- Lifecycle ：管理生命周期。
+- Closable ：关闭，释放资源
+- InitializingBean：自定义初始化。
+- BeanNameAware：设置 beanName 的 Aware 接口。
 
 **加载方式：**
 
@@ -300,3 +475,205 @@ BeanFactory 和 ApplicationContext 都支持 BeanPostProcessor，BeanFactoryPost
 作用于方法：当类配置了@Transactional，方法也配置了@Transactional，方法的事务会覆盖类的事务配置信息。
 
  
+
+### 什么是依赖注入？
+
+在依赖注入中，你不必主动、手动创建对象，但必须描述如何创建它们。
+
+- 你不是直接在代码中将组件和服务连接在一起，而是描述配置文件中哪些组件需要哪些服务。
+- 然后，再由 IoC 容器将它们装配在一起。
+
+### 可以通过多少种方式完成依赖注入？
+
+- 接口注入
+- 构造函数注入
+- setter 注入
+
+### 请介绍下常用的 BeanFactory 容器？
+
+BeanFactory 最常用的是 XmlBeanFactory 。它可以根据 XML 文件中定义的内容，创建相应的 Bean。
+
+### 请介绍下常用的 ApplicationContext 容器？
+
+以下是三种较常见的 ApplicationContext 实现方式：
+
+- 1、ClassPathXmlApplicationContext ：从 ClassPath 的 XML 配置文件中读取上下文，并生成上下文定义。应用程序上下文从程序环境变量中取得。示例代码如下：
+
+  ```
+  ApplicationContext context = new ClassPathXmlApplicationContext(“bean.xml”);
+  ```
+
+- 2、FileSystemXmlApplicationContext ：由文件系统中的XML配置文件读取上下文。示例代码如下：
+
+  ```
+  ApplicationContext context = new FileSystemXmlApplicationContext(“bean.xml”);
+  ```
+
+- 3、XmlWebApplicationContext ：由 Web 应用的XML文件读取上下文。例如我们在 Spring MVC 使用的情况。
+
+当然，目前我们更多的是使用 Spring Boot 为主，所以使用的是第四种 ApplicationContext 容器，ConfigServletWebServerApplicationContext 。
+
+### 简述 Spring IoC 的实现机制？
+
+简单来说，Spring 中的 IoC 的实现原理，就是**工厂模式**加**反射机制**。代码如下：
+
+```java
+interface Fruit {
+
+     public abstract void eat();
+     
+}
+class Apple implements Fruit {
+
+    public void eat(){
+        System.out.println("Apple");
+    }
+    
+}
+class Orange implements Fruit {
+    public void eat(){
+        System.out.println("Orange");
+    }
+}
+
+class Factory {
+
+    public static Fruit getInstance(String className) {
+        Fruit f = null;
+        try {
+            f = (Fruit) Class.forName(className).newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return f;
+    }
+    
+}
+
+class Client {
+
+    public static void main(String[] args) {
+        Fruit f = Factory.getInstance("io.github.dunwu.spring.Apple");
+        if(f != null){
+            f.eat();
+        }
+    }
+    
+}
+```
+
+### Spring 提供了以下五种标准的事件：
+
+1. 上下文更新事件（ContextRefreshedEvent）：该事件会在ApplicationContext 被初始化或者更新时发布。也可以在调用ConfigurableApplicationContext 接口中的 `#refresh()` 方法时被触发。
+2. 上下文开始事件（ContextStartedEvent）：当容器调用ConfigurableApplicationContext 的 `#start()` 方法开始/重新开始容器时触发该事件。
+3. 上下文停止事件（ContextStoppedEvent）：当容器调用 ConfigurableApplicationContext 的 `#stop()` 方法停止容器时触发该事件。
+4. 上下文关闭事件（ContextClosedEvent）：当ApplicationContext 被关闭时触发该事件。容器被关闭时，其管理的所有单例 Bean 都被销毁。
+5. 请求处理事件（RequestHandledEvent）：在 We b应用中，当一个HTTP 请求（request）结束触发该事件。
+
+------
+
+除了上面介绍的事件以外，还可以通过扩展 ApplicationEvent 类来开发**自定义**的事件。
+
+① 示例自定义的事件的类，代码如下：
+
+```java
+public class CustomApplicationEvent extends ApplicationEvent{  
+
+    public CustomApplicationEvent(Object source, final String msg) {  
+        super(source);
+    }  
+
+}
+```
+
+② 为了监听这个事件，还需要创建一个监听器。示例代码如下：
+
+```
+public class CustomEventListener implements ApplicationListener<CustomApplicationEvent> {
+
+    @Override  
+    public void onApplicationEvent(CustomApplicationEvent applicationEvent) {  
+        // handle event  
+    }
+    
+}
+```
+
+③ 之后通过 ApplicationContext 接口的 `#publishEvent(Object event)` 方法，来发布自定义事件。示例代码如下：
+
+```
+// 创建 CustomApplicationEvent 事件
+CustomApplicationEvent customEvent = new CustomApplicationEvent(applicationContext, "Test message");
+// 发布事件
+applicationContext.publishEvent(customEvent);
+```
+
+### Spring 有哪些配置方式
+
+单纯从 Spring Framework 提供的方式，一共有三种：
+
+- 1、XML 配置文件。
+
+  Bean 所需的依赖项和服务在 XML 格式的配置文件中指定。这些配置文件通常包含许多 bean 定义和特定于应用程序的配置选项。它们通常以 bean 标签开头。例如：
+
+  ```
+  <bean id="studentBean" class="org.edureka.firstSpring.StudentBean">
+      <property name="name" value="Edureka"></property>
+  </bean>
+  ```
+
+- 2、注解配置。
+
+  您可以通过在相关的类，方法或字段声明上使用注解，将 Bean 配置为组件类本身，而不是使用 XML 来描述 Bean 装配。默认情况下，Spring 容器中未打开注解装配。因此，您需要在使用它之前在 Spring 配置文件中启用它。例如：
+
+  ```
+  <beans>
+  <context:annotation-config/>
+  <!-- bean definitions go here -->
+  </beans>
+  ```
+
+- 3、Java Config 配置。
+
+  Spring 的 Java 配置是通过使用 @Bean 和 @Configuration 来实现。
+
+  - `@Bean` 注解扮演与 `<bean />` 元素相同的角色。
+
+  - `@Configuration` 类允许通过简单地调用同一个类中的其他 `@Bean` 方法来定义 Bean 间依赖关系。
+
+  - 例如：
+
+    ```
+    @Configuration
+    public class StudentConfig {
+        
+        @Bean
+        public StudentBean myStudent() {
+            return new StudentBean();
+        }
+        
+    }
+    ```
+
+    - 是不是很熟悉 😈
+
+目前主要使用 **Java Config** 配置为主。当然，三种配置方式是可以混合使用的。例如说：
+
+- Dubbo 服务的配置，艿艿喜欢使用 XML 。
+- Spring MVC 请求的配置，艿艿喜欢使用 `@RequestMapping` 注解。
+- Spring MVC 拦截器的配置，艿艿喜欢 Java Config 配置。
+
+------
+
+另外，现在已经是 Spring Boot 的天下，所以更加是 **Java Config** 配置为主。
+
+### 如何在 Spring 中启动注解装配？
+
+默认情况下，Spring 容器中未打开注解装配。因此，要使用基于注解装配，我们必须通过配置 `<context：annotation-config />` 元素在 Spring 配置文件中启用它。
+
+### @Required 注解有什么用？
+
+`@Required` 注解，应用于 Bean 属性 setter 方法。
+
+- 此注解仅指示必须在配置时使用 Bean 定义中的显式属性值或使用自动装配填充受影响的 Bean 属性。
+- 如果尚未填充受影响的 Bean 属性，则容器将抛出 BeanInitializationException 异常。
