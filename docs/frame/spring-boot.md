@@ -1,14 +1,73 @@
 # SpringBoot
 
+## Spring Boot 是什么？
+
+[Spring Boot](https://github.com/spring-projects/spring-boot) 是 Spring 的**子项目**，正如其名字，提供 Spring 的引导( **Boot** )的功能。
+
+通过 Spring Boot ，我们开发者可以快速配置 Spring 项目，引入各种 Spring MVC、Spring Transaction、Spring AOP、MyBatis 等等框架，而无需不断重复编写繁重的 Spring 配置，降低了 Spring 的使用成本。
+
+Spring Boot 的缺点主要是，因为自动配置 Spring Bean 的功能，我们可能无法知道，哪些 Bean 被进行创建了。这个时候，如果我们想要自定义一些 Bean ，可能存在冲突，或者不知道实际注入的情况。
+
+## Spring Boot 提供了哪些核心功能？
+
+- 1、内嵌 Servlet 容器(tomcat),  独立运行 Spring 项目
+
+- 2、提供 Starter 简化 Maven 配置
+
+- 4、[自动配置 Spring Bean](https://www.jianshu.com/p/ddb6e32e3faf)
+
+  Spring Boot 检测到特定类的存在，就会针对这个应用做一定的配置，进行自动配置 Bean ，这样会极大地减少我们要使用的配置。
+
+  当然，Spring Boot 只考虑大多数的开发场景，并不是所有的场景，若在实际开发中我们需要配置Bean ，而 Spring Boot 没有提供支持，则可以自定义自动配置进行解决。
+
+- 5、[准生产的应用监控](https://blog.csdn.net/wangshuang1631/article/details/72810412)
+
+  Spring Boot 提供基于 HTTP、JMX、SSH 对运行时的项目进行监控。
+
+- 6、无代码生成和 XML 配置
+
+## Spring Boot 有哪些配置方式？
+
+和 Spring 一样，一共提供了三种方式。
+
+- 1、XML 配置文件。
+
+- 2、注解配置。
+
+  您可以通过在相关的类，方法或字段声明上使用注解，将 Bean 配置为组件类本身，而不是使用 XML 来描述 Bean 装配。默认情况下，Spring 容器中未打开注解装配。因此，您需要在使用它之前在 Spring 配置文件中启用它。例如：
+
+  ```xml
+  <beans>
+  <context:annotation-config/>
+  <!-- bean definitions go here -->
+  </beans>
+  ```
+
+- 3、Java Config 配置。
+
+  ```java
+  @Configuration
+  public class StudentConfig {
+      
+      @Bean
+      public StudentBean myStudent() {
+          return new StudentBean();
+      }
+      
+  }
+  ```
+
+  
+
 ## @SpringBootApplication
 
-- 看作是 @Configuration、@EnableAutoConfiguration、@ComponentScan 注解的集合。
+看作是 @Configuration、@EnableAutoConfiguration、@ComponentScan 注解的集合。
 
 - @EnableAutoConfiguration：启用 SpringBoot 的自动配置机制
 
 - @ComponentScan： 扫描被@Component (@Repository,@Service,@Controller)注解的 bean，注解默认会扫描该类所在的包下所有的类。
 
-- @Configuration：允许在 Spring 上下文中注册额外的 bean 或导入其他配置类
+- @Configuration：允许在 Spring 上下文中注册额外的 bean 或导入其他配置类,`@Configuration` 注解，来自 `spring-context` 项目，用于 Java Config ，不是 Spring Boot 新带来的。
 
 
 ## 讲述一下 SpringBoot 自动装配原理？
@@ -33,34 +92,21 @@ SPI系统里抽象的各个模块，往往有很多不同的实现方案，比�
 
 @EnableAutoConfiguration是启动自动配置的关键
 
+```java
 import java.lang.annotation.Documented;
-
 import java.lang.annotation.ElementType;
-
 import java.lang.annotation.Inherited;
-
 import java.lang.annotation.Retention;
-
 import java.lang.annotation.RetentionPolicy;
-
 import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
 
- 
-
 @Target({ElementType.TYPE})
-
 @Retention(RetentionPolicy.RUNTIME)
-
 @Documented
-
 @Inherited
-
 @AutoConfigurationPackage
-
 @Import({AutoConfigurationImportSelector.class})
-
 public @interface EnableAutoConfiguration {
 
   String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
@@ -74,6 +120,9 @@ public @interface EnableAutoConfiguration {
   String[] excludeName() default {};
 
 }
+```
+
+
 
 @EnableAutoConfiguration 注解通过 Spring 提供的 @Import 注解导入了AutoConfigurationImportSelector类（@Import 注解可以导入配置类或者 Bean 到当前类中）。
 
@@ -155,7 +204,7 @@ Spring Boot 提供的条件注解 @ConditionalOnBean：当容器里有指定 Bea
 
 @ConditionalOnWebApplication：当前项目是 Web 项 目的条件下
 
-如何实现一个 Starter
+## **如何实现一个 Starter**
 
 第一步，创建threadpool-spring-boot-starter工程
 
@@ -171,7 +220,9 @@ Spring Boot 提供的条件注解 @ConditionalOnBean：当容器里有指定 Bea
 
  
 
- 
+## 如何在 Spring Boot 启动的时候运行一些特殊的代码？
+
+如果需要在 SpringApplication 启动后执行一些特殊的代码，你可以实现 ApplicationRunner 或 CommandLineRunner 接口，这两个接口工作方式相同，都只提供单一的 run 方法，该方法仅在 `SpringApplication#run(...)` 方法**完成之前调用**。 
 
  
 
