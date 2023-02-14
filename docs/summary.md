@@ -8,6 +8,7 @@
 * 框架
   * [Spring](/doc/spring/)
 * 分布式
+  * [基础](/doc/cloud/base.md)
   * [Spring Cloud](/doc/cloud/spring-cloud.md)
   * [Dubbo](/doc/cloud/dubbo.md)
 * 中间件
