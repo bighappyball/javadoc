@@ -438,6 +438,24 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### [240. 搜索二维矩阵 II - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix-ii/)
+
+```java
+  public boolean searchMatrix(int[][] matrix, int target) {
+        int m=0,n=matrix[0].length-1;
+        while(m<matrix.length&&n>=0){
+            if(matrix[m][n]==target){
+                return true;
+            }else if (matrix[m][n]>target){
+                n--;
+            }else{
+                m++;
+            }
+        }
+        return false;
+    }
+```
+
 
 
 ### [153. 寻找旋转排序数组中的最小值 ](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/submissions/392392512/)
@@ -712,6 +730,28 @@ public int search(int[] nums, int target) {
         return res;
  }
 ```
+
+### [48. 旋转图像 - 力扣（Leetcode）](https://leetcode.cn/problems/rotate-image/)
+
+```java
+// 矩阵想象成一个套一个的正方形，正方形数量是len/2，每个正方形，每一边上的点交换位置，就达到顺时针转90度的目的
+    public void rotate(int[][] matrix) {
+        int len=matrix.length;
+        for(int i=0;i<len/2;i++){
+            int start=i;
+            int end=len-i-1;
+            for(int j=0;j<end-start;j++){
+                int temp=matrix[start][start+j];
+                matrix[start][start+j]=matrix[end-j][start];
+                matrix[end-j][start]=matrix[end][end-j];
+                matrix[end][end-j]=matrix[start+j][end];
+                matrix[start+j][end]=temp;
+            }
+        }
+    }
+```
+
+
 
 ## 岛屿问题
 
@@ -1094,6 +1134,40 @@ class MyStack {
 ```
 
 
+
+### [394. 字符串解码 - 力扣（Leetcode）](https://leetcode.cn/problems/decode-string/)
+
+```java
+    public static String decodeString(String s) {
+        Stack<Integer> stack=new Stack();
+        Stack<StringBuffer> stack1=new Stack();
+        StringBuffer res=new StringBuffer();
+        int digist=0;
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(Character.isDigit(c)){
+                digist=10*digist+(c-'0');
+            } else if(c=='['){
+                stack.push(digist);
+                stack1.push(res);
+                digist=0;
+                res=new StringBuffer();
+            }else if(c==']'){
+                StringBuffer temp=stack1.pop();
+                Integer inttemp=stack.pop();
+                while(inttemp>0){
+                    temp.append(res);
+                    inttemp--;
+                }
+                res=temp;
+            }else {
+                res.append(c);
+            }
+        }
+        return res.toString();
+    }
+
+```
 
 
 
@@ -1996,3 +2070,57 @@ public List<List<Integer>> threeSum(int[] nums) {
         }
     }
 ```
+
+### [470. 用 Rand7() 实现 Rand10() - 力扣（Leetcode）](https://leetcode.cn/problems/implement-rand10-using-rand7/solutions/)
+
+生成的[1,40]等随机,结果再对%10 + 1就可以得到[1,10]等概率,剩下的数[41-49]可以继续同样的处理
+
+```java
+    public int rand10() {
+        int row,col,idx;
+        do{
+            row=rand7();
+            col=rand7();
+            idx=col+(row-1)*7;
+        }while(idx>40);
+        return 1+(idx-1)%10;
+    }
+```
+
+### [169. 多数元素 - 力扣（Leetcode）](https://leetcode.cn/problems/majority-element/solutions/)
+
+#### 哈希(o(n))
+
+#### 排序
+
+时间复杂度：O(nlog⁡n)。将数组排序的时间复杂度为 O(nlog⁡n)。
+
+空间复杂度：O(log⁡n)。如果使用语言自带的排序算法，需要使用 O(log⁡n)的栈空间。如果自己编写堆排序，则只需要使用 O(1)的额外空间。
+
+```java
+  public int majorityElement(int[] nums) {
+        Arrays.sort(nums);
+        return nums[nums.length / 2];
+    }
+```
+
+#### Boyer-Moore 投票算法
+
+**思路**
+
+如果我们把众数记为 +1，把其他数记为 −1，将它们全部加起来，显然和大于 `0`，从结果本身我们可以看出众数比其他数多。
+
+```java
+    public int majorityElement(int[] nums) {
+        int count=0;
+        Integer candidate =null;
+        for(int num:nums){
+            if(count==0){
+                candidate=num;
+            }
+            count+=(num==candidate)?1:-1;
+        }
+        return candidate;
+    }
+```
+

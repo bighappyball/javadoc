@@ -399,11 +399,11 @@ public int[] dfs(TreeNode node) {
     }
 ```
 
-### 路径和
+## 路径和
 
-#### [494. 目标和 - 力扣（Leetcode）](https://leetcode.cn/problems/target-sum/description/)
+### [494. 目标和 - 力扣（Leetcode）](https://leetcode.cn/problems/target-sum/description/)
 
-##### **深度优先**
+#### **深度优先**
 
 ```java
   int res=0;
@@ -424,7 +424,7 @@ public int[] dfs(TreeNode node) {
     }
 ```
 
-##### **动态规划**
+#### **动态规划**
 
 ```java
  public int findTargetSumWays(int[] nums, int target) {
@@ -564,6 +564,87 @@ public int coinChange(int[] coins, int amount) {
             }
         }
         return dp[amount]==Integer.MAX_VALUE?-1:dp[amount];
+    }
+```
+
+### [221. 最大正方形 - 力扣（Leetcode）](https://leetcode.cn/problems/maximal-square/)
+
+```java
+ public int maximalSquare(char[][] matrix) {
+        int m=matrix.length,n=matrix[0].length;
+        int[][] dp = new int[m][n];
+        int max=0;
+        for(int i=0;i<m;i++){
+            dp[i][0] = matrix[i][0] == '0' ? 0 : 1;
+            max=Math.max(dp[i][0],max);
+        }
+        for(int i=0;i<n;i++){
+            dp[0][i] = matrix[0][i] == '0' ? 0 : 1;
+            max=Math.max(dp[0][i],max);
+        }        
+        for(int i=1;i<m;i++){
+            for(int j=1;j<n;j++){
+                if(matrix[i][j]=='1'){
+                    dp[i][j]=1+Math.min(dp[i-1][j-1],Math.min(dp[i-1][j],dp[i][j-1]));
+                    max=Math.max(dp[i][j],max);
+                }
+            }
+        }
+        return max*max;
+    }
+```
+
+### [718. 最长重复子数组 - 力扣（Leetcode）](https://leetcode.cn/problems/maximum-length-of-repeated-subarray/solutions/)
+
+#### 动态规划
+
+```java
+ public int findLength(int[] nums1, int[] nums2) {
+        int len=nums1.length,len1=nums2.length;
+        int[][] dp=new int[len+1][len1+1];
+        int max=0;
+        for(int i=1;i<=len;i++){
+            for(int j=1;j<=len1;j++){
+                if(nums1[i-1]==nums2[j-1]){
+                    dp[i][j]=dp[i-1][j-1]+1;
+                }
+                max=Math.max(max,dp[i][j]);
+            }
+        }
+        return max;
+    }
+```
+
+#### 滑动窗口
+
+```java
+    public int findLength(int[] A, int[] B) {
+        int n = A.length, m = B.length;
+        int ret = 0;
+        for (int i = 0; i < n; i++) {
+            int len = Math.min(m, n - i);
+            int maxlen = maxLength(A, B, i, 0, len);
+            ret = Math.max(ret, maxlen);
+        }
+        for (int i = 0; i < m; i++) {
+            int len = Math.min(n, m - i);
+            int maxlen = maxLength(A, B, 0, i, len);
+            ret = Math.max(ret, maxlen);
+        }
+        return ret;
+    }
+
+    public int maxLength(int[] A, int[] B, int addA, int addB, int len) {
+        int ret = 0, k = 0;
+        for (int i = 0; i < len; i++) {
+            if (A[addA + i] == B[addB + i]) {
+                k++;
+            } else {
+                k = 0;
+            }
+            ret = Math.max(ret, k);
+        }
+        return ret;
     }
 ```
 

@@ -123,6 +123,33 @@
     }
 ```
 
+### [39. 组合总和 - 力扣（Leetcode）](https://leetcode.cn/problems/combination-sum/description/)
+
+```java
+List<List<Integer>> res=new ArrayList();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        dfs(candidates,new ArrayList(),target,0);
+        return res;
+    }
+
+    public void dfs(int[] candidates,List<Integer> list, int target,int start){
+        if(target==0){
+            res.add(new ArrayList(list));
+        }
+        if(start>candidates.length||target < 0){
+            return;
+        }
+        for(int i=start;i<candidates.length;i++){
+            list.add(candidates[i]);
+            dfs(candidates,list,target-candidates[i],i);
+            list.remove(list.size()-1);
+        }
+    }
+
+```
+
+
+
 ### [40. 组合总和 II](https://leetcode.cn/problems/combination-sum-ii/submissions/392751218/)
 
 #### 回溯+剪枝
