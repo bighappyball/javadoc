@@ -14,6 +14,8 @@ servlet是java提供的一门动态web资源开发技术，动态指的是区别
 
 以访问ur:  http://localhost:8080/web-demo/demo1为例，首先请求会到localhost的8080接口，而8080接口被web服务器（比如tomcat）所监听，web服务器会找到部署的web应用路径web-demo，进而找到匹配/demo1的servlet实例，调用servlet实例的service方法。
 
+对于Servlet而言，多个匹配成功的话，优先级是：精确匹配优先，其次是最长匹配路径，最后是后缀匹配
+
 **servlet的生命周期**
 
 初始化：会调用实例的init()方法，里面通常是一些配置和连接，默认是在第一次接到servlet请求时进行的，如果loadOnStartup设定为0或正整数，则会在web应用启动时加载，以提高首次响应速度。
@@ -23,6 +25,46 @@ servlet是java提供的一门动态web资源开发技术，动态指的是区别
 服务中止：会调用实例的destory()方法，回收资源。调用后，容器会释放servlet实例，后面会被java的垃圾回收器回收
 
 因此，可以理解servlet是一种规范的含义了，每个servlet类都会实现servlet接口，都存在这些方法
+
+### 工作流程
+
+1. Web Client 向Servlet容器（Tomcat）发出Http请求
+
+2. Servlet容器接收Web Client的请求
+
+3. Servlet容器创建一个HttpRequest对象，将Web Client请求的信息封装到这个对象中。
+
+4. Servlet容器创建一个HttpResponse对象
+
+5. Servlet容器调用HttpServlet对象的service方法，把HttpRequest对象与HttpResponse对象作为参数传给 HttpServlet 对象。
+
+6. HttpServlet调用HttpRequest对象的有关方法，获取Http请求信息。
+
+7. HttpServlet调用HttpResponse对象的有关方法，生成响应数据。
+
+8. Servlet容器把HttpServlet的响应结果传给Web Client。
+
+### 处理请求流程
+
+1. 用户点击一个链接，指向了一个servlet而不是一个静态页面。
+
+2. 容器“看出”这个请求是一个Servlet，所以它创建了两个对象HttpServletRequest和HttpServletResponse。
+
+3. 容器根据请求中的URL找到正确的Servlet，为这个请求创建或分配一个线程，并把请求和响应对象传递给这个Servlet线程。
+
+4. 容器调用Servlet的service()方法。根据请求的不同类型，service()方法会调用doGet()或doPost()方法。这里假设调用doGet()方法。
+
+5. doGet()方法生成动态页面，并把这个页面“塞到”响应对象里，需要注意的是，容器还有响应对象的一个引用！
+
+6. 线程结束，容器把响应对象转换为一个HTTP响应，并把它发回给客户，然后删除请求和响应对象。
+
+### 工作原理
+
+1、首先简单解释一下Servlet接收和响应客户请求的过程，首先客户发送一个请求，Servlet是调用service()方法对请求进行响应的，通过源代码可见，service()方法中对请求的方式进行了匹配，选择调用doGet,doPost等这些方法，然后再进入对应的方法中调用逻辑层的方法，实现对客户的响应。在Servlet接口和GenericServlet中是没有doGet（）、doPost（）等等这些方法的，HttpServlet中定义了这些方法，但是都是返回error信息，所以，我们每次定义一个Servlet的时候，都必须实现doGet或doPost等这些方法。
+
+2、每一个自定义的Servlet都必须实现Servlet的接口，Servlet接口中定义了五个方法，其中比较重要的三个方法涉及到Servlet的生命周期，分别是上文提到的init(),service(),destroy()方法。GenericServlet是一个通用的，不特定于任何协议的Servlet,它实现了Servlet接口。而HttpServlet继承于GenericServlet，因此HttpServlet也实现了Servlet接口。所以我们定义Servlet的时候只需要继承HttpServlet即可。
+
+3、Servlet接口和GenericServlet是不特定于任何协议的，而HttpServlet是特定于HTTP协议的类，所以HttpServlet中实现了service()方法，并将请求ServletRequest、ServletResponse 强转为HttpRequest 和 HttpResponse。
 
 ## 什么是 Spring MVC
 
@@ -169,7 +211,7 @@ SpringMVC 工作原理的图解我没有自己画，直接图省事在网上找�
 
 ### Spring MVC 的控制器是不是单例模式,如果是,有什么问题,怎么解决？
 
-答：是单例模式,所以在多线程访问的时候有线程安全问题,不要用同步,会影响性能的,解决方案是在控制器里面不能写字段
+答：是单例模式,所以在多线程访问的时候有线程安全问题,不要用同步,会影响性能的,解决方案是在控制器里面不能写共享字段
 
 ### @Controller 注解的作用 和@RequestMapping 注解的作用
 
@@ -181,42 +223,73 @@ SpringMVC 工作原理的图解我没有自己画，直接图省事在网上找�
 
 ### @RequestMapping流程可以分为下面6步
 
-1. 1.注册RequestMappingHandlerMapping bean 。
+1. 注册RequestMappingHandlerMapping bean 。
 
-2. 2.实例化RequestMappingHandlerMapping bean。
+2. 实例化RequestMappingHandlerMapping bean。
 
-3. 3.获取RequestMappingHandlerMapping bean实例。
+3. 获取RequestMappingHandlerMapping bean实例。
 
-4. 4.接收requst请求。
+4. 接收requst请求。
 
-5. 5.在RequestMappingHandlerMapping实例methodMap中查找对应的handler。
+5. 在RequestMappingHandlerMapping实例methodMap中查找对应的handler。
 
-6. 6.handler处理请求。
+6. handler处理请求。
 
 **通俗：**
 
-1. RequestMappingHandlerMapping 组件的配置
-
+1. RequestMapping,HandlerMapping 组件的配置
 2. 路径Path 与实际处理请求的方法的映射保存
-
 3. 请求到来时，根据请求的路由将其分发到对应处理方法
 
-4. 接口和url怎么注册
+接口和url怎么注册
 
-5. 根据配置的扫描路径获取所有的bean
-
-6. 通过@Controller或@RequestMapping来判断是否是handler，如果是就通过registerHandlerMethod方法注册（类似于map）   
+1. 根据配置的扫描路径获取所有的bean
+2. 通过@Controller或@RequestMapping来判断是否是handler，如果是就通过registerHandlerMethod方法注册（类似于map）   
 
 
 ### 怎么根据url找handle
 
 在RequestMappingHandlerMapping实例methodMap中查找对应的handler
 
-如果匹配到多个接口，如果选择？
+### 介绍一下 WebApplicationContext ？
 
- 
+WebApplicationContext 是实现ApplicationContext接口的子类，专门为 WEB 应用准备的。
 
+- 它允许从相对于 Web 根目录的路径中**加载配置文件**，**完成初始化 Spring MVC 组件的工作**。
+- 从 WebApplicationContext 中，可以获取 ServletContext 引用，整个 Web 应用上下文对象将作为属性放置在 ServletContext 中，以便 Web 应用环境可以访问 Spring 上下文。
 
+###  Spring MVC 和 Struts2 的异同？
 
+1. 入口不同
+   - Spring MVC 的入门是一个 Servlet **控制器**。
+   - Struts2 入门是一个 Filter **过滤器**。
+2. 配置映射不同，
+   - Spring MVC 是基于**方法**开发，传递参数是通过**方法形参**，一般设置为**单例**。
+   - Struts2 是基于**类**开发，传递参数是通过**类的属性**，只能设计为**多例**。
 
+- 视图不同
+  - Spring MVC 通过参数解析器是将 Request 对象内容进行解析成方法形参，将响应数据和页面封装成 **ModelAndView** 对象，最后又将模型数据通过 **Request** 对象传输到页面。其中，如果视图使用 JSP 时，默认使用 **JSTL** 。
+  - Struts2 采用**值栈**存储请求和响应的数据，通过 **OGNL** 存取数据。
 
+### 详细介绍下 Spring MVC 拦截器？
+
+`org.springframework.web.servlet.HandlerInterceptor` ，拦截器接口。代码如下
+
+- 一共有三个方法，分别为：
+  - `#preHandle(...)` 方法，调用 Controller 方法之**前**执行。
+  - `#postHandle(...)` 方法，调用 Controller 方法之**后**执行。
+  - `#afterCompletion(...)`方法，处理完 Controller 方法返回结果之后执行。
+    - 例如，页面渲染后。
+    - **当然，要注意，无论调用 Controller 方法是否成功，都会执行**。
+
+### Spring MVC 的拦截器和 Filter 过滤器有什么差别？
+
+看了文章 [《过滤器( Filter )和拦截器( Interceptor )的区别》](https://blog.csdn.net/xiaodanjava/article/details/32125687) ，感觉对比的怪怪的。艿艿觉得主要几个点吧：
+
+- **功能相同**：拦截器和 Filter都能实现相应的功能，谁也不比谁强。
+- **容器不同**：拦截器构建在 Spring MVC 体系中；Filter 构建在 Servlet 容器之上。
+- **使用便利性不同**：拦截器提供了三个方法，分别在不同的时机执行；过滤器仅提供一个方法，当然也能实现拦截器的执行时机的效果，就是麻烦一些。
+
+### @PathVariable 注解，在 Spring MVC 做了什么? 为什么 REST 在 Spring 中如此有用？
+
+`@PathVariable` 注解，是 Spring MVC 中有用的注解之一，它允许您从 URI 读取值，比如查询参数。它在使用 Spring 创建 RESTful Web 服务时特别有用，因为在 REST 中，资源标识符是 URI 的一部分。
