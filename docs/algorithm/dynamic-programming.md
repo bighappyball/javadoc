@@ -1,11 +1,53 @@
 ## 股票买卖
 
-121. 买卖股票的最佳时机
-122. 买卖股票的最佳时机 II
-123. 买卖股票的最佳时机 III
-188. 买卖股票的最佳时机 IV
-309. 最佳买卖股票时机含冷冻期
-714. 买卖股票的最佳时机含手续费
+### [121. 买卖股票的最佳时机 - 力扣（Leetcode）](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/)
+
+```java
+    public int maxProfit(int[] prices) {
+        if(prices.length==0){
+            return 0;
+        }
+        // 0代表卖出/休息，1代表买入/休息
+        int dp0 = 0;
+        int  dp1 = -prices[0];
+        for(int i=1;i<prices.length;i++){
+            dp0 = Math.max(dp1+prices[i],dp0);
+            dp1 = Math.max(-prices[i],dp1);
+        }
+        return dp0;
+    }
+```
+
+### [122. 买卖股票的最佳时机 II - 力扣（Leetcode）](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/)
+
+```java
+    public int maxProfit(int[] prices) {
+            if(prices.length==0){
+                return 0;
+            }
+            // 0代表当天持有0股，1代表当天持有1股
+            // int[][] dp=new int[prices.length][2];
+            int dp0 = 0;
+            int dp1 = -prices[0];
+            for(int i=1;i<prices.length;i++){
+                int new0 = Math.max(dp1+prices[i],dp0);
+                // 只能交易n次 
+                dp1 = Math.max(new0-prices[i],dp1);
+                dp0=new0;
+            }
+            return dp0;
+    }
+```
+
+
+
+买卖股票的最佳时机 III
+
+买卖股票的最佳时机 IV
+
+最佳买卖股票时机含冷冻期
+
+买卖股票的最佳时机含手续费
 
 https://leetcode.cn/circle/article/qiAgHn/
 

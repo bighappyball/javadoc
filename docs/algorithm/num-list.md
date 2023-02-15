@@ -360,6 +360,39 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### [34. 在排序数组中查找元素的第一个和最后一个位置 - 力扣（Leetcode）](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+```java
+    public int[] searchRange(int[] nums, int target) {
+        int left=0,right=nums.length-1;
+        int [] res=new int[2];
+        Arrays.fill(res,-1);
+        if(nums.length==0)return res;
+        while(left<right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]>=target){
+                right=mid;
+            }else {
+                left=mid+1;
+            }
+        }
+        res[0]=nums[right]==target?right:-1;
+        right=nums.length;
+        while(left<right){
+           int mid=left+(right-left)/2;
+           if(nums[mid]<=target){
+               left=mid+1;
+           }else{
+               right=mid;
+           }
+        }
+        if(left>0&&nums[left-1]==target){
+            res[1]=left-1;
+        }
+        return res;
+    }
+```
+
 
 
 ### [69. x 的平方根 ](https://leetcode.cn/problems/sqrtx/submissions/391186628/)
@@ -557,6 +590,23 @@ public int search(int[] nums, int target) {
             }
         }
         return -1;
+    }
+```
+
+### [162. 寻找峰值 - 力扣（Leetcode）](https://leetcode.cn/problems/find-peak-element/)
+
+```java
+    public int findPeakElement(int[] nums) {
+        int left=0,right=nums.length-1;
+        while(left<right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]<nums[mid+1]){
+                left=mid+1;
+            }else {
+                right=mid;
+            }
+        }
+        return left;
     }
 ```
 
@@ -788,6 +838,38 @@ public int search(int[] nums, int target) {
         infect(grid, i, j - 1);
     }
 ```
+
+### [695. 岛屿的最大面积 - 力扣（Leetcode）](https://leetcode.cn/problems/max-area-of-island/submissions/402523748/)
+
+```java
+   public int maxAreaOfIsland(int[][] grid) {
+        int max = 0;
+        for(int i = 0; i < grid.length; i++){
+            for(int j = 0; j < grid[0].length; j++){
+                if(grid[i][j] == 1){
+                    int num=infect(grid, i, j);
+                    max=Math.max(max,num);
+                }
+            }
+        }
+        return max;
+    }
+
+    public int infect(int[][] grid,int i, int j){
+        if(i<0||i>=grid.length||j<0||j>=grid[0].length||grid[i][j]!=1){
+            return 0;
+        }
+        grid[i][j]=2;
+        int num=1;
+        num+=infect(grid,i+1,j);
+        num+=infect(grid,i-1,j);
+        num+=infect(grid,i,j+1);
+        num+=infect(grid,i,j-1);
+        return num;
+    }
+```
+
+
 
 ### [59. 螺旋矩阵 II ](https://leetcode.cn/problems/spiral-matrix-ii/description/)
 
@@ -2043,7 +2125,7 @@ public List<List<Integer>> threeSum(int[] nums) {
     }
 ```
 
-## 回溯
+## 其他
 
 ### [77. 组合 - 力扣（Leetcode）](https://leetcode.cn/problems/combinations/description/)
 
@@ -2123,4 +2205,48 @@ public List<List<Integer>> threeSum(int[] nums) {
         return candidate;
     }
 ```
+
+### [14. 最长公共前缀 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-common-prefix/solutions/)
+
+```java
+ public String longestCommonPrefix(String[] strs) {
+        String s=strs[0];
+        for(int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            for(int j=1;j<strs.length;j++){
+                char c1=i<strs[j].length()?strs[j].charAt(i):'1';
+                if(c1!=c)return s.substring(0,i);
+            }
+        }
+        return s;
+    }
+```
+
+### [128. 最长连续序列 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-consecutive-sequence/solutions/)
+
+#### 哈希表
+
+```java
+  public int longestConsecutive(int[] nums) {
+        Set<Integer> map=new HashSet();
+        for(int num:nums){
+            map.add(num);
+        }
+        int max=0;
+        for(int num:map){
+            if(!map.contains(num-1)){
+                int currentNum = num;
+                int currentStreak = 1;
+                while(map.contains(currentNum+1)){
+                    currentNum++;
+                    currentStreak++;
+                }
+                max=Math.max(max,currentStreak);
+            }
+        }
+        return max;
+    }
+```
+
+
 

@@ -136,6 +136,54 @@ public void dfs(TreeNode root,List<List<Integer>> res,int level){
 
 ### [27. 二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)
 
+### [226. 翻转二叉树 - 力扣（Leetcode）](https://leetcode.cn/problems/invert-binary-tree/)
+
+### 递归
+
+```java
+ public TreeNode invertTree(TreeNode root) {
+        if(root==null){
+            return root;
+        }
+        TreeNode temp=root.left;
+        root.left=root.right;
+        root.right=temp;
+        invertTree(root.left);
+        invertTree(root.right);
+        return root;
+    }
+```
+
+### 迭代
+
+```java
+  public TreeNode invertTree(TreeNode root) {
+        if(root==null){
+            return null;
+        }
+        LinkedList<TreeNode> queue = new  LinkedList();
+        queue.add(root);
+        while(queue.size()>0){
+            int size=queue.size();
+            for(int i=0;i<size;i++){
+                TreeNode node = queue.poll();
+                TreeNode temp = node.left;
+                node.left=node.right;
+                node.right=temp;
+                if(node.left!=null){
+                    queue.add(node.left);
+                }
+                if(node.right!=null){
+                    queue.add(node.right);
+                }
+            }
+        }
+        return root;
+    }
+```
+
+
+
 ## 二叉树转链表
 
 ### [114. 二叉树展开为链表 - 力扣（Leetcode）](https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/submissions/393981168/)
