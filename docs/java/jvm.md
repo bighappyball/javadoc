@@ -654,11 +654,11 @@ jmap -dump:format=b,file=heap 7276
 
 8月12日中午午休时间，我们商业服务收到告警，服务进程占用容器的物理内存（16G）超过了80%的阈值，并且还在不断上升。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVGNZU4PNE8IyLXPlnT9B4icsRia2FicnOgiaSTribIh3B2U6XnO6nrOkPopw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/analysis/netty/640.png)
 
 监控系统调出图表查看：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVSbysHEE3jGh45w7eJeEfH1icJpPVlUdDUqm9ZJgd0AQmBC8IEgtskbQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/analysis/netty/640-1676439035395-3.png)
 
 像是Java进程发生了内存泄漏，而我们堆内存的限制是4G，这种大于4G快要吃满内存应该是JVM堆外内存泄漏。
 
@@ -672,7 +672,7 @@ jmap -dump:format=b,file=heap 7276
 
 下图是该调用接口当天的访问量变化：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qm3R3LeH8ra3BBA2qLlxfOUHXnj06TGVaXpaQEDFvRibmmiaZc1dibZ1MRwjll8MKjDV5fficektTExF67z7BHTTzQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/analysis/netty/640-1676439039842-6.png)
 
 可以看到案发当时调用量相比正常情况（每分钟200+次）提高了很多（每分钟5000+次）。
 
@@ -688,8 +688,6 @@ jmap -dump:format=b,file=heap 7276
 
 我们观察了新生代和老年代内存占用曲线以及回收次数统计，和往常一样没有大问题，我们接着在事故现场的容器上dump了一份JVM堆内存的日志。
 
-
-
 [怎么排查堆内存溢出啊？](https://mp.weixin.qq.com/s/7XGD-Z3wrThv5HyoK3B8AQ)
 
 [CPU100%，排查](https://mp.weixin.qq.com/s/roEMz-5tzBZvGxbjq8NhOQ)
@@ -698,5 +696,3 @@ jmap -dump:format=b,file=heap 7276
 
 [CPU飙高排查](https://mp.weixin.qq.com/s/nWghy4McYx6Ix3QPSLSmkQ)
 
-=======
->>>>>>> 60fc1f6 (fixs)

@@ -1,30 +1,36 @@
-# MyBatis
+## MyBatis
 
-## #{}和${}的区别是什么？
+### #{}和${}的区别是什么？
 
 ${}是 Properties 文件中的变量占位符，它可以用于标签属性值和 sq内部，属于静态文本替换，比如${driver}会被静态替换为com.mysql.jdbc. Driver。
 
 #{}是 sq的参数占位符，MyBatis 会将 sq中的#{}替换为? 号，在 sq执行前会使用 PreparedStatement 的参数设置方法，按序给 sq的? 号占位符设置参数值
 
-## Xm映射文件中，除了常见的 select|insert|update|delete 标签之外，还有哪些标签？
+### Xm映射文件中，除了常见的 select|insert|update|delete 标签之外，还有哪些标签？
 
 还有很多其他的标签， <resultMap> 、 <parameterMap> 、 <sql> 、 <include> 、 <selectKey> ，加上动态 sq的 9 个标签， trim|where|set|foreach|if|choose|when|otherwise|bind 等，其中 <sql> 为 sq片段标签，通过 <include> 标签引入 sq片段， <selectKey> 为不支持自增的主键生成策略标签。
 
-通常一个 Xm映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？
+### 通常一个 Xm映射文件，都会写一个 Dao 接口与之对应，请问，这个 Dao 接口的工作原理是什么？Dao 接口里的方法，参数不同时，方法能重载吗？
 
 Dao 接口里的方法可以重载，但是 Mybatis 的 XM里面的 ID 不允许重复。Mybatis 的 Dao 接口可以有多个重载方法，但是多个接口对应的映射必须只有一个，否则启动会报错。
 
 Dao 接口的工作原理是 JDK 动态代理，MyBatis 运行时会使用 JDK 动态代理为 Dao 接口生成代理 proxy 对象，代理对象 proxy 会拦截接口方法，转而执行 MappedStatement 所代表的 sql，然后将 sq执行结果返回。
 
-## 简述 MyBatis 的插件运行原理，以及如何编写一个插件
+### 简述 MyBatis 的插件运行原理，以及如何编写一个插件
+
+MyBatis 插件的运行是基于 JDK 动态代理 + 拦截器链实现
+
+- Interceptor 是拦截器，可以拦截 Executor, StatementHandle, ResultSetHandler, ParameterHandler 四个接口
+
+- 实际就是利用 JDK动态代理，生成对应的代理类实例，通过 InvocationHandler#invoke 实现拦截逻辑
+
+- InterceptorChain 是拦截器链，对象定义在 Configuration 类中, 实际是一个 List集合，元素就是 Interceptor接口的实现类
+
+- Invocation 是对方法、方法参数、执行对象和方法的执行的封装，就是对 InvocationHandler#invoke方法参数的封装
 
 实现 MyBatis 的 Interceptor 接口并复写 intercept() 方法，然后在给插件编写注解，指定要拦截哪一个接口的哪些方法即可，记住，别忘了在配置文件中配置你编写的插件。
 
-## MyBatis 是否支持延迟加载？如果支持，它的实现原理是什么？
-
-它的原理是，使用 CGLIB 创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用 a.getB().getName() ，拦截器 invoke() 方法发现 a.getB() 是 nul值，那么就会单独发送事先保存好的查询关联 B 对象的 sql，把 B 查询上来，然后调用 a.setB(b)，于是 a 的对象 b 属性就有值了，接着完成 a.getB().getName() 方法的调用。这就是延迟加载的基本原理。
-
-## MyBatis 中如何执行批处理？
+### MyBatis 中如何执行批处理？
 
 使用 BatchExecutor 完成批处理
 
@@ -36,7 +42,7 @@ ReuseExecutor ：执行 update 或 select，以 sq作为 key 查找 Statement �
 
 BatchExecutor ：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sq都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。
 
-## MyBatis 编程步骤
+### MyBatis 编程步骤
 
 1. 创建 SqlSessionFactory 对象。
 2. 通过 SqlSessionFactory 获取 SqlSession 对象。
@@ -46,137 +52,13 @@ BatchExecutor ：执行 update（没有 select，JDBC 批处理不支持 select�
 6. 执行失败，则使用 SqlSession 回滚事务。
 7. 最终，关闭会话。
 
-## `#{}` 和 `${}` 的区别是什么？
-
-`${}` 是 Properties 文件中的变量占位符，它可以用于 XML 标签属性值和 SQL 内部，属于**字符串替换**。例如将 `${driver}` 会被静态替换为 `com.mysql.jdbc.Driver` ：
-
-```
-<dataSource type="UNPOOLED">
-    <property name="driver" value="${driver}"/>
-    <property name="url" value="${url}"/>
-    <property name="username" value="${username}"/>
-</dataSource>
-```
-
-`${}` 也可以对传递进来的参数**原样拼接**在 SQL 中。代码如下：
-
-```
-<select id="getSubject3" parameterType="Integer" resultType="Subject">
-    SELECT * FROM subject
-    WHERE id = ${id}
-</select>
-```
-
-- 实际场景下，不推荐这么做。因为，可能有 SQL 注入的风险。
-
-------
-
-`#{}` 是 SQL 的参数占位符，Mybatis 会将 SQL 中的 `#{}` 替换为 `?` 号，在 SQL 执行前会使用 PreparedStatement 的参数设置方法，按序给 SQL 的 `?` 号占位符设置参数值，比如 `ps.setInt(0, parameterValue)` 。 所以，`#{}` 是**预编译处理**，可以有效防止 SQL 注入，提高系统安全性。
-
-------
-
-另外，`#{}` 和 `${}` 的取值方式非常方便。例如：`#{item.name}` 的取值方式，为使用反射从参数对象中，获取 `item` 对象的 `name` 属性值，相当于 `param.getItem().getName()` 。
-
-## 当实体类中的属性名和表中的字段名不一样 ，怎么办？
-
-第一种， 通过在查询的 SQL 语句中定义字段名的别名，让字段名的别名和实体类的属性名一致。代码如下：
-
-```
-<select id="selectOrder" parameterType="Integer" resultType="Order"> 
-    SELECT order_id AS id, order_no AS orderno, order_price AS price 
-    FROM orders 
-    WHERE order_id = #{id}
-</select>
-```
-
-- 这里，艿艿还有几点建议：
-  - 1、数据库的关键字，统一使用大写，例如：`SELECT`、`AS`、`FROM`、`WHERE` 。
-  - 2、每 5 个查询字段换一行，保持整齐。
-  - 3、`,` 的后面，和 `=` 的前后，需要有空格，更加清晰。
-  - 4、`SELECT`、`FROM`、`WHERE` 等，单独一行，高端大气。
-
-------
-
-第二种，是第一种的特殊情况。大多数场景下，数据库字段名和实体类中的属性名差，主要是前者为**下划线风格**，后者为**驼峰风格**。在这种情况下，可以直接配置如下，实现自动的下划线转驼峰的功能。
-
-```
-<setting name="logImpl" value="LOG4J"/>
-    <setting name="mapUnderscoreToCamelCase" value="true" />
-</settings>
-```
-
-😈 也就说，约定大于配置。非常推荐！
-
-------
-
-第三种，通过 `<resultMap>` 来映射字段名和实体类属性名的一一对应的关系。代码如下：
-
-```
-<resultMap type="me.gacl.domain.Order" id=”OrderResultMap”> 
-    <!–- 用 id 属性来映射主键字段 -–> 
-    <id property="id" column="order_id"> 
-    <!–- 用 result 属性来映射非主键字段，property 为实体类属性名，column 为数据表中的属性 -–> 
-    <result property="orderNo" column ="order_no" /> 
-    <result property="price" column="order_price" /> 
-</resultMap>
-
-<select id="getOrder" parameterType="Integer" resultMap="OrderResultMap">
-    SELECT * 
-    FROM orders 
-    WHERE order_id = #{id}
-</select>
-```
-
-- 此处 `SELECT *` 仅仅作为示例只用，实际场景下，千万千万千万不要这么干。用多少字段，查询多少字段。
-- 相比第一种，第三种的**重用性**会一些。
-
-## XML 映射文件中，除了常见的 select | insert | update | delete标 签之外，还有哪些标签？
-
-如下部分，可见 [《MyBatis 文档 —— Mapper XML 文件》](http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html) ：
-
-- ```
-  <cache />
-  ```
-
-   
-
-  标签，给定命名空间的缓存配置。
-
-  - `<cache-ref />` 标签，其他命名空间缓存配置的引用。
-
-- `<resultMap />` 标签，是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
-
-- ~~`` 标签，已废弃！老式风格的参数映射。内联参数是首选,这个元素可能在将来被移除，这里不会记录。~~
-
-- ```
-  <sql />
-  ```
-
-   
-
-  标签，可被其他语句引用的可重用语句块。
-
-  - `<include />` 标签，引用 `<sql />` 标签的语句。
-
-- `<selectKey />` 标签，不支持自增的主键生成策略标签。
-
-如下部分，可见 [《MyBatis 文档 —— 动态 SQL》](http://www.mybatis.org/mybatis-3/zh/dynamic-sql.html) ：
-
-- `<if />`
-- `<choose />`、`<when />`、`<otherwise />`
-- `<trim />`、`<where />`、`<set />`
-- `<foreach />`
-- `<bind />`
-
-## Mybatis 动态 SQL 是做什么的？都有哪些动态 SQL ？能简述一下动态 SQL 的执行原理吗？
+### Mybatis 动态 SQL 是做什么的？都有哪些动态 SQL ？能简述一下动态 SQL 的执行原理吗？
 
 - Mybatis 动态 SQL ，可以让我们在 XML 映射文件内，以 XML 标签的形式编写动态 SQL ，完成逻辑判断和动态拼接 SQL 的功能。
 - Mybatis 提供了 9 种动态 SQL 标签：`<if />`、`<choose />`、`<when />`、`<otherwise />`、`<trim />`、`<where />`、`<set />`、`<foreach />`、`<bind />` 。
 - 其执行原理为，使用 **OGNL** 的表达式，从 SQL 参数对象中计算表达式的值，根据表达式的值动态拼接 SQL ，以此来完成动态 SQL 的功能。
 
-如上的内容，更加详细的话，请看 [《MyBatis 文档 —— 动态 SQL》](http://www.mybatis.org/mybatis-3/zh/dynamic-sql.html) 文档。
-
-## 最佳实践中，通常一个 XML 映射文件，都会写一个 Mapper 接口与之对应。请问，这个 Mapper 接口的工作原理是什么？Mapper 接口里的方法，参数不同时，方法能重载吗？
+### 最佳实践中，通常一个 XML 映射文件，都会写一个 Mapper 接口与之对应。请问，这个 Mapper 接口的工作原理是什么？Mapper 接口里的方法，参数不同时，方法能重载吗？
 
 Mapper 接口，对应的关系如下：
 
@@ -210,13 +92,12 @@ Mapper 接口是没有实现类的，当调用接口方法时，接口全限名 
   }
   ```
 
-  - 完整的流程，胖友可以慢慢撸下 MyBatis 的源码。
 
 ------
 
 Mapper 接口里的方法，是不能重载的，因为是**全限名 + 方法名**的保存和寻找策略。😈 所以有时，想个 Mapper 接口里的方法名，还是蛮闹心的，嘿嘿。
 
-## Mapper 接口绑定有几种实现方式,分别是怎么实现的?
+### Mapper 接口绑定有几种实现方式,分别是怎么实现的?
 
 接口绑定有三种实现方式：
 
@@ -230,13 +111,13 @@ Mapper 接口里的方法，是不能重载的，因为是**全限名 + 方法�
 
 实际场景下，最最最推荐的是**第一种**方式。因为，SQL 通过注解写在 Java 代码中，会非常杂乱。而写在 XML 中，更加有整体性，并且可以更加方便的使用 OGNL 表达式。
 
-## Mybatis 的 XML Mapper文件中，不同的 XML 映射文件，id 是否可以重复？
+### Mybatis 的 XML Mapper文件中，不同的 XML 映射文件，id 是否可以重复？
 
 不同的 XML Mapper 文件，如果配置了 `"namespace"` ，那么 id 可以重复；如果没有配置 `"namespace"` ，那么 id 不能重复。毕竟`"namespace"` 不是必须的，只是最佳实践而已。
 
 原因就是，`namespace + id` 是作为 `Map<String, MappedStatement>` 的 key 使用的。如果没有 `"namespace"`，就剩下 id ，那么 id 重复会导致数据互相覆盖。如果有了 `"namespace"`，自然 id 就可以重复，`"namespace"`不同，`namespace + id` 自然也就不同。
 
-## 如何获取自动生成的(主)键值?
+### 如何获取自动生成的(主)键值?
 
 不同的数据库，获取自动生成的(主)键值的方式是不同的。
 
@@ -297,25 +178,11 @@ CACHE 10;
 
 - 他们使用第一种方式，没有具体原因，可能就没什么讲究吧。嘿嘿。
 
-至于为什么不用**触发器**呢？朋友描述如下：
-
-> 朋友：触发器不行啊，我们这边原来也有触发器，一有数据更改就会有问题了呀
-> 艿艿：数据更改指的是？
-> 朋友：就改线上某几条数据
-> 艿艿：噢噢。手动改是吧？
-> 朋友：不行~
-
-------
-
-当然，数据库还有 SQLServer、PostgreSQL、DB2、H2 等等，具体的方式，胖友自己 Google 下噢。
-
-关于如何获取自动生成的(主)键值的**原理**，可以看看 [《精尽 MyBatis 源码分析 —— SQL 执行（三）之 KeyGenerator》](http://svip.iocoder.cn/MyBatis/executor-3/) 。
-
-## Mybatis 执行批量插入，能返回数据库主键列表吗？
+### Mybatis 执行批量插入，能返回数据库主键列表吗？
 
 能，JDBC 都能做，Mybatis 当然也能做。
 
-## 在 Mapper 中如何传递多个参数?
+### 在 Mapper 中如何传递多个参数?
 
 第一种，使用 Map 集合，装载多个参数进行传递。代码如下：
 
@@ -381,7 +248,7 @@ List<Student> selectStudents(Integer start, Integer end);
 
 - 其中，按照参数在方法方法中的位置，从 1 开始，逐个为 `#{param1}`、`#{param2}`、`#{param3}` 不断向下。
 
-## Mybatis 是否可以映射 Enum 枚举类？
+### Mybatis 是否可以映射 Enum 枚举类？
 
 Mybatis 可以映射枚举类，对应的实现类为 EnumTypeHandler 或 EnumOrdinalTypeHandler 。
 
@@ -415,7 +282,7 @@ TypeHandler 有两个作用：
 
 关于 TypeHandler 的**原理**，可以看看 [《精尽 MyBatis 源码分析 —— 类型模块》](http://svip.iocoder.cn/MyBatis/type-package/) 。
 
-## Mybatis 都有哪些 Executor 执行器？它们之间的区别是什么？
+### Mybatis 都有哪些 Executor 执行器？它们之间的区别是什么？
 
 Mybatis 有四种 Executor 执行器，分别是 SimpleExecutor、ReuseExecutor、BatchExecutor、CachingExecutor 。
 
@@ -434,70 +301,7 @@ Mybatis 有四种 Executor 执行器，分别是 SimpleExecutor、ReuseExecutor�
 
 这块的源码解析，可见 [《精尽 MyBatis 源码分析 —— SQL 执行（一）之 Executor》](http://svip.iocoder.cn/MyBatis/executor-1) 。
 
-## MyBatis 如何执行批量插入?
-
-首先，在 Mapper XML 编写一个简单的 Insert 语句。代码如下：
-
-```
-<insert id="insertUser" parameterType="String"> 
-    INSERT INTO users(name) 
-    VALUES (#{value}) 
-</insert>
-```
-
-然后，然后在对应的 Mapper 接口中，编写映射的方法。代码如下：
-
-```
-public interface UserMapper {
-    
-    void insertUser(@Param("name") String name);
-
-}
-```
-
-最后，调用该 Mapper 接口方法。代码如下：
-
-```
-private static SqlSessionFactory sqlSessionFactory;
-
-@Test
-public void testBatch() {
-    // 创建要插入的用户的名字的数组
-    List<String> names = new ArrayList<>();
-    names.add("占小狼");
-    names.add("朱小厮");
-    names.add("徐妈");
-    names.add("飞哥");
-
-    // 获得执行器类型为 Batch 的 SqlSession 对象，并且 autoCommit = false ，禁止事务自动提交
-    try (SqlSession session = sqlSessionFactory.openSession(ExecutorType.BATCH, false)) {
-        // 获得 Mapper 对象
-        UserMapper mapper = session.getMapper(UserMapper.class);
-        // 循环插入
-        for (String name : names) {
-            mapper.insertUser(name);
-        }
-        // 提交批量操作
-        session.commit();
-    }
-}
-```
-
-代码比较简单，胖友仔细看看。当然，还有另一种方式，代码如下：
-
-```
-INSERT INTO [表名]([列名],[列名]) 
-VALUES
-([列值],[列值])),
-([列值],[列值])),
-([列值],[列值]));
-```
-
-- 对于这种方式，需要保证单条 SQL 不超过语句的最大限制 `max_allowed_packet` 大小，默认为 1 M 。
-
-这两种方式的性能对比，可以看看 [《[实验\]mybatis批量插入方式的比较》](https://www.jianshu.com/p/cce617be9f9e) 。
-
-## 介绍 MyBatis 的一级缓存和二级缓存的概念和实现原理？
+### 介绍 MyBatis 的一级缓存和二级缓存的概念和实现原理？
 
 内容有些长，直接参见 [《聊聊 MyBatis 缓存机制》](https://tech.meituan.com/mybatis_cache.html) 一文。
 
@@ -505,7 +309,7 @@ VALUES
 
 这块的源码解析，可见 [《精尽 MyBatis 源码分析 —— 缓存模块》](http://svip.iocoder.cn/MyBatis/cache-package) 。
 
-## Mybatis 是否支持延迟加载？如果支持，它的实现原理是什么？
+### Mybatis 是否支持延迟加载？如果支持，它的实现原理是什么？
 
 Mybatis 仅支持 association 关联对象和 collection 关联集合对象的延迟加载。其中，association 指的就是**一对一**，collection 指的就是**一对多查询**。
 
@@ -521,7 +325,7 @@ Mybatis 仅支持 association 关联对象和 collection 关联集合对象的�
 
 这块的源码解析，可见 [《 精尽 MyBatis 源码分析 —— SQL 执行（五）之延迟加载》](http://svip.iocoder.cn/MyBatis/executor-5) 文章。
 
-## Mybatis 能否执行一对一、一对多的关联查询吗？都有哪些实现方式，以及它们之间的区别。
+### Mybatis 能否执行一对一、一对多的关联查询吗？都有哪些实现方式，以及它们之间的区别。
 
 > 艿艿：这道题有点难度。理解倒是好理解，主要那块源码的实现，艿艿看的有点懵逼。大体的意思是懂的，但是一些细节没扣完。
 
@@ -554,27 +358,9 @@ Mybatis 仅支持 association 关联对象和 collection 关联集合对象的�
 | 1    | teacher | 42   |
 | 1    | teacher | 43   |
 
-## 简述 Mybatis 的插件运行原理？以及如何编写一个插件？
 
-Mybatis 仅可以编写针对 ParameterHandler、ResultSetHandler、StatementHandler、Executor 这 4 种接口的插件。
 
-Mybatis 使用 JDK 的动态代理，为需要拦截的接口生成代理对象以实现接口方法拦截功能，每当执行这 4 种接口对象的方法时，就会进入拦截方法，具体就是 InvocationHandler 的 `#invoke(...)`方法。当然，只会拦截那些你指定需要拦截的方法。
-
-------
-
-编写一个 MyBatis 插件的步骤如下：
-
-1. 首先，实现 Mybatis 的 Interceptor 接口，并实现 `#intercept(...)` 方法。
-2. 然后，在给插件编写注解，指定要拦截哪一个接口的哪些方法即可
-3. 最后，在配置文件中配置你编写的插件。
-
-具体的，可以参考 [《MyBatis 官方文档 —— 插件》](http://www.mybatis.org/mybatis-3/zh/configuration.html#plugins) 。
-
-------
-
-插件的详细解析，可以看看 [《精尽 MyBatis 源码分析 —— 插件体系（一）之原理》](http://svip.iocoder.cn/MyBatis/plugin-1) 。
-
-## Mybatis 是如何进行分页的？分页插件的原理是什么？
+### Mybatis 是如何进行分页的？分页插件的原理是什么？
 
 Mybatis 使用 RowBounds 对象进行分页，它是针对 ResultSet 结果集执行的**内存分页**，而非**数据库分页**。
 
@@ -591,16 +377,9 @@ Mybatis 使用 RowBounds 对象进行分页，它是针对 ResultSet 结果集�
 
 举例：`SELECT * FROM student` ，拦截 SQL 后重写为：`select * FROM student LIMI 0，10` 。
 
-目前市面上目前使用比较广泛的 MyBatis 分页插件有：
-
-- [Mybatis-PageHelper](https://github.com/pagehelper/Mybatis-PageHelper)
-- [MyBatis-Plus](https://github.com/baomidou/mybatis-plus)
-
-从现在看来，[MyBatis-Plus](https://github.com/baomidou/mybatis-plus) 逐步使用的更加广泛。
-
 关于 MyBatis 分页插件的原理深入，可以看看 [《精尽 MyBatis 源码分析 —— 插件体系（二）之 PageHelper》](http://svip.iocoder.cn/MyBatis/plugin-2) 。
 
-## MyBatis 与 Hibernate 有哪些不同？
+### MyBatis 与 Hibernate 有哪些不同？
 
 Mybatis 和 Hibernate 不同，它**不完全是**一个 ORM 框架，因为MyBatis 需要程序员自己编写 SQL 语句。不过 MyBatis 可以通过 XML 或注解方式灵活配置要运行的 SQL 语句，并将 Java 对象和 SQL 语句映射生成最终执行的 SQL ，最后将 SQL 执行的结果再映射生成 Java 对象。
 
@@ -617,7 +396,7 @@ Hibernate 对象/关系映射能力强，数据库无关性好。如果用 Hiber
 
 当然，实际上，MyBatis 也可以搭配自动生成代码的工具，提升开发效率，还可以使用 [MyBatis-Plus](http://mp.baomidou.com/) 框架，已经内置常用的 SQL 操作，也是非常不错的。
 
-## JDBC 编程有哪些不足之处，MyBatis是如何解决这些问题的？
+### JDBC 编程有哪些不足之处，MyBatis是如何解决这些问题的？
 
 问题一：SQL 语句写在代码中造成代码不易维护，且代码会比较混乱。
 
@@ -644,7 +423,7 @@ Hibernate 对象/关系映射能力强，数据库无关性好。如果用 Hiber
 😈 当然，即使不使用 MyBatis ，也可以使用数据库连接池。
 另外，MyBatis 默认提供了数据库连接池的实现，只是说，因为其它开源的数据库连接池性能更好，所以一般很少使用 MyBatis 自带的连接池实现。
 
-## Mybatis 比 IBatis 比较大的几个改进是什么？
+### Mybatis 比 IBatis 比较大的几个改进是什么？
 
 > 这是一个选择性了解的问题，因为可能现在很多面试官，都没用过 IBatis 框架。
 
@@ -652,7 +431,7 @@ Hibernate 对象/关系映射能力强，数据库无关性好。如果用 Hiber
 2. 动态 SQL 由原来的节点配置变成 OGNL 表达式。
 3. 在一对一或一对多的时候，引进了 `association` ，在一对多的时候，引入了 `collection`节点，不过都是在 `<resultMap />` 里面配置。
 
-## Mybatis 映射文件中，如果 A 标签通过 include 引用了B标签的内容，请问，B 标签能否定义在 A 标签的后面，还是说必须定义在A标签的前面？
+### Mybatis 映射文件中，如果 A 标签通过 include 引用了B标签的内容，请问，B 标签能否定义在 A 标签的后面，还是说必须定义在A标签的前面？
 
 > 老艿艿：这道题目，已经和源码实现，有点关系了。
 
@@ -664,7 +443,7 @@ Hibernate 对象/关系映射能力强，数据库无关性好。如果用 Hiber
 
 此处，我们在引申一个问题，Spring IOC 中，存在互相依赖的 Bean 对象，该如何解决呢？答案见 [《【死磕 Spring】—— IoC 之加载 Bean：创建 Bean（五）之循环依赖处理》](http://svip.iocoder.cn/Spring/IoC-get-Bean-createBean-5/) 。
 
-## 简述 Mybatis 的 XML 映射文件和 Mybatis 内部数据结构之间的映射关系？
+### 简述 Mybatis 的 XML 映射文件和 Mybatis 内部数据结构之间的映射关系？
 
 > 老艿艿：这道题目，已经和源码实现，有点关系了。
 
