@@ -749,6 +749,22 @@ public int search(int[] nums, int target) {
 
 ### [260. 只出现一次的数字 III - 力扣（Leetcode）](https://leetcode.cn/problems/single-number-iii/description/)
 
+### [283. 移动零 - 力扣（Leetcode）](https://leetcode.cn/problems/move-zeroes/)
+
+```java
+   public void moveZeroes(int[] nums) {
+        int index=0;
+        for(int num:nums){
+            if(num!=0){
+                nums[index++]=num;
+            }
+        }
+        while(index<nums.length){
+            nums[index++]=0;
+        }
+    }
+```
+
 
 
 ## 矩阵问题
@@ -1251,6 +1267,36 @@ class MyStack {
 
 ```
 
+### [402. 移掉 K 位数字 - 力扣（Leetcode）](https://leetcode.cn/problems/remove-k-digits/description/)
+
+#### 单调栈
+
+思路: 为了让结果最小，应删除高位的大数，为了找到这些数，可用单调递增栈。让栈维持固定长度n-k，从左向右遍历，则出栈的就是高位最大的数，则栈内剩余的就是最小的结果。
+
+```java
+  public String removeKdigits(String num, int k) {
+        Stack<Character> stack=new Stack();
+        for(char c:num.toCharArray()){
+            while(k > 0 && !stack.isEmpty() && c < stack.peek()){
+                stack.pop();
+                k--;
+            }
+            if(c!='0'||!stack.isEmpty()){
+                stack.push(c);
+            }
+        }
+        while( k > 0 && !stack.isEmpty()){
+            stack.pop();
+            k--;
+        }
+        StringBuffer buffer = new StringBuffer();
+        while(!stack.isEmpty()){
+            buffer.append(stack.pop());
+        }
+        return buffer.length() == 0 ? "0" : buffer.reverse().toString();
+    }
+```
+
 
 
 
@@ -1489,6 +1535,33 @@ class Solution {
         return true;
     }
 }
+```
+
+### [179. 最大数 - 力扣（Leetcode）](https://leetcode.cn/problems/largest-number/)
+
+```java
+public String largestNumber(int[] nums) {
+        int len=nums.length;
+        for(int i=0;i<len;i++){
+            for(int j=i+1;j<len;j++){
+                String a=String.valueOf(nums[i]);
+                String b=String.valueOf(nums[j]);
+                if((a+b).compareTo(b+a)<0){
+                    int temp=nums[j];
+                    nums[j]=nums[i];
+                    nums[i]=temp;
+                }
+            }
+        }
+        StringBuilder res=new StringBuilder();
+        for(int num:nums){
+            res.append(num);
+        }
+        while(res.length()>1&&res.charAt(0)=='0'){
+            res.deleteCharAt(0);
+        }
+        return res.toString();
+    }
 ```
 
 
@@ -2248,5 +2321,19 @@ public List<List<Integer>> threeSum(int[] nums) {
     }
 ```
 
+## 运算符
 
+### [136. 只出现一次的数字 - 力扣（Leetcode）](https://leetcode.cn/problems/single-number/)
+
+思路: ^是异或运算符，符号两边的数必须为二进制,当两个boolean类型的变量同真或同假时，结果为假；两个变量一真一假时，结果为真
+
+```java
+    public int singleNumber(int[] nums) {
+        int a=0;
+        for(int num:nums){
+            a^=num;
+        }
+        return a;
+    }
+```
 

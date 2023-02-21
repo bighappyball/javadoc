@@ -690,3 +690,29 @@ public int coinChange(int[] coins, int amount) {
     }
 ```
 
+## 背包问题
+
+求解顺序的完全背包问题时，对物品的迭代应该放在最里层，对背包的迭代放在外层，只有这样才能让物品按一定顺序放入背包中。
+
+### [139. 单词拆分 - 力扣（Leetcode）](https://leetcode.cn/problems/word-break/solutions/)
+
+#### 动态规划
+
+我们定义 dp[i] 表示字符串 s 前 i 个字符组成的字符串 s[0..i−1]是否能被空格拆分成若干个字典中出现的单词
+
+```java
+//这里放你的代码
+ public boolean wordBreak(String s, List<String> wordDict) {
+        boolean[] dp=new boolean[s.length()+1];
+        dp[0]=true;
+        for(int i=1;i<=s.length();i++){
+            for(String word:wordDict){ // 对物品的迭代应该放在最里层
+                if(i>=word.length() &&word.equals(s.substring(i-word.length(),i))){
+                    dp[i]=dp[i]||dp[i-word.length()];
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+```
+
