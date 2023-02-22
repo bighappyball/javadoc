@@ -356,6 +356,33 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
     }
 ```
 
+### [958. 二叉树的完全性检验 - 力扣（Leetcode）](https://leetcode.cn/problems/check-completeness-of-a-binary-tree/solutions/?languageTags=java)
+
+#### 迭代
+
+```java
+public boolean isCompleteTree(TreeNode root) {
+        LinkedList<TreeNode> q=new LinkedList();
+        q.add(root);
+        while(q.peekFirst()!=null){
+            TreeNode cur=q.removeFirst();
+            q.add(cur.left);
+            q.add(cur.right);
+        }
+        while(!q.isEmpty()){
+            if(q.removeFirst()!=null){
+                return false;
+            }
+        }
+        return true;
+    }
+```
+
+#### 递归
+
+```java
+```
+
 
 
 ## 二叉搜索树

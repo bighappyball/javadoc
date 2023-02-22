@@ -360,6 +360,18 @@
 
 ![alt 堆排序](../_media/argorithm/sort/849589-20171015231308699-356134237.gif) 
 
+## **拓扑排序**
+
+用有向图描述依赖关系
+示例：n = 6，先决条件表：[[3, 0], [3, 1], [4, 1], [4, 2], [5, 3], [5, 4]]
+课 0, 1, 2 没有先修课，可以直接选。其余的课，都有两门先修课。
+我们用有向图来展现这种依赖关系（做事情的先后关系）：
+
+![微信截图_20200517052852.png](../_media/analysis/netty/de601db5bd50985014c7a6b89bca8aa231614b4ba423620dd2e31993c75a9137-微信截图_20200517052852.png)这种叫 有向无环图，把一个 有向无环图 转成 线性的排序 就叫 拓扑排序。
+有向图有 入度 和 出度 的概念：
+如果存在一条有向边 A --> B，则这条边给 A 增加了 1 个出度，给 B 增加了 1 个入度。
+所以，顶点 0、1、2 的入度为 0。顶点 3、4、5 的入度为 2。
+
 
 
 ## 题目
@@ -429,5 +441,61 @@ public int findKthLargest(int[] nums, int k) {
         }
         return merged.toArray(new int[merged.size()][]);
     }
+```
+
+
+
+### [207. 课程表 - 力扣（Leetcode）](https://leetcode.cn/problems/course-schedule/solutions/250377/bao-mu-shi-ti-jie-shou-ba-shou-da-tong-tuo-bu-pai-/)
+
+#### 拓扑排序
+
+```java
+ public boolean canFinish(int numCourses, int[][] prerequisites) {
+        // 入度数组
+        int[] res = new int[numCourses];
+        // 邻接表
+        Map<Integer,List<Integer>> map=new HashMap();
+        for(int i=0;i<prerequisites.length;i++){
+            int a=prerequisites[i][0],b=prerequisites[i][1];
+            // 求课的初始入度值
+            res[a]++;
+            // 当前课已经存在于邻接表
+            List<Integer> list=map.get(b);
+            if(list==null){
+                list=new ArrayList();
+            }
+            list.add(prerequisites[i][0]);
+            map.put(b,list);
+        }
+        Deque<Integer> queue = new LinkedList();
+        // 所有入度为0的课入列
+        for (int i = 0; i < res.length; i++) { 
+            if (res[i] == 0) queue.add(i);
+        }
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int selected = queue.poll();           // 当前选的课，出列
+            count++;                                  // 选课数+1
+            List<Integer> toEnQueue = map.get(selected);   // 获取这门课对应的后续课
+            if (toEnQueue!=null&&toEnQueue.size()>0 ) {      // 确实有后续课
+                for (int i = 0; i < toEnQueue.size(); i++) {
+                    res[toEnQueue.get(i)]--;             // 依赖它的后续课的入度-1
+                    if (res[toEnQueue.get(i)] == 0) {    // 如果因此减为0，入列
+                        queue.add(toEnQueue.get(i));
+                    }
+                }
+            }
+        }
+        return count == numCourses; // 选了的课等于总课数，true，否则false
+    }
+```
+
+### [补充题：检测循环依赖 (qq.com)](https://mp.weixin.qq.com/s/pCRscwKqQdYYN7M1Sia7xA)
+
+#### 拓扑排序
+
+### [字节跳动高频题——排序奇升偶降链表 (qq.com)](https://mp.weixin.qq.com/s/0WVa2wIAeG0nYnVndZiEXQ)
+
+```java
 ```
 
