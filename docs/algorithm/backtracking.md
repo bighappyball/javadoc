@@ -215,5 +215,49 @@ List<List<Integer>> res=new ArrayList();
     }
 ```
 
+### [79. 单词搜索 - 力扣（Leetcode）](https://leetcode.cn/problems/word-search/submissions/405204944/)
 
+#### 回溯
+
+```java
+public boolean exist(char[][] board, String word) {
+        int m=board.length,n=board[0].length;
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(dfs(board,word,0,i,j)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean dfs(char[][] board, String word,int index,int x,int y){
+        if(x<0||x>=board.length||y<0||y>=board[0].length||board[x][y]=='.'||board[x][y]!=word.charAt(index)){
+            return false;
+        }
+        if(index==word.length()-1){
+            return true;
+        }
+        char temp=board[x][y];
+        board[x][y]='.';
+        boolean b=dfs(board,word,index+1,x,y+1)||dfs(board,word,index+1,x+1,y)||dfs(board,word,index+1,x-1,y)||dfs(board,word,index+1,x,y-1);
+        board[x][y]=temp;
+        return b;
+    }
+```
+
+## 记忆化深度优先搜索
+
+### [329. 矩阵中的最长递增路径 - 力扣（Leetcode）](https://leetcode.cn/problems/longest-increasing-path-in-a-matrix/solutions/)
+
+#### 记忆化深度优先搜索
+
+使用记忆化深度优先搜索，当访问到一个单元格 (i,j) 时，如果 `memo[i][j]=0`，说明该单元格的结果已经计算过，则直接从缓存中读取结果，如果` memo[i][j]=0`，说明该单元格的结果尚未被计算过，则进行搜索，并将计算得到的结果存入缓存中。
+
+```java
+
+```
+
+#### 拓扑排序
 

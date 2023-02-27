@@ -41,7 +41,29 @@
 
 
 
-买卖股票的最佳时机 III
+### [123. 买卖股票的最佳时机 III - 力扣（Leetcode）](https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/)
+
+```java
+public int maxProfit(int[] prices) {
+        if(prices.length==0){
+            return 0;
+        }
+        int[][][] dp=new int[prices.length][3][2];
+        dp[0][1][0]=0;
+        dp[0][1][1]=-prices[0];
+        dp[0][2][0]=0;
+        dp[0][2][1]=-prices[0];
+        for(int i=1;i<prices.length;i++){
+            dp[i][2][0] = Math.max(dp[i-1][2][1]+prices[i],dp[i-1][2][0]);
+            dp[i][2][1]=Math.max(dp[i-1][2][1],dp[i-1][1][0]-prices[i]);
+            dp[i][1][0]=Math.max(dp[i-1][1][0],dp[i-1][1][1]+prices[i]);
+            dp[i][1][1]=Math.max(dp[i-1][1][1],dp[i-1][0][0]-prices[i]);
+        }
+        return dp[prices.length-1][2][0];
+    }
+```
+
+
 
 买卖股票的最佳时机 IV
 
@@ -600,7 +622,7 @@ public int coinChange(int[] coins, int amount) {
         for(int coin:coins){
             for(int i=coin;i<=amount;i++){   
                   // 只有dp[j-coins[i]]不是初始最大值时,该位才有选择的必要
-                if(i>=coin&&dp[i-coin]!=Integer.MAX_VALUE){
+                if(dp[i-coin]!=Integer.MAX_VALUE){
                     dp[i]=Math.min(dp[i],dp[i-coin]+1);
                 }
             }
@@ -608,6 +630,25 @@ public int coinChange(int[] coins, int amount) {
         return dp[amount]==Integer.MAX_VALUE?-1:dp[amount];
     }
 ```
+
+### [518. 零钱兑换 II - 力扣（Leetcode）](https://leetcode.cn/problems/coin-change-ii/submissions/405699715/)
+
+#### 动态规划
+
+```java
+    public int change(int amount, int[] coins) {
+        int[] dp=new int[amount+1];
+        dp[0]=1;
+        for(int coin:coins){
+            for(int i=coin;i<=amount;i++){
+                dp[i]+=dp[i-coin];
+            }
+        }
+        return dp[amount];
+    }
+```
+
+
 
 ### [221. 最大正方形 - 力扣（Leetcode）](https://leetcode.cn/problems/maximal-square/)
 
@@ -716,3 +757,4 @@ public int coinChange(int[] coins, int amount) {
     }
 ```
 
+### [字节跳动高频题——圆环回原点问题 (qq.com)](https://mp.weixin.qq.com/s/NZPaFsFrTybO3K3s7p7EVg)

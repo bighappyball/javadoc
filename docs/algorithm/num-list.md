@@ -765,6 +765,30 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### [75. 颜色分类 - 力扣（Leetcode）](https://leetcode.cn/problems/sort-colors/)
+
+```java
+ public void sortColors(int[] nums) {
+        int left=0,right=nums.length-1,cur=0;
+        while(cur<=right){
+            if(nums[cur]==0){
+               swap(nums,cur,left++);
+               cur++;
+            }else if(nums[cur]==2){
+                swap(nums,cur,right--);
+            }else{
+                cur++;
+            }
+        }
+    }
+
+    public void swap(int[] nums,int a,int b){
+        int temp=nums[a];
+        nums[a]=nums[b];
+        nums[b]=temp;
+    }
+```
+
 
 
 ## 矩阵问题
@@ -2339,6 +2363,51 @@ public List<List<Integer>> threeSum(int[] nums) {
         return max;
     }
 ```
+
+### [135. 分发糖果 - 力扣（Leetcode）](https://leetcode.cn/problems/candy/submissions/406823245/)
+
+#### 两次循环
+
+思路:  我们可以将「相邻的孩子中，评分高的孩子必须获得更多的糖果」这句话拆分为两个规则，分别处理。
+
+左规则：当 ratings[i−1]<ratings[i] 时，i 号学生的糖果数量将比 i−1 号孩子的糖果数量多。
+
+右规则：当 ratings[i]>ratings[i+1] 时，i 号学生的糖果数量将比 i+1 号孩子的糖果数量多。
+
+在实际代码中，我们先计算出左规则*left* 数组，在计算右规则的时候只需要用单个变量记录当前位置的右规则，同时计算答案即可。
+
+```java
+ public int candy(int[] ratings) {
+        int n=ratings.length;
+        int[] left=new int[n];
+        for(int i=0;i<n;i++){
+            if(i>0&&ratings[i]>ratings[i-1]){
+                left[i]=left[i-1]+1;
+            }else{
+                left[i]=1;
+            }
+        }
+        int right=0,ret=0;
+        for(int i=n-1;i>=0;i--){
+            if(i<n-1&&ratings[i]>ratings[i+1]){
+                right++;
+            }else{
+                right=1;
+            }
+            ret+=Math.max(left[i],right);
+        }
+        return ret;
+    }
+```
+
+#### 常数空间遍历
+
+```java
+```
+
+#### 变形:连成圈
+
+#### 变形:站成矩阵
 
 ## 运算符
 
