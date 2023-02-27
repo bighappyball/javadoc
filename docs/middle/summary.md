@@ -1,6 +1,7 @@
 
 
 * [中间件](/middle/)
-  * [MQ](/middle/mq.md)
-  * [nginx](/middle/nginx.md)
+  * [消息队列](/middle/mq.md)
+  * [Nginx](/middle/nginx.md)
+
 
