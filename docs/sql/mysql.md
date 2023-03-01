@@ -2,8 +2,6 @@
 
 Mysql
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpwqHyYbEIPyeesNicgZ2s5NTIzp5SWFrcGlcD3SSKo1OWl3zgCFDlPtPcoqUTfaM9NaEQ67m21I5YQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
-
 ## 数据库范式
 
 ### 1NF(第一范式)
