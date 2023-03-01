@@ -240,10 +240,7 @@ public void dfs(TreeNode root,List<List<Integer>> res,int level){
 ```java
 public boolean isSubtree(TreeNode root, TreeNode subRoot) {
         // 我s都遍历完了。你居然还没匹配上。那就返回false
-        if(root==null){
-            return false;
-        }
-        return isSameTree(root,subRoot)||isSubtree(root.left,subRoot)||isSubtree(root.right,subRoot);
+      return (root!=null&&subRoot!=null)&&( isSubtree(root.left,subRoot)||isSubtree(root.right,subRoot)||isSameTree(root,subRoot));
     }
 
     public boolean isSameTree(TreeNode root,TreeNode subRoot){
@@ -259,6 +256,33 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
         return isSameTree(root.left,subRoot.left)&&isSameTree(root.right,subRoot.right);
     }
 ```
+
+### [剑指 Offer 26. 树的子结构 - 力扣（Leetcode）](https://leetcode.cn/problems/shu-de-zi-jie-gou-lcof/submissions/407655946/)
+
+```java
+ public boolean isSubStructure(TreeNode A, TreeNode B) {
+
+        return ((A!=null&&B!=null)&&(isSameTree(A,B)||isSubStructure(A.left,B)||isSubStructure(A.right,B)));
+    }
+
+     public boolean isSameTree(TreeNode root,TreeNode subRoot){
+        if(root==null&&subRoot==null){
+            return true;
+        }
+        if(subRoot==null){
+            return true;
+        }
+        if(root==null){
+            return false;
+        }
+        if(root.val!=subRoot.val){
+            return false;
+        }
+        return isSameTree(root.left,subRoot.left)&&isSameTree(root.right,subRoot.right);
+    }
+```
+
+
 
 #### [100. 相同的树 - 力扣（Leetcode）](https://leetcode.cn/problems/same-tree/description/)
 

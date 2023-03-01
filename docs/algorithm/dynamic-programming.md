@@ -124,7 +124,30 @@ https://leetcode.cn/circle/article/qiAgHn/
     }
 ```
 
+### [125. 验证回文串 - 力扣（Leetcode）](https://leetcode.cn/problems/valid-palindrome/submissions/407648595/?languageTags=java)
 
+```java
+  public boolean isPalindrome(String s) {
+        s=s.toLowerCase();
+        int left=0,right=s.length()-1;
+        while(left<=right){
+            if(!Character.isLetterOrDigit(s.charAt(left))){
+                left++;
+                continue;
+            }
+            if(!Character.isLetterOrDigit(s.charAt(right))){
+                right--;
+                continue;
+            }
+            if(s.charAt(left)!=s.charAt(right)){
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+```
 
 ## 接雨水问题
 
@@ -757,4 +780,30 @@ public int coinChange(int[] coins, int amount) {
     }
 ```
 
+## 其他
+
 ### [字节跳动高频题——圆环回原点问题 (qq.com)](https://mp.weixin.qq.com/s/NZPaFsFrTybO3K3s7p7EVg)
+
+### [91. 解码方法 - 力扣（Leetcode）](https://leetcode.cn/problems/decode-ways/)
+
+```java
+ public int numDecodings(String s) {
+        if(s.charAt(0)=='0'){
+            return 0;
+        }
+        int[] dp=new int[s.length()+1];
+        dp[0]=1;
+        for(int i=0;i<s.length();i++){
+            char c = s.charAt(i);
+            dp[i+1]=c=='0'?0:dp[i];
+            if(i>0){
+                char pre = s.charAt(i-1);
+                if(pre=='1'||(pre=='2'&&c<='6')){
+                    dp[i+1]+=dp[i-1];
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+```
+

@@ -471,6 +471,26 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### 剑指 Offer 04. 二维数组中的查找
+
+思路 [剑指 Offer 04. 二维数组中的查找 - 力扣（Leetcode）](https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/solutions/95306/mian-shi-ti-04-er-wei-shu-zu-zhong-de-cha-zhao-zuo/)
+
+```java
+    int m=matrix.length-1,n=0;
+        while(m>=0&&n<matrix[0].length){
+            if(matrix[m][n]<target) {
+                n++;
+            }else if(matrix[m][n]>target){
+                m--;
+            }else{
+                return true;
+            }
+        }
+        return false;
+```
+
+
+
 ### [240. 搜索二维矩阵 II - 力扣（Leetcode）](https://leetcode.cn/problems/search-a-2d-matrix-ii/)
 
 ```java
@@ -786,6 +806,31 @@ public int search(int[] nums, int target) {
         int temp=nums[a];
         nums[a]=nums[b];
         nums[b]=temp;
+    }
+```
+
+### [189. 轮转数组 - 力扣（Leetcode）](https://leetcode.cn/problems/rotate-array/)
+
+```java
+ public void rotate(int[] nums, int k) {
+        if(nums.length<2){
+            return;
+        }
+        k=k%nums.length;
+        reverse(nums,0,nums.length-1);
+        reverse(nums,0,k-1);
+        reverse(nums,k,nums.length-1);
+    }
+
+    public void reverse(int[] nums,int start,int end){
+        int temp;
+        while(start<end){
+            temp=nums[start];
+            nums[start]=nums[end];
+            nums[end]=temp;
+            start++;
+            end--;
+        }
     }
 ```
 
@@ -1981,6 +2026,32 @@ public int lengthOfLongestSubstring(String s) {
         return i==nums.length;
     }
 ```
+
+### [45. 跳跃游戏 II - 力扣（Leetcode）](https://leetcode.cn/problems/jump-game-ii/)
+
+```java
+ public int jump(int[] nums) {
+        // 记录当前能跳跃到的位置的边界下标
+        int border = 0;
+        // 记录在边界范围内，能跳跃的最远位置的下标
+        int maxPosition = 0;
+        // 记录所用步数
+        int steps = 0;
+        for(int i=0;i<nums.length-1;i++){
+            // 继续往下遍历，统计边界范围内，哪一格能跳得更远，每走一步就更新一次能跳跃的最远位置下标
+            // 其实就是在统计下一步的最优情况
+            maxPosition = Math.max(maxPosition,nums[i]+i);
+            // 如果到达了边界，那么一定要跳了，下一跳的边界下标就是之前统计的最优情况maxPosition，并且步数加1
+            if(i==border){
+                border = maxPosition;
+                steps++;
+            }
+        }
+        return steps;
+    }
+```
+
+
 
 ### [面试题61. 扑克牌中的顺子 - 力扣（Leetcode）](https://leetcode.cn/problems/bu-ke-pai-zhong-de-shun-zi-lcof/description/)
 

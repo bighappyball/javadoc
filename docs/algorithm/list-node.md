@@ -799,9 +799,55 @@ void dfs(Node cur) {
     }
 ```
 
-### 分隔链表
+### [445. 两数相加 II - 力扣（Leetcode）](https://leetcode.cn/problems/add-two-numbers-ii/)
 
-#### [86. 分隔链表 - 力扣（Leetcode）](https://leetcode.cn/problems/partition-list/description/)
+#### 递归
+
+```java
+ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        l1 = reverse(l1);
+        l2 = reverse(l2);
+        return reverse(add(l1, l2));
+    }
+
+    public ListNode reverse(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode result = reverse(head.next);
+        head.next.next = head;
+        head.next = null;
+        return result;
+    }
+
+    public ListNode add(ListNode l1, ListNode l2) {
+        if(l1 == null) return l2;
+        if(l2 == null) return l1;
+        int sum = l1.val + l2.val;
+        ListNode result = new ListNode(sum % 10);
+        result.next = add(l1.next, l2.next);
+        if(sum > 9) result.next = add(result.next, new ListNode(1));
+        return result;
+    }
+```
+
+
+
+#### 反转
+
+```java
+```
+
+
+
+#### 栈
+
+```java
+```
+
+
+
+## 分隔链表
+
+### [86. 分隔链表 - 力扣（Leetcode）](https://leetcode.cn/problems/partition-list/description/)
 
 思路: 创建两个链表,分别存放小于或大于对节点,最后合并两节点
 
