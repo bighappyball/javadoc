@@ -834,6 +834,32 @@ public int search(int[] nums, int target) {
     }
 ```
 
+### [287. 寻找重复数 - 力扣（Leetcode）](https://leetcode.cn/problems/find-the-duplicate-number/submissions/407940693/)
+
+```java
+    public int findDuplicate(int[] nums) {
+        int i=0;
+        while(i<=nums.length){
+            if(nums[i]!=i+1){
+                if(nums[i]==nums[nums[i]-1]){
+                    return nums[i];
+                }else{
+                    swap(nums,i,nums[i]-1);
+                }
+            }else{
+                i++;
+            }
+        }
+        return 0;
+    }
+
+    public void swap(int[] nums,int i,int j){
+        int temp=nums[i];
+        nums[i]=nums[j];
+        nums[j]=temp;
+    }
+```
+
 
 
 ## 矩阵问题
@@ -984,6 +1010,41 @@ public int search(int[] nums, int target) {
         return res;
     }
 ```
+
+### [剑指 Offer 29. 顺时针打印矩阵 - 力扣（Leetcode）](https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)
+
+```java
+	  public int[] spiralOrder(int[][] matrix) {
+        if(matrix.length==0){
+            return new int[0];
+        }
+        int left=0,right=matrix[0].length-1,top=0,bottom=matrix.length-1;
+        int[] res=new int[matrix.length*matrix[0].length];
+        int index=0;
+        while(left<=right){
+            for(int i=left;i<=right;i++){
+                res[index++]=matrix[top][i];
+            }
+            if(++top>bottom)break;
+            for(int i=top;i<=bottom;i++){
+                res[index++]=matrix[i][right];
+            }
+            if(--right<left)break;
+            for(int i=right;i>=left;i--){
+                res[index++]=matrix[bottom][i];
+            }
+            if(--bottom<top)break;
+            for(int i=bottom;i>=top;i--){
+                res[index++]=matrix[i][left];
+            }
+            if(++left>right)break;
+
+        }
+        return res;
+    }
+```
+
+
 
 ### [498. 对角线遍历 ](https://leetcode.cn/problems/diagonal-traverse/solutions/1597961/dui-jiao-xian-bian-li-by-leetcode-soluti-plz7/)
 
@@ -2114,7 +2175,7 @@ public List<List<Integer>> threeSum(int[] nums) {
 排序+双指针
 
 ```java
-  public int[] intersection(int[] nums1, int[] nums2) {
+   public int[] intersection(int[] nums1, int[] nums2) {
         Arrays.sort(nums1);
         Arrays.sort(nums2);
         int index1=0,index2=0;
@@ -2122,8 +2183,9 @@ public List<List<Integer>> threeSum(int[] nums) {
         while(index1<nums1.length&&index2<nums2.length){
             int num1=nums1[index1],num2=nums2[index2];
             if(num1==num2){
-
-                
+                set.add(num1);
+                index1++;
+                index2++;
             }else if(num1<num2){
                 index1++;
             }else{
