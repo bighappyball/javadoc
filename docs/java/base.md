@@ -1082,13 +1082,43 @@ Spring 中的 AOP 模块中：如果目标对象实现了接口，则默认采�
 
 ## IO模型
 
-- 同步阻塞，相当于一个线程在等待。
+### 同步/阻塞
 
-- 同步非阻塞，相当于一个线程在正常运行。
+[【面试】迄今为止把同步/异步/阻塞/非阻塞/BIO/NIO/AIO讲的这么清楚的好文章（快快珍藏） (qq.com)](https://mp.weixin.qq.com/s/EVequWGVMWV5Ki2llFzdHg)
 
-- 异步阻塞，相当于多个线程都在等待。
+所谓同步/异步，关注的是能不能同时开工。所谓阻塞/非阻塞，关注的是能不能动。
 
-- 异步非阻塞，相当于多个线程都在正常运行。
+- 同步阻塞，不能同时开工，也不能动。只有一条小道，一次只能过一辆车，可悲的是还TMD的堵上了, 相当于一个线程在等待。
+
+- 同步非阻塞，不能同时开工，也不能动。只有一条小道，一次只能过一辆车，可悲的是还TMD的堵上了, 相当于一个线程在正常运行。
+
+- 异步阻塞，可以同时开工，但不可以动。有多条路，每条路都可以跑车，可气的是全都TMD的堵上了, 相当于多个线程都在等待。
+
+- 异步非阻塞，可以工时开工，也可以动。有多条路，每条路都可以跑车，很爽的是全都可以正常通行,  相当于多个线程都在正常运行。
+
+**阻塞IO和不阻塞IO**
+
+IO指的就是读入/写出数据的过程，和**等待**读入/写出数据的过程。一旦拿到数据后就变成了数据操作了，就不是IO了。拿网络IO来说，等待的过程就是数据从网络到网卡再到内核空间。读写的过程就是内核空间和用户空间的相互拷贝。
+
+非阻塞IO就是用户线程不参与以上两个过程，即数据已经拷贝到用户空间后，才去通知用户线程，一上来就可以直接操作数据了。
+
+![图片](../_media/analysis/netty/640-1677833591163-5.jpeg)
+
+![图片](../_media/analysis/netty/640-1677833608079-8.jpeg)
+
+
+
+**同步IO和异步IO**
+
+同步IO意味着必须拿到IO的数据，才可以继续执行。因为后续操作依赖IO数据，所以它必须是阻塞的。
+
+异步IO是指发起IO请求后，不用拿到IO的数据就可以继续执行。
+
+![图片](../_media/analysis/netty/640-1677833619479-11.jpeg)
+
+![图片](../_media/analysis/netty/640-1677833660000-14.jpeg)
+
+
 
 ### BIO
 
@@ -1106,13 +1136,140 @@ NIO (Non-blocking/New I/O)
 
 Java 中的 NIO 可以看作是 I/O 多路复用模型。也有很多人认为，Java 中的 NIO 属于同步非阻塞 IO 模型。
 
-#### 同步非阻塞 IO 模型
+**同步非阻塞 IO 模型**
 
 ![img](../_media/analysis/netty/wps14F1.tmp.jpg) 
 
 同步非阻塞 IO 模型中，应用程序会一直发起 read 调用，等待数据从内核空间拷贝到用户空间的这段时间里，线程依然是阻塞的，直到在内核把数据拷贝到用户空间。
 
-#### I/O 多路复用模型 
+#### 三大核心组件
+
+![1](../_media/analysis/netty/5388447552f04aa7823e2e06080e51e8.png)
+
+**Channel**
+
+
+
+基本上所有的 IO 操作都是从 Channel 开始。数据可以从 Channel 读取到 Buffer 中，也可以从 Buffer 写到 Channel 中
+
+Channel 有非常多的实现类，最为重要的**四个** Channel 实现类如下：
+
+- SocketChannel ：一个客户端用来**发起** TCP 的 Channel 。
+- ServerSocketChannel ：一个服务端用来**监听**新进来的连接的 TCP 的 Channel 。对于每一个新进来的连接，都会创建一个对应的 SocketChannel 。
+- DatagramChannel ：通过 UDP 读写数据。
+- FileChannel ：从文件中，读写数据。
+
+**Buffer**
+
+
+
+一个 Buffer ，本质上是内存中的一块，我们可以将数据写入这块内存，之后从这块内存获取数据。通过将这块内存封装成 NIO Buffer 对象，并提供了一组常用的方法，方便我们对该块内存的读写。
+
+**基本属性**
+
+- `capacity` 属性，容量，Buffer 能容纳的数据元素的**最大值**。这一容量在 Buffer 创建时被赋值，并且**永远不能被修改**。
+- `position` 属性，位置，初始值为 0 
+- `limit` 属性，上限。
+- `mark` 属性，标记，通过 `#mark()` 方法，记录当前 `position` ；通过 `reset()` 方法，恢复 `position` 为标记。
+
+**创建 Buffer**
+
+`#allocate(int capacity)`,`\#wrap(array)` 返回的是 HeapByteBuffer 的堆内存对象
+
+`#allocateDirect(int capacity)` 返回的是堆外内存对象
+
+**Selector**
+
+它是 Java NIO 核心组件中的一个，用于轮询一个或多个 NIO Channel 的状态是否处于可读、可写。如此，一个线程就可以管理多个 Channel ，也就说可以管理多个网络连接。也因此，Selector 也被称为**多路复用器**。
+
+**那么 Selector 是如何轮询的呢？**
+
+- 首先，需要将 Channel 注册到 Selector 中，这样 Selector 才知道哪些 Channel 是它需要管理的。
+- 之后，Selector 会不断地轮询注册在其上的 Channel 。如果某个 Channel 上面发生了读或者写事件，这个 Channel 就处于就绪状态，会被 Selector 轮询出来，然后通过 SelectionKey 可以获取就绪 Channel 的集合，进行后续的 I/O 操作。
+
+ **优点**
+
+使用一个线程**能够**处理多个 Channel 的优点是，只需要更少的线程来处理 Channel 。事实上，可以使用一个线程处理所有的 Channel 。对于操作系统来说，线程之间上下文切换的开销很大，而且每个线程都要占用系统的一些资源( 例如 CPU、内存 )。因此，使用的线程越少越好。
+
+ **缺点**
+
+因为在一个线程中使用了多个 Channel ，因此会造成每个 Channel 处理效率的降低。
+
+当然，Netty 在设计实现上，通过 n 个线程处理多个 Channel ，从而很好的解决了这样的缺点。其中，n 的指的是有限的线程数，默认情况下为 CPU * 2 。
+
+**创建Select**
+
+`Selector selector = Selector.open();`
+
+**注册 Chanel 到 Selector**
+
+```java
+channel.configureBlocking(false); // <1>
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+```
+
+如果一个 Channel 要注册到 Selector 中，那么该 Channel 必须是**非阻塞**
+
+在 `#register(Selector selector, int interestSet)` 方法的**第二个参数**，表示一个“interest 集合”，意思是通过 Selector 监听 Channel 时，对**哪些**( 可以是多个 )事件感兴趣。可以监听四种不同类型的事件：
+
+- Connect ：连接完成事件( TCP 连接 )，仅适用于客户端，对应 `SelectionKey.OP_CONNECT` 。
+- Accept ：接受新连接事件，仅适用于服务端，对应 `SelectionKey.OP_ACCEPT` 。
+- Read ：读事件，适用于两端，对应 `SelectionKey.OP_READ` ，表示 Buffer 可读。
+- Write ：写时间，适用于两端，对应 `SelectionKey.OP_WRITE` ，表示 Buffer 可写。
+
+**获取可操作的 Channel**
+
+`Set selectedKeys = selector.selectedKeys();`
+
+
+
+### AIO
+
+AIO (Asynchronous I/O)
+
+异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。
+
+![img](../_media/analysis/netty/wps14F3.tmp.jpg) 
+
+### I/O 多路复用模型 
+
+#### socket底层通信原理
+
+[为什么网络 I/O 会被阻塞？ (qq.com)](https://mp.weixin.qq.com/s/RTJRzM1R7t344w5whESYmg)
+
+![图片](../_media/analysis/netty/640.png)
+
+1. 创建 socket  `int socket(int domain, int type, int protocol);`
+
+- domain：这个参数用于选择通信的协议族，比如选择 IPv4 通信，还是 IPv6 通信等等
+- type：选择套接字类型，可选字节流套接字、数据报套接字等等。
+- protocol：指定使用的协议,默认为0。
+
+2. bind  IP 和端口, 服务器应用需要指明 IP 和端口，这样客户端才好找上门来要服务，所以此时我们需要指定一个地址和端口来与这个 socket 绑定一下
+
+   `int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);`
+
+3. listen,   执行了 socket、bind 之后，此时的 socket 还处于 closed 的状态，也就是不对外监听的，然后我们需要调用 listen 方法，让 socket 进入被动监听状态，这样的 socket 才能够监听到客户端的连接请求。
+
+   `int listen(int sockfd, int backlog);`
+
+   传入创建的 socket 的 fd，并且指明一下 backlog 的大小。
+
+   1. socket 有一个队列，同时存放已完成的连接和半连接，backlog为这个队列的大小。
+   2. socket 有两个队列，分别为已完成的连接队列和半连接队列，backlog为这个两个队列的大小之和。
+   3. socket 有两个队列，分别为已完成的连接队列和半连接队列，backlog仅为已完成的连接队列大小。
+
+4. accpet     现在我们已经初始化好监听套接字了，此时会有客户端连上来，然后我们需要处理这些已经完成建连的连接。
+
+5. 建立连接以后 read、write
+
+   
+
+   
+
+#### IO复用原理
+
+[IO 多路复用 (qq.com)](https://mp.weixin.qq.com/s/CMWlDywI1zbgJSoeGTBmuw)
 
 ![img](../_media/analysis/netty/wps14F2.tmp.jpg) 
 
@@ -1126,17 +1283,56 @@ epol调用 ：linux 2.6 内核，属于 select 调用的增强版本，优化了
 
 Java 中的 NIO ，有一个非常重要的选择器 ( Selector ) 的概念，也可以被称为 多路复用器。通过它，只需要一个线程便可以管理多个客户端连接。当客户端数据到了之后，才会为其服务。
 
-### AIO
+#### select
 
-AIO (Asynchronous I/O)
+当使用select函数的时候，先通知内核挂起进程，一旦一个或者多个IO事情发生，控制权将返回给应用程序，然后由应用程序进行IO处理,鉴于select所支持的描述符有限,只有1024个，随后提出poll解决这个问题
 
-异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。
+> 文件描述符：Linux 系统中，把一切都看做是文件（一切皆文件），当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。
+>
+> 文件描述符、文件、进程间的关系：
+>
+> （1）每个文件描述符会与一个打开的文件相对应；
+>
+> （2）不同的文件描述符也可能指向同一个文件；
+>
+> （3）相同的文件可以被不同的进程打开，也可以在同一个进程被多次打开；
+> 
 
-![img](../_media/analysis/netty/wps14F3.tmp.jpg) 
+select缺点:
+
+1. select 调用需要传入 fd 数组，需要拷贝一份到内核，高并发场景下这样的拷贝消耗的资源是惊人的。（可优化为不复制）
+
+2. select 在内核层仍然是通过遍历的方式检查文件描述符的就绪状态，是个同步过程，只不过无系统调用切换上下文的开销。（内核层可优化为异步事件通知）
+
+3. select 仅仅返回可读文件描述符的个数，具体哪个可读还是要用户自己遍历。（可优化为只返回给用户就绪的文件描述符，无需用户做无效的遍历）
+
+#### epoll
+
+epol通过监控注册的多个描述字，来进行 I/O 事件的分发处理。不同于 pol的是，epol不仅提供了默认的 level-triggered（条件触发）机制，还提供了性能更为强劲的edge triggered（边缘触发）机制
+
+优化select:
+
+1. 内核中保存一份文件描述符集合，无需用户每次都重新传入，只需告诉内核修改的部分即可。
+
+2. 内核不再通过轮询的方式找到就绪的文件描述符，而是通过异步 IO 事件唤醒。
+
+3. 内核仅会将有 IO 事件的文件描述符返回给用户，用户也无需遍历整个文件描述符集合。
+
+**epoll的底层实现**
+
+- 当我们使用epoll_fd增加一个fd的时候，内核会为我们创建一个epitem实例，讲这个实例作为红黑树的节点，此时你就可以BB一些红黑树的性质，当然你如果遇到让你手撕红黑树的大哥，在最后的提问环节就让他写写吧
+
+- 随后查找的每一个fd是否有事件发生就是通过红黑树的epitem来操作
+
+- epoll维护一个链表来记录就绪事件，内核会当每个文件有事件发生的时候将自己登记到这个就绪列表，然后通过内核自身的文件file-eventpoll之间的回调和唤醒机制，减少对内核描述字的遍历，大俗事件通知和检测的效率
 
 
 
-### Reactor 和 Proactor
+### Reactor 
+
+[微信公众平台 (qq.com)](https://mp.weixin.qq.com/s/px6-YnPEUCEqYIp_YHhDzg)
+
+#### Reactor 和 Proactor
 
 I/O 多路复用技术会用一个系统调用函数来监听我们所有关心的连接，也就说可以在一个监控线程里面监控很多的连接。
 
@@ -1162,7 +1358,7 @@ Reactor 模式主要由 Reactor 和处理资源池这两个核心部分组成，
 
 Proactor 是异步网络模式， 感知的是已完成的读写事件。在发起异步读写请求时，需要传入数据缓冲区的地址（用来存放结果数据）等信息，这样系统内核才可以自动帮我们把数据的读写工作完成，这里的读写工作全程由操作系统来做，并不需要像 Reactor 那样还需要应用进程主动发起 read/write 来读写数据，操作系统完成读写工作后，就会通知应用进程直接处理数据
 
-### 单 Reactor 单进程
+#### 单 Reactor 单进程
 
 ![img](../_media/analysis/netty/wps14ED.tmp.jpg)
 
@@ -1194,7 +1390,7 @@ Handler 对象通过 read -> 业务处理 -> send 的流程来完成完整的业
 - Redis 是由 C 语言实现的，它采用的正是「单 Reactor 单进程」的方案，因为 Redis 业务处理主要是在内存中完成，操作的速度是很快的，性能瓶颈不在 CPU 上，所以 Redis 对于命令的处理是单进程的方案。
 
 
-### 单 Reactor 多进程/多线程
+#### 单 Reactor 多进程/多线程
 
 ![img](../_media/analysis/netty/wps14EE.tmp.jpg)
 
@@ -1217,7 +1413,7 @@ Handler 对象不再负责业务处理，只负责数据的接收和发送，Han
 - 多线程间可以共享数据，虽然要额外考虑并发问题，但是这远比进程间通信的复杂度低得多，因此实际应用中也看不到单 Reactor 多进程的模式
 
 
-### 多 Reactor 多进程/多线程
+#### 多 Reactor 多进程/多线程
 
 ![img](../_media/analysis/netty/wps14EF.tmp.jpg)
 
@@ -1241,26 +1437,6 @@ Netty 和 Memcache 都采用了「多 Reactor 多线程」的方案。
 采用了「多 Reactor 多进程」方案的开源软件是 Nginx，不过方案与标准的多 Reactor 多进程有些差异。
 
 具体差异表现在主进程中仅仅用来初始化 socket，并没有创建 mainReactor 来 accept 连接，而是由子进程的 Reactor 来 accept 连接，通过锁来控制一次只有一个子进程进行 accept（防止出现惊群现象），子进程 accept 新连接后就放到自己的 Reactor 进行处理，不会再分配给其他子进程。
-
-### Select/poll/epoll
-
-[「网络IO套路」当时就靠它追到女友 (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453146772&idx=2&sn=689db364f8cbb82bf60c570103f2aa77&scene=21#wechat_redirect)
-
-#### select
-
-当使用select函数的时候，先通知内核挂起进程，一旦一个或者多个IO事情发生，控制权将返回给应用程序，然后由应用程序进行IO处理,鉴于select所支持的描述符有限，随后提出poll解决这个问题
-
-#### epoll
-
-epol通过监控注册的多个描述字，来进行 I/O 事件的分发处理。不同于 pol的是，epol不仅提供了默认的 level-triggered（条件触发）机制，还提供了性能更为强劲的edge triggered（边缘触发）机制
-
-**epoll的底层实现**
-
-- 当我们使用epoll_fd增加一个fd的时候，内核会为我们创建一个epitem实例，讲这个实例作为红黑树的节点，此时你就可以BB一些红黑树的性质，当然你如果遇到让你手撕红黑树的大哥，在最后的提问环节就让他写写吧
-
-- 随后查找的每一个fd是否有事件发生就是通过红黑树的epitem来操作
-
-- epoll维护一个链表来记录就绪事件，内核会当每个文件有事件发生的时候将自己登记到这个就绪列表，然后通过内核自身的文件file-eventpoll之间的回调和唤醒机制，减少对内核描述字的遍历，大俗事件通知和检测的效率
 
 
 

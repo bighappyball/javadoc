@@ -300,9 +300,7 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
 
 
-## 构造二叉树
 
-前序找根，中序来分。意思是每次都可以通过前序找到根节点，再用中序遍历确定新的左右子树的范围，最后递归这个过程就可以了。
 
 
 ## 平衡二叉树
@@ -754,6 +752,35 @@ class Solution {
 ```
 
 ### [105. 从前序与中序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/)
+
+### [106. 从中序与后序遍历序列构造二叉树 - 力扣（Leetcode）](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+
+```java
+ 	HashMap<Integer,Integer> memo = new HashMap<>();
+    int[] post;
+
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        for(int i = 0;i < inorder.length; i++) memo.put(inorder[i], i);
+        post = postorder;
+        TreeNode root = build(0, inorder.length - 1, 0, post.length - 1);
+        return root;
+
+    }
+    public TreeNode build(int inStart,int inEnd,int posStart,int posEnd){
+        if(posEnd<posStart||inEnd<inStart){
+            return null;
+        }
+        int rootVal = post[posEnd];
+        int rootIndex=memo.get(rootVal);
+        TreeNode node=new TreeNode(rootVal);
+        int leftNum=rootIndex-inStart;
+        node.left=build(inStart,rootIndex-1,posStart,posStart+leftNum-1);
+        node.right=build(rootIndex+1,inEnd,posStart+leftNum,posEnd-1);
+        return node;
+    }
+```
+
+
 
 ##  最近的共同祖先
 

@@ -1283,7 +1283,9 @@ class MyStack {
 
 ```java
  public boolean checkValidString(String s) {
+     	//存(的索引
         Stack<Integer> stack=new Stack();
+     	//存*的索引
         Stack<Integer> stack1=new Stack();
         for(int i=0;i<s.length();i++){
             char c=s.charAt(i);
@@ -1297,6 +1299,7 @@ class MyStack {
                 else stack.pop();
             }
         }
+     	//可能会存在*(情况
         while(!stack.isEmpty()&&!stack1.isEmpty()){
             if(stack.peek()>stack1.peek())return false;
             stack.pop();
@@ -2541,6 +2544,40 @@ public List<List<Integer>> threeSum(int[] nums) {
 #### 变形:连成圈
 
 #### 变形:站成矩阵
+
+### [347. 前 K 个高频元素 - 力扣（Leetcode）](https://leetcode.cn/problems/top-k-frequent-elements/)
+
+#### 堆排序
+
+```java
+```
+
+#### 优先队列
+
+```java
+  public int[] topKFrequent(int[] nums, int k) {
+        LinkedList<Integer> stack=new LinkedList();
+        Map<Integer,Integer> map=new HashMap();
+        for(int num:nums){
+            Integer number=map.getOrDefault(num,0);
+            map.put(num,number+1);
+        }
+        Set<Map.Entry<Integer, Integer>> entries = map.entrySet();
+        PriorityQueue<Map.Entry<Integer,Integer>> queue=new PriorityQueue<>((o1,o2)->o1.getValue()-o2.getValue());
+        for(Map.Entry<Integer,Integer> entry:entries){
+            queue.offer(entry);
+            if(queue.size()>k)queue.poll();
+        }
+        int[] res=new int[k];
+        for(int i=k-1;i>=0;i--){
+            res[i]=queue.poll().getKey();
+        }
+        return res;
+
+    }
+```
+
+
 
 ## 运算符
 
