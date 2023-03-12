@@ -1,8 +1,8 @@
-# 多线程与并发
+多线程与并发
 
 ## 并发理论基础
 
-### 什么是线程和进程?
+### 线程和进程
 
 进程是程序的一次执行过程，是系统运行程序的基本单位，因此进程是动态的。系统运行一个程序即是一个进程从创建，运行到消亡的过程。
 
@@ -14,33 +14,9 @@
 
 堆和方法区是所有线程共享的资源，其中堆是进程中最大的一块内存，主要用于存放新创建的对象 (几乎所有对象都在这里分配内存)，方法区主要用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
 
-### 程序计数器为什么是私有的
 
-程序计数器主要有下面两个作用：
 
-- 字节码解释器通过改变程序计数器来依次读取指令，从而实现代码的流程控制，如：顺序执行、选择、循环、异常处理。
-- 在多线程的情况下，程序计数器用于记录当前线程执行的位置，从而当线程被切换回来的时候能够知道该线程上次运行到哪儿了。
-- 需要注意的是，如果执行的是 native 方法，那么程序计数器记录的是 undefined 地址，只有执行的是 Java 代码时程序计数器记录的才是下一条指令的地址。
-
-所以，程序计数器私有主要是为了线程切换后能恢复到正确的执行位置
-
-### 虚拟机栈和本地方法栈为什么是私有的?
-
-**虚拟机栈**： 每个 Java 方法在执行的同时会创建一个栈帧用于存储局部变量表、操作数栈、常量池引用等信息。从方法调用直至执行完成的过程，就对应着一个栈帧在 Java 虚拟机栈中入栈和出栈的过程。
-
-**本地方法栈**： 和虚拟机栈所发挥的作用非常相似，区别是： 虚拟机栈为虚拟机执行 Java 方法 （也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。 在 HotSpot 虚拟机中和 Java 虚拟机栈合二为一。
-
-所以，为了保证线程中的局部变量不被别的线程访问到，虚拟机栈和本地方法栈是线程私有的。
-
-### 一句话简单了解堆和方法区
-
-堆和方法区是所有线程共享的资源，其中堆是进程中最大的一块内存，主要用于存放新创建的对象 (几乎所有对象都在这里分配内存)，方法区主要用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
-
-### 使用多线程可能带来什么问题?
-
-并发编程的目的就是为了能提高程序的执行效率提高程序运行速度，但是并发编程并不总是能提高程序运行速度的，而且并发编程可能会遇到很多问题，比如：内存泄漏、死锁、线程不安全等等。
-
-### 什么是线程死锁?如何避免死锁?
+### 线程死锁
 
 线程死锁描述的是这样一种情况：多个线程同时被阻塞，它们中的一个或者全部都在等待某个资源被释放。由于线程被无限期地阻塞，因此程序不可能正常终止。
 
@@ -55,7 +31,7 @@
 - 破坏不剥夺条件 ：占用部分资源的线程进一步申请其他资源时，如果申请不到，可以主动释放它占有的资源。
 - 破坏循环等待条件 ：靠按序申请资源来预防。按某一顺序申请资源，释放资源则反序释放。破坏循环等待条件。
 
-### sleep() 方法和 wait() 方法区别和共同点?
+### sleep() 方法和 wait() 
 
 两者最主要的区别在于：
 
@@ -64,7 +40,7 @@
 - wait() 通常被用于线程间交互/通信，sleep() 通常被用于暂停执行。
 - wait() 方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() 方法执行完成后，线程会自动苏醒。或者可以使用 wait(long timeout) 超时后线程会自动苏醒。
 
-### 什么是上下文切换?
+### 上下文切换
 
 当出现如下情况的时候，线程会从占用 CPU 状态中退出
 
@@ -175,23 +151,9 @@ java提供了volatile关键字来保证可见性
 
 - 传递性：如果操作 A 先行发生于操作 B，操作 B 先行发生于操作 C，那么操作 A 先行发生于操作 C。
 
-### 线程安全: 不是一个非真即假的命题
 
-1. 不可变：不可变(Immutable)的对象一定是线程安全的
 
-2. 绝对线程安全：不管运行时环境如何，调用者都不需要任何额外的同步措施
-
-3. 相对线程安全：相对线程安全需要保证对这个对象单独的操作是线程安全的，在调用的时候不需要做额外的保障措施。但是对于一些特定顺序的连续调用，就可能需要在调用端使用额外的同步手段来保证调用的正确性。例如 Vector、HashTable、Collections 的 synchronizedCollection() 方法包装的集合等。
-
-4. 线程兼容：线程兼容是指对象本身并不是线程安全的，但是可以通过在调用端正确地使用同步手段来保证对象在并发环境中可以安全地使用，
-
-5. 线程对立：线程对立是指无论调用端是否采取了同步措施，都无法在多线程环境中并发使用的代码。由于 Java 语言天生就具备多线程特性，线程对立这种排斥多线程的代码是很少出现的，而且通常都是有害的，应当尽量避免。
-
- 
-
- 
-
-### 线程状态转换
+### 线程状态
 
 1. 新建(New)：创建后尚未启动
 
@@ -224,6 +186,12 @@ java提供了volatile关键字来保证可见性
 
 Java 不支持多重继承，因此继承了 Thread 类就无法继承其它类，但是可以实现多个接口；类可能只要求可执行就行，继承整个 Thread 类开销过大。
 
+## 线程池
+
+[两道面试题，深入线程池，连环17问 (qq.com)](https://mp.weixin.qq.com/s/NDOx94yY06OnHjrYq2lVYw)
+
+[线程池引发的bug)](https://mp.weixin.qq.com/s/TQGtNpPiTypeKd5kUnfxEw)
+
 ### Executor
 
 Executor 管理多个异步任务的执行，而无需程序员显式地管理线程的生命周期。这里的异步是指多个任务的执行互不干扰，不需要进行同步操作。
@@ -250,6 +218,125 @@ Executor 管理多个异步任务的执行，而无需程序员显式地管理�
 调用的是 shutdownNow() 方法，则相当于调用每个线程的 interrupt() 方法。
 
 如果只想中断 Executor 中的一个线程，可以通过使用 submit() 方法来提交一个线程，它会返回一个 Future<?> 对象，通过调用该对象的 cancel(true) 方法就可以中断线程。
+
+## 
+
+### 线程池的状态
+
+总共有 5 种：
+
+1. RUNNING：运行状态、
+2. SHUTDOWN：关闭状态、
+3. STOP：停止状态、
+4. TIDYING：整理状态
+5. TERMINATED：销毁状态。
+
+默认情况下，如果不调用关闭方法，线程池会一直处于 RUNNING 状态，而线程池状态的转移有两个路径：
+
+- 当调用 shutdown() 方法时，线程池的状态会从 RUNNING 到 SHUTDOWN，再到 TIDYING，最后到 TERMENATED 销毁状态；
+- 当调用 shutdownNow() 方法时，线程池的状态会从 RUNNING 到 STOP，再到 TIDYING，最后到 TERMENATED 销毁状态。
+
+### 线程池的好处
+
+- 降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
+
+- 提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立即执行。
+
+- 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
+
+
+### 实现 Runnable 接口和 Callable 接口的区别
+
+- Runnable自 Java 1.0 以来一直存在，但Callable仅在 Java 1.5 中引入,目的就是为了来处理Runnable不支持的用例。
+
+- Runnable 接口 不会返回结果或抛出检查异常，但是 Callable 接口 可以。
+
+
+### 执行 execute()方法和 submit()方法的区别是什么呢？
+
+1. execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
+
+2. submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，并且可以通过 Future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get(long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。
+
+
+### 如何创建线程池
+
+- ThreadPoolExecutor 通过构造方法实现
+
+- 通过 Executor 框架的工具类 Executors 来实现
+
+
+### 几种常见的线程池详解
+
+- FixedThreadPoo 被称为可重用固定线程数的线程池。
+
+- SingleThreadExecutor 是只有一个线程的线程池
+
+- CachedThreadPooL 是一个会根据需要创建新线程的线程池 SynchronousQueue
+
+  执行execute方法时，首先会先执行SynchronousQueue的**offer方法提交任务**，并查询线程池中是否有空闲线程来执行SynchronousQueue的**poll方法来移除任务**。如果有，则配对成功，将任务交给这个空闲线程。否则，配对失败，创建新的线程去处理任务；当线程池中的线程空闲时，会执行SynchronousQueue的poll方法等待执行SynchronousQueue中新提交的任务。若超过60s依然没有任务提交到SynchronousQueue，这个空闲线程就会终止；因为maximumPoolSize是无界的，所以提交任务的速度 > 线程池中线程处理任务的速度就要不断创建新线程；每次提交任务，都会立即有线程去处理，因此CachedThreadPool适用于处理**大量、耗时少**的任务。
+
+- ScheduledThreadPoolExecutor 详解
+
+  ScheduledThreadPoolExecutor 使用的任务队列 DelayQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。
+
+  **周期执行**
+
+  线程 1 从 DelayQueue 中获取已到期的 ScheduledFutureTask（DelayQueue.take()）。到期任务是指 ScheduledFutureTask的 time 大于等于当前系统的时间；
+
+  线程 1 执行这个 ScheduledFutureTask；
+
+  线程 1 修改 ScheduledFutureTask 的 time 变量为下次将要被执行的时间；
+
+  线程 1 把这个修改 time 之后的 ScheduledFutureTask 放回 DelayQueue 中（DelayQueue.add())
+
+### ThreadPoolExecutor构造参数
+
+corePoolSize : 核心线程数定义了最小可以同时运行的线程数量。
+
+maximumPoolSize : 当队列中存放的任务达到队列容量的时候，当前可以同时运行的线程数量变为最大线程数。
+
+workQueue: 当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，新任务就会被存放在队列中。
+
+keepAliveTime:当线程池中的线程数量大于 corePoolSize 的时候，如果这时没有新的任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了 keepAliveTime才会被回收销毁；
+
+unit : keepAliveTime 参数的时间单位。
+
+threadFactory :executor 创建新线程的时候会用到。
+
+handler :饱和策略。关于饱和策略下面单独介绍一下。
+
+### 线程池大小确定
+
+- CPU 密集型任务(N+1)
+
+- I/O 密集型任务(2N)
+
+
+### 动态参数设置
+
+格外需要注意的是corePoolSize， 程序运行期间的时候，我们调用 setCorePoolSize（） 这个方法的话，线程池会首先判断当前工作线程数是否大于corePoolSize，如果大于的话就会回收工作线程。
+
+另外，你也看到了上面并没有动态指定队列长度的方法，美团的方式是自定义了一个叫做 ResizableCapacityLinkedBlockIngQueue 的队列（主要就是把LinkedBlockingQueue的capacity 字段的final关键字修饰给去掉了，让它变为可变的）。
+
+### 饱和策略
+
+如果当前同时运行的线程数量达到最大线程数量并且队列也已经被放满了任务时，ThreadPoolTaskExecutor 定义一些策略:
+
+- ThreadPoolExecutor.AbortPolicy： 抛出 RejectedExecutionException来拒绝新任务的处理。
+
+- ThreadPoolExecutor.CallerRunsPolicy： 调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
+
+- ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
+
+- ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
+
+
+## 
+
+
+
+
 
 
 
@@ -280,7 +367,7 @@ Executor 管理多个异步任务的执行，而无需程序员显式地管理�
 
 使用 wait() 挂起期间，线程会释放锁。这是因为，如果没有释放锁，那么其它线程就无法进入对象的同步方法或者同步控制块中，那么就无法执行 notify() 或者 notifyAll() 来唤醒挂起的线程，造成死锁。
 
-## 所有的锁
+## 锁分类
 
 乐观锁：悲观锁认为自己在使用数据的时候一定有别的线程来修改数据，因此在获取数据的时候会先加锁，确保数据不会被别的线程修改。Java中，synchronized关键字和Lock的实现类都是悲观锁。
 
@@ -313,7 +400,7 @@ Executor 管理多个异步任务的执行，而无需程序员显式地管理�
 
 
 
-### Synchronized详解
+## Synchronized
 
 #### synchronized 属于重量级锁
 
@@ -605,116 +692,6 @@ volatile 的 happens-before 关系 happens-before 规则中有一条是 volatile
 #### ThreadLoca内存泄露问题
 
 ThreadLocalMap 中使用的 key 为 ThreadLoca的弱引用,而 value 是强引用。所以，如果 ThreadLoca没有被外部强引用的情况下，在垃圾回收的时候，key 会被清理掉，而 value 不会被清理掉。这样一来，ThreadLocalMap 中就会出现 key 为 nul的 Entry。假如我们不做任何措施的话，value 永远无法被 GC 回收，这个时候就可能会产生内存泄露。ThreadLocalMap 实现中已经考虑了这种情况，在调用 set()、get()、remove() 方法的时候，会清理掉 key 为 nul的记录。使用完 ThreadLocal方法后 最好手动调用remove()方法
-
-## 线程池
-
-### 线程池的状态
-
-总共有 5 种：
-
-1. RUNNING：运行状态、
-2. SHUTDOWN：关闭状态、
-3. STOP：停止状态、
-4. TIDYING：整理状态
-5. TERMINATED：销毁状态。
-
-默认情况下，如果不调用关闭方法，线程池会一直处于 RUNNING 状态，而线程池状态的转移有两个路径：
-
-- 当调用 shutdown() 方法时，线程池的状态会从 RUNNING 到 SHUTDOWN，再到 TIDYING，最后到 TERMENATED 销毁状态；
-- 当调用 shutdownNow() 方法时，线程池的状态会从 RUNNING 到 STOP，再到 TIDYING，最后到 TERMENATED 销毁状态。
-
-### 线程池的好处
-
-- 降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
-
-- 提高响应速度。当任务到达时，任务可以不需要等到线程创建就能立即执行。
-
-- 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
-
-
-### 实现 Runnable 接口和 Callable 接口的区别
-
-- Runnable自 Java 1.0 以来一直存在，但Callable仅在 Java 1.5 中引入,目的就是为了来处理Runnable不支持的用例。
-
-- Runnable 接口 不会返回结果或抛出检查异常，但是 Callable 接口 可以。
-
-
-### 执行 execute()方法和 submit()方法的区别是什么呢？
-
-1. execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功与否；
-
-2. submit()方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，并且可以通过 Future 的 get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成，而使用 get(long timeout，TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时候有可能任务没有执行完。
-
-
-### 如何创建线程池
-
-- ThreadPoolExecutor 通过构造方法实现
-
-- 通过 Executor 框架的工具类 Executors 来实现
-
-
-### 几种常见的线程池详解
-
-- FixedThreadPoo被称为可重用固定线程数的线程池。
-
-- SingleThreadExecutor 是只有一个线程的线程池
-
-- CachedThreadPoo 是一个会根据需要创建新线程的线程池
-
-- ScheduledThreadPoolExecutor 详解
-
-  ScheduledThreadPoolExecutor 使用的任务队列 DelayQueue 封装了一个 PriorityQueue，PriorityQueue 会对队列中的任务进行排序，执行所需时间短的放在前面先被执行(ScheduledFutureTask 的 time 变量小的先执行)，如果执行所需时间相同则先提交的任务将被先执行(ScheduledFutureTask 的 squenceNumber 变量小的先执行)。
-
-  **周期执行**
-
-  线程 1 从 DelayQueue 中获取已到期的 ScheduledFutureTask（DelayQueue.take()）。到期任务是指 ScheduledFutureTask的 time 大于等于当前系统的时间；
-
-  线程 1 执行这个 ScheduledFutureTask；
-
-  线程 1 修改 ScheduledFutureTask 的 time 变量为下次将要被执行的时间；
-
-  线程 1 把这个修改 time 之后的 ScheduledFutureTask 放回 DelayQueue 中（DelayQueue.add())
-
-### ThreadPoolExecutor构造参数
-
-corePoolSize : 核心线程数定义了最小可以同时运行的线程数量。
-
-maximumPoolSize : 当队列中存放的任务达到队列容量的时候，当前可以同时运行的线程数量变为最大线程数。
-
-workQueue: 当新任务来的时候会先判断当前运行的线程数量是否达到核心线程数，如果达到的话，新任务就会被存放在队列中。
-
-keepAliveTime:当线程池中的线程数量大于 corePoolSize 的时候，如果这时没有新的任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了 keepAliveTime才会被回收销毁；
-
-unit : keepAliveTime 参数的时间单位。
-
-threadFactory :executor 创建新线程的时候会用到。
-
-handler :饱和策略。关于饱和策略下面单独介绍一下。
-
-### 线程池大小确定
-
-- CPU 密集型任务(N+1)
-
-- I/O 密集型任务(2N)
-
-
-### 动态参数设置
-
-格外需要注意的是corePoolSize， 程序运行期间的时候，我们调用 setCorePoolSize（） 这个方法的话，线程池会首先判断当前工作线程数是否大于corePoolSize，如果大于的话就会回收工作线程。
-
-另外，你也看到了上面并没有动态指定队列长度的方法，美团的方式是自定义了一个叫做 ResizableCapacityLinkedBlockIngQueue 的队列（主要就是把LinkedBlockingQueue的capacity 字段的final关键字修饰给去掉了，让它变为可变的）。
-
-### 饱和策略
-
-如果当前同时运行的线程数量达到最大线程数量并且队列也已经被放满了任务时，ThreadPoolTaskExecutor 定义一些策略:
-
-- ThreadPoolExecutor.AbortPolicy： 抛出 RejectedExecutionException来拒绝新任务的处理。
-
-- ThreadPoolExecutor.CallerRunsPolicy： 调用执行自己的线程运行任务，也就是直接在调用execute方法的线程中运行(run)被拒绝的任务，如果执行程序已关闭，则会丢弃该任务。因此这种策略会降低对于新任务提交速度，影响程序的整体性能。如果您的应用程序可以承受此延迟并且你要求任何一个任务请求都要被执行的话，你可以选择这个策略。
-
-- ThreadPoolExecutor.DiscardPolicy： 不处理新任务，直接丢弃掉。
-
-- ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
 
 ## Java 常见并发容器总结
@@ -1093,3 +1070,47 @@ ReentrantReadWriteLock底层是基于ReentrantLock和AbstractQueuedSynchronizer�
 ## 零拷贝
 
 [傻瓜三歪让我教他「零拷贝」 (qq.com)](https://mp.weixin.qq.com/s/FgBCop2zFfcX5ZszE0NoCQ)
+
+## 其他
+
+### 程序计数器为什么是私有的
+
+程序计数器主要有下面两个作用：
+
+- 字节码解释器通过改变程序计数器来依次读取指令，从而实现代码的流程控制，如：顺序执行、选择、循环、异常处理。
+- 在多线程的情况下，程序计数器用于记录当前线程执行的位置，从而当线程被切换回来的时候能够知道该线程上次运行到哪儿了。
+- 需要注意的是，如果执行的是 native 方法，那么程序计数器记录的是 undefined 地址，只有执行的是 Java 代码时程序计数器记录的才是下一条指令的地址。
+
+所以，程序计数器私有主要是为了线程切换后能恢复到正确的执行位置
+
+### 虚拟机栈和本地方法栈为什么是私有的?
+
+**虚拟机栈**： 每个 Java 方法在执行的同时会创建一个栈帧用于存储局部变量表、操作数栈、常量池引用等信息。从方法调用直至执行完成的过程，就对应着一个栈帧在 Java 虚拟机栈中入栈和出栈的过程。
+
+**本地方法栈**： 和虚拟机栈所发挥的作用非常相似，区别是： 虚拟机栈为虚拟机执行 Java 方法 （也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。 在 HotSpot 虚拟机中和 Java 虚拟机栈合二为一。
+
+所以，为了保证线程中的局部变量不被别的线程访问到，虚拟机栈和本地方法栈是线程私有的。
+
+### 一句话简单了解堆和方法区
+
+堆和方法区是所有线程共享的资源，其中堆是进程中最大的一块内存，主要用于存放新创建的对象 (几乎所有对象都在这里分配内存)，方法区主要用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
+
+### 使用多线程可能带来什么问题?
+
+并发编程的目的就是为了能提高程序的执行效率提高程序运行速度，但是并发编程并不总是能提高程序运行速度的，而且并发编程可能会遇到很多问题，比如：内存泄漏、死锁、线程不安全等等。
+
+### 线程安全: 不是一个非真即假的命题
+
+1. 不可变：不可变(Immutable)的对象一定是线程安全的
+
+2. 绝对线程安全：不管运行时环境如何，调用者都不需要任何额外的同步措施
+
+3. 相对线程安全：相对线程安全需要保证对这个对象单独的操作是线程安全的，在调用的时候不需要做额外的保障措施。但是对于一些特定顺序的连续调用，就可能需要在调用端使用额外的同步手段来保证调用的正确性。例如 Vector、HashTable、Collections 的 synchronizedCollection() 方法包装的集合等。
+
+4. 线程兼容：线程兼容是指对象本身并不是线程安全的，但是可以通过在调用端正确地使用同步手段来保证对象在并发环境中可以安全地使用，
+
+5. 线程对立：线程对立是指无论调用端是否采取了同步措施，都无法在多线程环境中并发使用的代码。由于 Java 语言天生就具备多线程特性，线程对立这种排斥多线程的代码是很少出现的，而且通常都是有害的，应当尽量避免。
+
+ 
+
+ 
