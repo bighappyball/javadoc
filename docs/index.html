@@ -1,216 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>Java知识星球</title>
+  <title>CodeGuide | 程序员编码指南</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
-  <link rel="stylesheet" href="./plugins/vue.css">
-  <link rel="shortcut icon" href="favicon.ico">
-  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
-    title="docsify-darklight-theme" type="text/css" /> -->
-  <link rel="stylesheet" href="./plugins/style.min.css" title="docsify-darklight-theme" type="text/css" />
-  <!-- Themes (light + dark) -->
-  <!-- <link rel="stylesheet" media="(prefers-color-scheme: dark)"
-    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css"> -->
-  <!-- <link rel="stylesheet" media="(prefers-color-scheme: light)"
-    href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css"> -->
-  <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" /> -->
-</head>
-
-<body>
-  <div id="back" style="width: 100%;height: 400px;position: absolute;"></div>
-  <div id="app"></div>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="/assets/css/vue.css">
+  <link rel="stylesheet" href="/assets/css/gitalk.css">
   <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?b3354307876925c625a24bb138d2177c";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+    var gitalkConfig = {
+      clientID: '4a657aa4ae6c0f1862a1',
+      clientSecret: '94793d5bac0c884a8798ea941f7c5bc9fb004720',
+      repo: 'fuzhengwei.github.io',
+      owner: 'fuzhengwei',
+      admin: ["fuzhengwei"],
+      distractionFreeMode: false
+    };
     window.$docsify = {
-      repo: 'https://github.com/docsifyjs/docsify/',
-      // 左侧导航栏
-      loadSidebar: 'summary.md',
-      loadNavbar: true,
-      subMaxLevel: 6,
-      sidebarDisplayLevel: 1,
-      // logo: './_media/logo.png',
-      // 文档标题
-      name: '知识星球',
-      //自动为每个页面增加标题
-      autoHeader: true,
-      //小屏设备下合并导航栏到侧边栏
-      mergeNavbar: true,
-      // 开启首页
+      name: '吾辈皆牛马',
+      repo: 'https://github.com/bighappyball',
+      auto2top: true,
       coverpage: true,
-      themeColor: "#409EFF",
-      // 统计字数
-      count: {
-        countable: true,
-        position: 'top',
-        margin: '0px',
-        float: 'left',
-        fontsize: '0.8em',
-        color: 'rgb(90,90,90)',
-        language: 'chinese',
-        localization: {
-          words: "",
-          minute: ""
-        },
-        isExpected: true
-      },
-      tabs: {
-        theme: 'classic' // default
+      loadSidebar: true,
+      maxLevel: 4,
+      subMaxLevel: 2,
+      search: {
+        paths: 'auto',
+        placeholder: '🔍 Type to search ',
+        noData: '😞 No Results! ',
+        depth: 6
       },
       pagination: {
-        previousText: '上一章节',
-        // or
-        nextText: {
-          '/en/': 'NEXT',
-          '/': '下一章节'
-        },
-        crossChapter: true,
-        crossChapterText: true,
+        previousText: 'PREVIOUS',
+        nextText: 'NEXT',
+        crossChapter: true
       },
-      // 搜索完整配置参数
-      search: {
-        maxAge: 86400000, // 过期时间，单位毫秒，默认一天
-        paths: ['auto'], // or 'auto'
-        placeholder: '搜索',
-        // 支持本地化
-        // placeholder: {
-        //   '/zh-cn/': '搜索',
-        //   '/': '搜索'
-        // },
-        noData: '找不到结果！',
-        // 支持本地化
-        // noData: {
-        //   '/zh-cn/': '找不到结果',
-        //   '/': 'No Results'
-        // },
-        // 搜索标题的最大层级, 1 - 6
-        depth: 6,
-        hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
-        // 避免搜索索引冲突
-        // 同一域下的多个网站之间
-        namespace: 'website-1',
-        // 使用不同的索引作为路径前缀（namespaces）
-        // 注意：仅适用于 paths: 'auto' 模式
-        //
-        // 初始化索引时，我们从侧边栏查找第一个路径
-        // 如果它与列表中的前缀匹配，我们将切换到相应的索引
-        pathNamespaces: ['/zh-cn', '/ru-ru', '/ru-ru/v1'],
-        // 您可以提供一个正则表达式来匹配前缀。在这种情况下，
-        // 匹配到的字符串将被用来识别索引
-        pathNamespaces: /^(\/(zh-cn|ru-ru))?(\/(v1|v2))?/
-      },
-      autoFooter: {
-        name: "chenxhe",          // company display name (required)
-        copyYear: 2022,             // start copyright year (required)
-        url: "",          // company url (optional)
-        policy: true,   // show Privacy Policy (optional)
-        terms: true,   // show Terms of Service (optional)
-        cookies: true,   // show Cookies Policy (optional)
-        onBody: true             // if true it is on the main doc
-      },
-      darklightTheme: {
-        siteFont: 'PT Sans | Source Sans Pro',
-        defaultTheme: 'dark',
-        codeFontFamily: 'Roboto Mono, Monaco, courier, monospace',
-        bodyFontSize: '16px',
-        dark: {
-          accent: '#42b983',
-          toogleBackground: '#ffffff',
-          background: '#091a28',
-          textColor: '#b4b4b4',
-          codeTextColor: '#ffffff',
-          codeBackgroundColor: '#0e2233',
-          borderColor: '#0d2538',
-          blockQuoteColor: '#858585',
-          highlightColor: '#d22778',
-          sidebarSublink: '#b4b4b4',
-          codeTypeColor: '#ffffff',
-          coverBackground: 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
-          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/sun.svg)'
-        },
-        light: {
-          accent: '#42b983',
-          toogleBackground: '#091a28',
-          background: '#ffffff',
-          textColor: '#34495e',
-          codeTextColor: '#525252',
-          codeBackgroundColor: '#f8f8f8',
-          borderColor: 'rgba(0, 0, 0, 0.07)',
-          blockQuoteColor: '#858585',
-          highlightColor: '#d22778',
-          sidebarSublink: '#b4b4b4',
-          codeTypeColor: '#091a28',
-          coverBackground: 'linear-gradient(to left bottom, hsl(118, 100%, 85%) 0%,hsl(181, 100%, 85%) 100%)',
-          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/icons/moon.svg)'
+      plugins: [
+        function (hook, vm) {
+          hook.doneEach(function() {
+            var label, domObj, main, divEle, gitalk;
+            label = md5(decodeURI(vm.route.path.split("/").pop()));
+            domObj = Docsify.dom;
+            main = domObj.getNode("#main");
+
+            Array.apply(
+              null,
+              document.querySelectorAll("div.gitalk-container")
+            ).forEach(function(ele) {
+              ele.remove();
+            });
+      
+            divEle = domObj.create("div");
+            divEle.id = "gitalk-container-" + label;
+            divEle.className = "gitalk-container";
+            divEle.style = "width: " + main.clientWidth + "px; margin: 0 auto 20px;";
+            domObj.appendTo(domObj.find(".content"), divEle);
+            gitalk = new Gitalk(
+              Object.assign(gitalkConfig, { id: !label ? "home" : label })
+            );
+            gitalk.render("gitalk-container-" + label);
+          });
         }
-      },
-      // timeUpdater: {
-      //   text: "<div align='right' width='200px' style='color:rgb(90,90,90);font-size:0.9em'>{docsify-updated}</div>",
-      //   formatUpdated: "{YYYY}/{MM}/{DD}",
-      //   whereToPlace: "top",  // "top" or "bottom", default to "bottom"
-      // },
-    }
+      ]
+    }                                 
   </script>
-  <!-- 翻页插件 -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script> -->
-  <script src="./plugins/docsify-pagination.min.js"></script>
-  <!-- Docsify v4 -->
-  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/docsify.min.js"></script> -->
-  <script src="./plugins/docsify.min.js"></script>
-  <!-- 字数统计 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script> -->
-  <script src="./plugins/countable.min.js"></script>
-  <!-- 搜索 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script> -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script> -->
-  <script src="./plugins/search.min.js"></script>
-  <!-- 复制到剪贴板 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script> -->
-  <!-- emoji表情支持 -->
-  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/docsify/4.13.0/plugins/emoji.min.js"></script> -->
-  <script src="./plugins/emoji.min.js"></script>
-  <!-- 图片缩放 - Zoom image -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script> -->
-  <script src="./plugins/zoom-image.min.js"></script>
-  <!-- 主题 -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script> -->
-  <!-- <script src="./plugins/docsify-themeable.min.js"></script> -->
-  <!-- java代码高亮 -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script> -->
-  <script src="./plugins/prism-java.min.js"></script>
-  <!-- tabs -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script> -->
-  <script src="./plugins/docsify-tabs@1.js"></script>
-  <!-- 文档更新时间 -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/docsify-updated/src/time-updater.min.js"></script> -->
-  <!-- 黑暗模式切换 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js" type="text/javascript"> -->
-  <script src="./plugins/index.min.js"></script>
-  <!-- 目录折叠 -->
-  <!-- <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script> -->
-  <script src="./plugins/docsify-sidebar-collapse.min.js"></script>
 
-  <!-- 背景 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
-  <script>
-    VANTA.RINGS({
-      el: ".cover-main",
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      minHeight: 200.00,
-      minWidth: 200.00,
-      scale: 1.00,
-      scaleMobile: 1.00,
-      color: 0xffb3,
-      backgroundAlpha: 1
-    })
-  </script>
+<script src="/assets/js/md5.js"></script>
+<script src="/assets/js/docsify.min.js"></script>
+<script src="/assets/js/gitalk.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
+<script src="/assets/js/docsify-pagination.min.js"></script>
+<script src="/assets/js/zoom-image.js"></script>
+<script src="/assets/js/prism-bash.js"></script>
+<script src="/assets/js/prism-java.min.js"></script>
 </body>
-
 </html>
-<footer id="mb-footer"></footer>

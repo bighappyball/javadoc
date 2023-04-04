@@ -1,14 +1,13 @@
-<img width="150px" style="border-radius: 50%" bor src="./_media/image/logo.png">
+![logo](_media/logo.png)
 
-# Java 知识星球
+# 
 
-- The moments of pain is worth for the honor of a lifetime
-<!-- - 短暂的痛苦，值得换来终身荣誉 -->
+## 吾辈皆牛马
 
+- Why do Java programmers always choose to drink green tea instead of coffee? 
+Because Java drinks green tea, while C++ drinks coffee. Of course, this is just a joke.
+    
+[![stars](https://badgen.net/github/stars/bighappyball/javadoc?icon=github&color=4ab8a1)](https://github.com/stars/bighappyball/javadoc) [![forks](https://badgen.net/github/forks/fuzhengwei/fuzhengwei.github.io?icon=github&color=4ab8a1)](https://github.com/bighappyball/javadoc) 
 
-<!-- [![star](https://gitee.com/moxi159753/mogu_blog_v2/badge/star.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/stargazers)
-[![fork](https://gitee.com/moxi159753/mogu_blog_v2/badge/fork.svg?theme=dark)](https://gitee.com/moxi159753/mogu_blog_v2/members) -->
-
-<!-- [Gitee](<https://gitee.com/moxi159753/mogu_blog_v2>) -->
 [Github](<https://github.com/bighappyball/javadoc>)
 [开始阅读](README.md)
