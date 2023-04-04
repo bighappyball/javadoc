@@ -6,7 +6,7 @@ java知识文档
 ## 安装教程
 1. npm i docsify-cli -g
 
-2.  docsify serve docs
+2. docsify serve docs
 
 ## mark文件编辑器Typora
 
