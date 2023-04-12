@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>CodeGuide | 程序员编码指南</title>
+  <title>Programmer Community</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="/assets/css/vue.css">
   <link rel="stylesheet" href="/assets/css/gitalk.css">
+  <link rel="stylesheet" href="/assets/css/jx-toc.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/fontawesome.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/solid.css">
   <script>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b3354307876925c625a24bb138d2177c";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();
+    var _hmt = _hmt || [];
+    (function () {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b3354307876925c625a24bb138d2177c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
   </script>
 </head>
+
 <body>
-<div id="app"></div>
-<script>
+  <div id="app"></div>
+  <script>
     var gitalkConfig = {
       clientID: '4a657aa4ae6c0f1862a1',
       clientSecret: '94793d5bac0c884a8798ea941f7c5bc9fb004720',
@@ -30,7 +36,7 @@
       distractionFreeMode: false
     };
     window.$docsify = {
-      name: '吾辈皆牛马',
+      name: 'Programmer Community',
       repo: 'https://github.com/bighappyball',
       auto2top: true,
       coverpage: true,
@@ -48,9 +54,19 @@
         nextText: 'NEXT',
         crossChapter: true
       },
+      // 思维导图
+      plantuml: {
+        skin: 'default',
+        renderSvgAsObject: true,
+      },
+      // 业内导航栏
+      jxtoc: {
+        headings: "h1, h2, h3, h4, h5, h6",
+      },
       plugins: [
         function (hook, vm) {
-          hook.doneEach(function() {
+          hook.doneEach(function () {
+
             var label, domObj, main, divEle, gitalk;
             label = md5(decodeURI(vm.route.path.split("/").pop()));
             domObj = Docsify.dom;
@@ -59,10 +75,10 @@
             Array.apply(
               null,
               document.querySelectorAll("div.gitalk-container")
-            ).forEach(function(ele) {
+            ).forEach(function (ele) {
               ele.remove();
             });
-      
+
             divEle = domObj.create("div");
             divEle.id = "gitalk-container-" + label;
             divEle.className = "gitalk-container";
@@ -78,13 +94,16 @@
     }                                 
   </script>
 
-<script src="/assets/js/md5.js"></script>
-<script src="/assets/js/docsify.min.js"></script>
-<script src="/assets/js/gitalk.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
-<script src="/assets/js/docsify-pagination.min.js"></script>
-<script src="/assets/js/zoom-image.js"></script>
-<script src="/assets/js/prism-bash.js"></script>
-<script src="/assets/js/prism-java.min.js"></script>
+  <script src="/assets/js/md5.js"></script>
+  <script src="/assets/js/docsify.min.js"></script>
+  <script src="/assets/js/gitalk.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.js"></script>
+  <script src="/assets/js/docsify-pagination.min.js"></script>
+  <script src="/assets/js/zoom-image.js"></script>
+  <script src="/assets/js/prism-bash.js"></script>
+  <script src="/assets/js/prism-java.min.js"></script>
+  <script src="/assets/js/docsify-plantuml.min.js"></script>
+  <script src="/assets/js/jx-toc.js"></script>
 </body>
+
 </html>

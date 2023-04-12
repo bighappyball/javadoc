@@ -30,6 +30,17 @@ java知识文档
 该标题不会出现在侧边栏的目录中。
 在使用时， <!-- {docsify-ignore} --> 和 <!-- {docsify-ignore-all} --> 都不会在页面上呈现。
 
+## plantuml思维导图
+
+```plantuml
+@startmindmap
+*[#Orange] Colors
+**[#lightgreen] Green
+**[#FFBBCC] Rose
+**[#lightblue] Blue
+@endmindmap
+```
+
 ## Markdown 语法
 
 ### 图片
