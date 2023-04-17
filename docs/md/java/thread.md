@@ -1,4 +1,137 @@
-多线程与并发
+# 第3节 多线程与并发
+
+```plantuml
+@startmindmap
+!theme cerulean-outline
+scale 1300 width
+
+
++_ 多线程与并发
+++_ 并发基础
++++_ 线程和进程
++++_ 线程死锁
++++_ sleep() 方法和 wait()
++++_ 上下文切换
++++_ 为什么需要多线程
++++_ 原子性 有序性 可见性
+++_ 线程状态
+++_ 线程池
++++_ newFixedThreadPool
++++_ newCacheThreadPool
+++++_ SynchronousQueue
++++_ newSIngleTheadExecutor
++++_  newScheduledThewadPool
+++++_ DelayedWorkQueue
++++_ newWorkStealingPool
++++_ ThreadPoolExecutor
+++++_ 参数
++++++_ 核心线程数
++++++_ 最大线程数
++++++_ 空闲时间&单位
++++++_ 缓冲队列
+++++++_ LinkedBlockingQueue(无界 当心内存溢出)
+++++++_ ArrayBlockingQueue 
++++++_ 工厂方法
++++++_ 拒绝策略
+++++++_ 抛出异常
+++++++_ 丢弃
+++++++_ 重试
+++++++_ 丢弃最早提交的
+++++_ 执行过程 
++++++_ 核心线程->队列->最大线程->拒绝策略
+++++_ 运行状态(有个Volatile的状态码)
++++++_ running
++++++_ shutdown
++++++_ stop
++++++_ terminated(所有线程销毁)
+++++_ 故障
+
+++_ Synchronized
++++_ 对象
+++++_  对象头（Header）
+++++_   Mark Word
+++++_   Klass Point
+++++_   Monitor
++++++_  EntryList
++++++_  Owner（会指向持有 Monitor 对象的线程）
++++++_  WaitSet
+++++_  实例数据
+++++_  对其填充
++++_ 方法
+++++_ ACC_SYNCHRONIZED
++++++_  一旦执行到这个方法，就会先判断是否有标志位，然后，ACC_SYNCHRONIZED会去隐式调用刚才的两个指令：monitorenter和monitorexit。
++++_ 代码块
+++++_  monitorenter
+++++_  monitorexit
+++++_  程序计数器 count
++++_ 锁膨胀
+++++_  无锁
+++++_  偏向锁
+++++_  轻量级针
+++++_  自旋
+++++_  重量级
++++_ 特性保证
+++++_  有序性
++++++_   as-if-serial
++++++_   happens-before
+++++_  可见性 内存强制刷新
+++++_   原子性 单一线程持有
+++++_  可重入性 计数器
++++_ 重锁  用户态内核态切换
++++_ sync 和 Lock的区别
++++_ 劣势 锁升级不可逆
+++_ Lock
++++_ ReentrantReadWriteLock
+++++_  ReadLock
+++++_  WriteLock
++++_ ReentrantLock
+++++_  NonfairSync
++++++_   tryAcquire
++++++_   acquireQueued
++++++_   CAS
+++++_  FairSync
++++++_   hasQueuedPredecessors
++++++_   如果是当前持有锁的线程 可重入
+++++_  AbstractQueuedSynchronizer
++++++_   入队 出队
++++++_   头结点设计
++++++_   共享和独享的实现
++++++_   CAS
+++++++_    实际应用
+++++++_    存在的问题
+++++++_     cpu开销
+++++++_     只能保证一个共享变量原子操作 ,用AtomicReference解决
+++++++_     ABA 标志位+时间戳解决
++++_ StampedLock
+++_ Lock
+++_ ThreadLocal
++++_ 内存泄露
++++_ Session
+++_ Volatile
++++_ MESI
+++++_  当CPU写数据时，如果发现操作的变量是共享变量，即在其他CPU中也存在该变量的副本，会发出信号通知其他CPU将该变量的缓存行置为无效状态，因此当其他CPU需要读取这个变量时，发现自己缓存中缓存该变量的缓存行是无效的，那么它就会从内存重新读取
+++++_  锁bus
+++++_  volitale会一直嗅探 cas 不断循环无效交互 导致带宽达到峰值(总线风暴)
++++_ Java内存模型JMM
+++++_  高速缓存
++++_ 可见性
+++++_  嗅探机制 强制失效 处理器嗅探总线
++++_ 有序性 
+++++_ 禁止指令重排序
+++++_  happens-before
+++++_ as-if-serial
++++_ AtomicInteger
++++_ 跳出死循环
+++_ JUC
+++_ countDownLatch
+++_ 常见问题
+ 
+@endmindmap
+```
+
+
+
+
 
 ## 并发理论基础
 
