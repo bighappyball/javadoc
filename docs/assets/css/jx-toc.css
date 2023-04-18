@@ -18,7 +18,7 @@
   max-height: 80%;
   overflow-y: auto;
   overflow-x: hidden;
-  max-width: 200px;
+  max-width: 300px;
   color: var(--sidebar-nav-link-color--hover, var(--sidebar-nav-link-color), #e4e4e7);
 }
 #jx-toc::-webkit-scrollbar {
