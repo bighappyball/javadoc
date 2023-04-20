@@ -89,7 +89,7 @@ var buildTOC = function(options) {
   var lastLi = null;
   var selector = '.markdown-section ' + options.headings
   var headers = getHeaders(selector).filter(h => h.id);
-
+  debugger
   headers.reduce(function(prev, curr, index) {
     var currentLevel = getLevel(curr.tagName);
     var offset = currentLevel - prev;
@@ -126,7 +126,8 @@ var goTopFunction = function(e) {
 
 // Docsify plugin functions
 function plugin(hook, vm) {
-  var userOptions = vm.config.jxtoc;
+  debugger
+  var userOptions = vm.config.plantumltoc;
 
   hook.mounted(function () {
     var mainElm = document.querySelector("main");

@@ -928,16 +928,84 @@ CountDownLatch 是一次性的，计数器的值只能在构造方法中初始�
 
 ##### 原理
 
+[CyclicBarrier - 简书 (jianshu.com)](https://www.jianshu.com/p/043ac5689002)
+
 **await**
 
 ```java
 public int await() throws InterruptedException, BrokenBarrierException {
-    try {
-      	// 内部调用了dowait方法
-        return dowait(false, 0L);
-    } catch (TimeoutException toe) {
-        throw new Error(toe); // cannot happen
+        try {
+            return dowait(false, 0L);
+        } catch (TimeoutException toe) {
+            throw new Error(toe); // cannot happen
+        }
     }
+ 
+private int dowait(boolean timed, long nanos)
+        throws InterruptedException, BrokenBarrierException,
+               TimeoutException {
+        final ReentrantLock lock = this.lock;
+        lock.lock(); //加锁
+        try {
+            final Generation g = generation;
+ 
+            if (g.broken)
+                throw new BrokenBarrierException();
+            //有一个线程线程被中断，整个CyclicBarrier将不可用
+            if (Thread.interrupted()) {
+                breakBarrier();
+                throw new InterruptedException();
+            }
+ 
+            int index = --count; //待等待的任务数减1
+            if (index == 0) {  // 如果待等待的任务数减至0，依次唤醒所有线程
+                boolean ranAction = false;
+                try {
+                    final Runnable command = barrierCommand;
+                    if (command != null)
+                        command.run();//唤醒前先执行Runnable对象的run方法
+                    ranAction = true;
+                    nextGeneration();//重置整个CyclicBarrier，方便下次重用
+                    return 0;
+                } finally {
+                    if (!ranAction)
+                        breakBarrier();
+                }
+            }
+ 
+            //如果待等待的任务数大于0，进行线程阻塞，直到count为0时被唤醒
+            for (;;) {
+                try {
+                    if (!timed)
+                        trip.await();//阻塞当前线程
+                    else if (nanos > 0L)
+                        nanos = trip.awaitNanos(nanos);//延时阻塞当前线程
+                } catch (InterruptedException ie) {
+                    if (g == generation && ! g.broken) {
+                        breakBarrier();
+                        throw ie;
+                    } else {
+                        // We're about to finish waiting even if we had not
+                        // been interrupted, so this interrupt is deemed to
+                        // "belong" to subsequent execution.
+                        Thread.currentThread().interrupt();
+                    }
+                }
+ 
+                if (g.broken)//异常唤醒
+                    throw new BrokenBarrierException();
+ 
+                if (g != generation)//正常被唤醒，generation会被新建
+                    return index;
+ 
+                if (timed && nanos <= 0L) {//延迟阻塞时间到后唤醒
+                    breakBarrier();
+                    throw new TimeoutException();
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
 }
 ```
 
@@ -1062,20 +1130,6 @@ AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方�
 
 ### JUC原子类:   CAS, Unsafe和原子类详解
 
-什么是CAS：
-
-CAS的全称为Compare-And-Swap，直译就是对比交换。是一条CPU的原子指令，其作用是让CPU先进行比较两个值是否相等，然后原子地更新某个位置的值，经过调查发现，其实现方式是基于硬件平台的汇编指令，就是说CAS是靠硬件实现的，JVM只是封装了汇编调用，那些AtomicInteger类便是使用了这些封装后的接口；
-
-CAS操作是原子性的，所以多线程并发使用CAS更新数据时，可以不使用锁。JDK中大量使用了CAS来更新数据而防止加锁(synchronized 重量级锁)来保持原子更新。
-
-CAS 问题：
-
-ABA问题：加版本号
-
-循环时间长开销大：自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。如果JVM能支持处理器提供的pause指令，那么效率会有一定的提升
-
-只能保证一个共享变量的原子操作：当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性，这个时候就可以用锁。从Java 1.5开始，JDK提供了AtomicReference类来保证引用对象之间的原子性，就可以把多个变量放在一个对象里来进行CAS操作
-
  
 
 UnSafe类详解：
@@ -1140,7 +1194,7 @@ Thread.sleep()本身就是一个native方法；
 
 LockSupport.park()底层是调用的Unsafe的native方法；
 
- ¶ Object.wait()和LockSupport.park()的区别 
+ Object.wait()和LockSupport.park()的区别 
 
 Object.wait()方法需要在synchronized块中执行；
 
@@ -1161,52 +1215,6 @@ LockSupport.park()不带超时的，需要另一个线程执行unpark()来唤醒
 park()/unpark()底层的原理是“二元信号量”，你可以把它相像成只有一个许可证的Semaphore，只不过这个信号量在重复执行unpark()的时候也不会再增加许可证，最多只有一个许可证。
 
  LockSupport.park()会释放锁资源吗? 不会，它只负责阻塞当前线程，释放锁资源实际上是在Condition的await()方法中实现的。
-
- 
-
-JUC锁: 锁核心类AQS详解-AbstractQueuedSynchronizer实现类
-
-AQS 核心思想：
-
-AQS核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，即将暂时获取不到锁的线程加入到队列中。
-
-CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列(虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系)。AQS是将每条请求共享资源的线程封装成一个CLH锁队列的一个结点(Node)来实现锁的分配。
-
-AQS 对资源的共享方式：
-
- 
-
-Exclusive(独占)：只有一个线程能执行，如ReentrantLock。又可分为公平锁和非公平锁：
-
-公平锁：按照线程在队列中的排队顺序，先到者先拿到锁
-
-非公平锁：当线程要获取锁时，无视队列顺序直接去抢锁，谁抢到就是谁的
-
-Share(共享)：多个线程可同时执行，如Semaphore/CountDownLatch。Semaphore、CountDownLatCh、 CyclicBarrier、ReadWriteLock 我们都会在后面讲到。
-
-AQS底层使用了模板方法模式
-
-同步器的设计是基于模板方法模式的，如果需要自定义同步器一般的方式是这样(模板方法模式很经典的一个应用)：
-
- 
-
-ReentrantLock详解：
-
- 核心函数分析 通过分析ReentrantLock的源码，可知对其操作都转化为对Sync对象的操作，由于Sync继承了AQS，所以基本上都可以转化为对AQS的操作。如将ReentrantLock的lock函数转化为对Sync的lock函数的调用，而具体会根据采用的策略(如公平策略或者非公平策略)的不同而调用到Sync的不同子类。 所以可知，在ReentrantLock的背后，是AQS对其服务提供了支持，由于之前我们分析AQS的核心源码，遂不再累赘。下面还是通过例子来更进一步分析源码。
-
-ReentrantLock类内部总共存在Sync、NonfairSync、FairSync三个类，NonfairSync与FairSync类继承自Sync类，Sync类继承自AbstractQueuedSynchronizer抽象类。
-
-Sync：默认非公平
-
-NonfairSync：非公平锁
-
-FairSync：实现公平锁，跟踪lock方法的源码可知，当资源空闲时，它总是会先判断sync队列(AbstractQueuedSynchronizer中的数据结构)是否有等待时间更长的线程，如果存在，则将该线程加入到等待队列的尾部，实现了公平获取原则。其中，FairSync类的lock的方法调用如下，只给出了主要的方法。
-
- 
-
-ReentrantReadWriteLock详解：
-
-ReentrantReadWriteLock底层是基于ReentrantLock和AbstractQueuedSynchronizer来实现的，所以，ReentrantReadWriteLock的数据结构也依托于AQS的数据结构。
 
  
 
