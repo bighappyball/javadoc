@@ -3,8 +3,8 @@
 
 "use strict";
 var defaultOptions = {
-  headings: 'h1, h2, h3,h4,h5',
-  isOpen:false
+  headings: 'h1,h2,h3,h4,h5',
+  isOpen: false
 }
 
 
@@ -57,13 +57,13 @@ var getLevel = function (header) {
 };
 
 
-var handleUrl=function(url){
+var handleUrl = function (url) {
   // 转小写
-  url=url.toLowerCase();
+  url = url.toLowerCase();
   // 空格转-
-  url=url.replace(" ",'-')
+  url = url.replace(" ", '-')
   // ()
-  url=url.replace("(","").replace(")","")
+  url = url.replace("(", "").replace(")", "")
 }
 
 
@@ -72,20 +72,35 @@ var handleUrl=function(url){
 var buildTOC = function (options) {
   var ret = document.createElement('div');
   // var height=options.height?options.height:1000;
-  var width=options.width?options.width:900;
-  var skin=options.skin?options.skin:"cerulean-outline"
-  // scale ${height} height\n
-  var data = `@startmindmap\n  !theme ${skin}\n scale ${width} width\n`
-  var selector = '.markdown-section ' + options.headings?options.headings:defaultOptions
+  var width = options.width ? options.width : 900;
+  var skin = options.skin ? options.skin : "cerulean-outline"
+  // scale ${height} height\n scale ${width} width\n
+  var data = `@startmindmap\n  !theme ${skin}\n`
+  var selector = '.markdown-section ' + options.headings ? options.headings : defaultOptions
   var headers = getHeaders(selector).filter(h => h.id);
-  var baseURL=window.location.href.split("?",1)[0]
+  var baseURL = window.location.href.split("?", 1)[0]
+  var levels = new Array(10).fill(0)
+
   headers.reduce(function (prev, curr, index) {
     var currentLevel = getLevel(curr.tagName);
+    var autoHeaderText = '';
+    debugger
+    levels[currentLevel - 1]++
+    if (prev > currentLevel) {
+      for (var i = currentLevel; i < levels.length; i++) {
+        levels[i] = 0;
+      }
+    }
     for (var j = 0; j < currentLevel; j++) {
       data += '+';
+      autoHeaderText += `${levels[j]}.`
     }
-    data += `_ ${curr.innerText}[[${baseURL}?id=${curr.innerText.toLowerCase()} #]]\n`
+    
+    data += `_ [[${baseURL}?id=${curr.innerText.toLowerCase()} ${autoHeaderText}]]${curr.innerText}\n`
     // data += `_ <color:black>${curr.innerText}</color>\n`
+    console.log(curr.innerHTML)
+    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText+curr.innerText}</span>`)
+    // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
   }, getLevel(options.headings));
   data += ` @endmindmap`
@@ -141,7 +156,7 @@ function plugin(hook, vm) {
     if (!plantumltoc) {
       return;
     }
-   
+
     plantumltoc.innerHTML = null
 
 
