@@ -1,128 +1,41 @@
 /* 目录样式 */
 #plantuml-toc {
-  background-color: var(--sidebar-background, #fff);
-  /* border: 1px solid var(--sidebar-border-color, rgba(0, 0, 0, 0.07)); */
-  border-radius: 5px;
+  padding: 5px;
+  max-height: 400px;
+  overflow-x: auto;
+  width: 100%;
+}
+
+#plantuml-control{
+  /* background-color: var(--sidebar-background, #fff);
+
+  border-top-left-radius: 35px;
+  border-bottom-left-radius: 35px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
   padding: 5px ;
   position: fixed;
-  right: 20px;
-  bottom: 80px;
+  right: 0px;
+  top: 300px;
   font-size: 14px;
   white-space: nowrap;
   z-index: 999;
   cursor: pointer;
   text-align: right;
-  max-height: 80%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-width: 1300px;
-  color: var(--sidebar-nav-link-color--hover, var(--sidebar-nav-link-color), #e4e4e7);
-}
-#plantuml-toc::-webkit-scrollbar {
-  width: 4px;
-}
-#plantuml-toc::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 4px;
-}
-#plantuml-toc:hover::-webkit-scrollbar-thumb {
-  background: hsla(0, 0%, 53.3%, 0.4);
-}
-#plantuml-toc:hover::-webkit-scrollbar-track {
-  background: hsla(0, 0%, 53.3%, 0.1);
-}
-#plantuml-toc ul {
-  display: none;
-  text-align: left;
-  padding-right: 10px;
-  padding-left: 10px;
-  list-style-type: none;
-}
-#plantuml-toc ul li a:last-child(1){
-  color: #fff;
-}
-#plantuml-toc:hover ul {
-  display: block;
-}
-#plantuml-toc ul li a {
-  text-decoration: none;
-  border-bottom: none;
-  font-size: 15px;
-  color: var(--sidebar-nav-link-color, #364149);
-  background: 0 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  font-weight: normal;
-  color: #71717A;
-  line-height: 25px;
-}
-#plantuml-toc ul li a:hover {
-  text-decoration: none;
-  color: #444950;
+  width: 30px;
+  height: 30px; */
 }
 
-#plantuml-toc ul li a:focus{
-  color: #42b983;
-}
-/* 目前没有处理自动标识，所以先注释起来了 */
-/* #plantuml-toc .active {
-  border-left: 5px solid;
-  color: var(--theme-color, #42b983);
-  padding-left: 10px;
-} */
-/* 回到顶部样式 */
-/* #plantuml-toc-gotop {
-  position: fixed;
-  right: 50px;
-  bottom: 68px;
-  background-color: var(--sidebar-background, #fafafa);
-  border: 1px solid var(--sidebar-border-color, rgba(0, 0, 0, 0.07));
-  border-radius: 1px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-  z-index: 999;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px 10px;
-  color: var(--sidebar-nav-link-color--hover, var(--sidebar-nav-link-color));
-} */
 
-#jx-sun {
-  position: fixed;
-  right: 68px;
-  bottom: 24px;
-  background-color: white;
-  border: 1px solid var(--sidebar-border-color, rgba(0, 0, 0, 0.07));
-  border-radius: 1px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-  z-index: 999;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px 10px;
-  color: black;
+
+#plantuml-content {
+  width: 100%;
+  max-height: 600px;
+  overflow-y: scroll;
 }
 
-#jx-moon {
-  position: fixed;
-  right: 32px;
-  bottom: 24px;
-  background-color: black;
-  border: 1px solid var(--sidebar-border-color, rgba(0, 0, 0, 0.07));
-  border-radius: 1px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-  z-index: 999;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px 10px;
-  color: white;
+.plantuml-active{
+  display:block;
 }
+

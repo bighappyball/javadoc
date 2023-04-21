@@ -4,6 +4,7 @@
 "use strict";
 var defaultOptions = {
   headings: 'h1, h2, h3,h4,h5',
+  isOpen:false
 }
 
 
@@ -20,22 +21,9 @@ function compress(s) {
   return dest
 }
 
-var aTag = function (src) {
-  var a = document.createElement('a');
-  var content = src.firstChild.innerHTML;
-
-  // 使用这个限制长度，未使用。
-  // https://github.com/arendjr/text-clipper
-  a.innerHTML = content;
-  a.href = src.firstChild.href;
-
-  a.onclick = activeClass;
-  return a
-};
-
 var activeClass = function (e) {
-
-  var divs = document.querySelectorAll('#plantuml-toc .active');
+  debugger
+  var divs = document.querySelectorAll('#plantuml-content');
 
   // 删除之前的样式
   [].forEach.call(divs, function (div) {
@@ -43,8 +31,9 @@ var activeClass = function (e) {
   });
 
   // 给当前点击的项加入新的样式
-  e.target.parentNode.setAttribute('class', 'active')
+  divs.setAttribute('class', '.plantuml-active')
 };
+
 
 
 
@@ -68,24 +57,38 @@ var getLevel = function (header) {
 };
 
 
+var handleUrl=function(url){
+  // 转小写
+  url=url.toLowerCase();
+  // 空格转-
+  url=url.replace(" ",'-')
+  // ()
+  url=url.replace("(","").replace(")","")
+}
 
 
 
 
 var buildTOC = function (options) {
-  var ret = document.createElement('p');
-  var data = "@startmindmap\n !theme cerulean-outline\n scale 900 width\n"
+  var ret = document.createElement('div');
+  // var height=options.height?options.height:1000;
+  var width=options.width?options.width:900;
+  var skin=options.skin?options.skin:"cerulean-outline"
+  // scale ${height} height\n
+  var data = `@startmindmap\n  !theme ${skin}\n scale ${width} width\n`
   var selector = '.markdown-section ' + options.headings?options.headings:defaultOptions
   var headers = getHeaders(selector).filter(h => h.id);
+  var baseURL=window.location.href.split("?",1)[0]
   headers.reduce(function (prev, curr, index) {
     var currentLevel = getLevel(curr.tagName);
     for (var j = 0; j < currentLevel; j++) {
       data += '+';
     }
-    data += "_ " + curr.innerText + "\n"
+    data += `_ ${curr.innerText}[[${baseURL}?id=${curr.innerText.toLowerCase()} #]]\n`
+    // data += `_ <color:black>${curr.innerText}</color>\n`
     return currentLevel;
   }, getLevel(options.headings));
-  data += " @endmindmap"
+  data += ` @endmindmap`
   var eleStr = `<p data-lang="plantuml">${compress(data)}</p>`
   ret.innerHTML = eleStr
   return ret;
@@ -107,13 +110,24 @@ var buildTOC = function (options) {
 function plugin(hook, vm) {
   var userOptions = vm.config.plantumltoc;
 
-  hook.beforeEach(function () {
+  hook.mounted(function () {
     var mainElm = document.querySelector("main");
     var content = window.Docsify.dom.find(".content");
     if (content) {
+
       var plantumltoc = window.Docsify.dom.create("div", "");
       plantumltoc.id = "plantuml-toc"
-      window.Docsify.dom.before(mainElm, plantumltoc);
+      window.Docsify.dom.before(content, plantumltoc);
+
+      // var plantumlcontrol = window.Docsify.dom.create("div", "");
+      // plantumlcontrol.id = "plantuml-control"
+      // window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
+      // plantumlcontrol.innerHTML="<span>目录</span>"
+      // plantumlcontrol.onclick = activeClass;
+
+      var plantumlcontent = window.Docsify.dom.create("div", "");
+      plantumlcontent.id = "plantuml-content"
+      window.Docsify.dom.appendTo(plantumltoc, plantumlcontent);
 
       // var plantumlGoTop = window.Docsify.dom.create("span", "<i class='fas fa-arrow-up'></i>");
       // plantumlGoTop.id = "plantuml-toc-gotop";
@@ -123,15 +137,14 @@ function plugin(hook, vm) {
   });
 
   hook.doneEach(function () {
-    var plantumltoc = document.getElementById('plantuml-toc');
+    var plantumltoc = document.getElementById('plantuml-content');
     if (!plantumltoc) {
       return;
     }
+   
     plantumltoc.innerHTML = null
 
-    // var TocAnchor = document.createElement('i');
-    // TocAnchor.setAttribute('class', 'fas fa-list');
-    // plantumltoc.appendChild(TocAnchor);
+
 
     const toc = buildTOC(userOptions);
 

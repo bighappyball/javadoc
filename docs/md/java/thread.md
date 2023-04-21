@@ -1,6 +1,6 @@
 # 第3节 多线程与并发
 
-```plantuml
+<!-- ```plantuml
 @startmindmap
 !theme cerulean-outline
 scale 1300 width
@@ -126,7 +126,7 @@ scale 1300 width
 ++_ 常见问题
  
 @endmindmap
-```
+``` -->
 
 
 
