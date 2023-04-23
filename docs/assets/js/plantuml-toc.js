@@ -102,13 +102,16 @@ var buildTOC = function (options) {
     }
     for (var j = 0; j < currentLevel; j++) {
       data += '+';
-      autoHeaderText += `${levels[j]}.`
+      autoHeaderText += `${levels[j]}`
+      if(j!=currentLevel-1){
+        autoHeaderText+='.'
+      }
     }
-
+    autoHeaderText
     data += `_ [[${baseURL}?id=${curr.innerText.toLowerCase()} ${autoHeaderText}]]${curr.innerText}\n`
     // data += `_ <color:black>${curr.innerText}</color>\n`
     console.log(curr.innerHTML)
-    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + curr.innerText}</span>`)
+    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText +' '+ curr.innerText}</span>`)
     // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
   }, getLevel(options.headings));
