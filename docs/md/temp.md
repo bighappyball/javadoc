@@ -1,637 +1,679 @@
+# Spring框架
 
-## Class文件结构概述
+## 什么是Spring?
 
-[同事：你能跟我聊聊class文件么？ (qq.com)](https://mp.weixin.qq.com/s?__biz=MzAwNDA2OTM1Ng==&mid=2453157347&idx=1&sn=e8873bac7b92163ce2d54df41d06f4dc&scene=21#wechat_redirect)
+Spring 是一个轻量级 Java 开发框架，Spring 最根本的使命是解决企业级应用开发的复杂性，Java 开发者可以专注于应用程序的开发,即简化 Java 开发。
 
-Class文件主要分为以下几个部分：
+**Spring 特性**
 
-- 魔数（magic number） 魔数用于对文件格式的二次校验，是判别文件格式的特殊标识，一般位于文件的开头位置，魔数本身没有什么限制，是可以由开发者自由定义的，只要保证不与其他文件格式的魔数重复。
-- 版本号（minor&major version） JDK版本问题
-- 常量池（constant pool）
-- 访问标记（access flag） 就是类上的修饰符，如final、abstract等
-- 类索引（this class）
-- 超类索引（super class）
-- 接口表索引（interface）
-- 字段表（field）
-- 方法表（method）
-- 属性表（attribute）
+- 非侵入式：基于Spring开发的应用中的对象可以不依赖于Spring的API 
+- 控制反转：IOC——Inversion of Control，指的是将对象的创建权交给 Spring 去创建。使用 Spring 之前，对象的创建都是由我们自己在代码中new创建。而使用 Spring 之后。对象的创建都是给了 Spring 框架。 
+- 依赖注入：DI——Dependency Injection，是指依赖的对象不需要手动调用 setXX 方法去设置，而是通过配置赋值。 
+- 面向切面编程：Aspect Oriented Programming——AOP 容器：Spring 是一个容器，因为它包含并且管理应用对象的生命周期 
+- 组件化：Spring 实现了使用简单的组件配置组合成一个复杂的应用。在 Spring 中可以使用XML和Java注解组合这些对象。 
+- 一站式：在 IOC 和 AOP 的基础上可以整合各种企业应用的开源框架和优秀的第三方类库（实际上 Spring 自身也提供了表现层的 SpringMVC 和持久层的 Spring JDBC）
 
-## 对象
+ **缺点**
 
-那对象具体都包含哪些内容？
+- Spring 明明一个很轻量级的框架，却给人感觉大而全
+- Spring 依赖反射，反射影响性能
+- 使用门槛升高，入门 Spring 需要较长时间
 
-- 对象头
-- 实例数据
-- 对齐填充
+## Spring 模块组成
 
-### 对象头
+![img](_media/analysis/netty/wps7F38.tmp.jpg) 
 
-- 对象自身运行时所需的数据，也被称为Mark Word，也就是用于轻量级锁和偏向锁的关键点。具体的内容包含对象的hashcode、分代年龄、轻量级锁指针、重量级锁指针、GC标记、偏向锁线程ID、偏向锁时间戳。
-- 存储类型指针，也就是指向类的元数据的指针，通过这个指针才能确定对象是属于哪个类的实例。
-- 如果是数组的话，则还包含了数组的长度。
+- spring core：提供了框架的基本组成部分，包括控制反转（Inversion of Control，IOC）和依赖注入（Dependency Injection，DI）功能。
+- •spring beans：提供了 BeanFactory，是工厂模式的一个经典实现，Spring 将管理对象称为Bean。 
+- • spring context：构建于 core 封装包基础上的 context 封装包，提供了一种框架式的对象访问方法。
+- • spring jdbc：提供了一个 JDBC 的抽象层，消除了烦琐的 JDBC 编码和数据库厂商特有的错误代码解析， 用于简化 JDBC。
+- • spring aop：提供了面向切面的编程实现，让你可以自定义拦截器、切点等。
+- • spring Web：提供了针对 Web 开发的集成特性，例如文件上传，利用 servlet listeners 进行ioc 容器初始化和针对 Web 的 ApplicationContext。 
+- • spring test：主要为测试提供支持的，支持使用 JUnit 或 TestNG 对 Spring 组件进行单元测试和集成测试
 
+## Spring 设计模式
 
+1. 工厂模式：BeanFactory 就是简单工厂模式的体现，用BeanFactory  ApplicationContext来创建对象的实例；
 
-## 类的生命周期
+2. 单例模式：Bean 默认为单例模式。
 
-其中类加载的过程包括了加载、验证、准备、解析、初始化五个阶段。在这五个阶段中，加载、验证、准备和初始化这四个阶段发生的顺序是确定的，而解析阶段则不一定，它在某些情况下可以在初始化阶段之后开始，这是为了支持Java语言的运行时绑定(也成为动态绑定或晚期绑定)。另外注意这里的几个阶段是按顺序开始，而不是按顺序进行或完成，因为这些阶段通常都是互相交叉地混合进行的，通常在一个阶段执行的过程中调用或激活另一个阶段。
+3. 代理模式：Spring 的 AOP 功能用到了 JDK 的动态代理和 CGLIB 字节码生成技术；
 
-![img](../_media/analysis/netty/wps333.tmp.jpg) 
+4. 模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate。
 
-### 类的加载
+5. 观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，Spring中的事件编程模型就是观察者模式的实现。在Spring中定义了一个ApplicationListener接口，用来监听Application的事件，Application其实就是ApplicationContext，ApplicationContext内置了几个事件，其中比较容易理解的是：ContextRefreshedEvent、ContextStartedEvent、ContextStoppedEvent、ContextClosedEvent，从名称上来看，就知道这几个事件是什么时候被触发的了。接下来我们说一下如何利用Spring中的事件编程模型来定义自定义事件，并且发布事件。
+6. 包装器设计模式 : 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
 
-查找并加载类的二进制数据
-
-在加载阶段，虚拟机需要完成以下三件事情:
-
-![img](../_media/analysis/netty/wps334.tmp.jpg) 
-
-- 通过一个类的全限定名来获取其定义的二进制字节流。
-
-- 将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构。
-
-- 在Java堆中生成一个代表这个类的java.lang.Class对象，作为对方法区中这些数据的访问入口。
-
-#### **加载.class文件的方式**
-
-- 从本地系统中直接加载
-- 通过网络下载.class文件
-- 从zip，jar等归档文件中加载.class文件
-- 从专有数据库中提取.class文件
-- 将Java源文件动态编译为.class文件
-
-### 验证
-
-确保被加载的类的正确性
-
-- 文件格式验证: 验证字节流是否符合Class文件格式的规范；例如: 是否以0xCAFEBABE开头、主次版本号是否在当前虚拟机的处理范围之内、常量池中的常量是否有不被支持的类型。 
-
-- 元数据验证: 对字节码描述的信息进行语义分析(注意: 对比javac编译阶段的语义分析)，以保证其描述的信息符合Java语言规范的要求；例如: 这个类是否有父类，除了java.lang.Object之外。 
-
-- 字节码验证: 通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的。 
-
-- 符号引用验证: 确保解析动作能正确执行。
-
-
-验证阶段是非常重要的，但不是必须的，它对程序运行期没有影响，如果所引用的类经过反复验证，那么可以考虑采用-Xverifynone参数来关闭大部分的类验证措施，以缩短虚拟机类加载的时间。
-
-### 准备 
-
-为类的静态变量分配内存，并将其初始化为默认值
-
-进行内存分配的仅包括类变量(static)，而不包括实例变量，实例变量会在对象实例化时随着对象一块分配在Java堆中。
-
-这里所设置的初始值通常情况下是数据类型默认的零值(如0、0L、null、false等)，而不是被在Java代码中被显式地赋予的值。
-
-假设一个类变量的定义为: public static int value = 3；那么变量value在准备阶段过后的初始值为0，而不是3，因为这时候尚未开始执行任何Java方法，而把value赋值为3的put static指令是在程序编译后，存放于类构造器<clinit>()方法之中的，所以把value赋值为3的动作将在初始化阶段才会执行。
-
-### 解析
-
-把类中的符号引用转换为直接引用
-
-### 初始化
-
-初始化，为类的静态变量赋予正确的初始值，JVM负责对类进行初始化，主要对类变量进行初始化。
-
-#### 初始化步骤
-
-- 假如这个类还没有被加载和连接，则程序先加载并连接该类
-
-- 假如该类的直接父类还没有被初始化，则先初始化其直接父类
-
-- 假如类中有初始化语句，则系统依次执行这些初始化语句
-
-
-#### 类初始化时机
-
-只有当对类的主动使用的时候才会导致类的初始化，类的主动使用包括以下六种:
-
-- 创建类的实例，也就是new的方式 
-
-- 访问某个类或接口的静态变量，或者对该静态变量赋值 
-
-- 调用类的静态方法 
-
-- 反射(如Class.forName("com.pdai.jvm.Test")) 
-
-- 初始化某个类的子类，则其父类也会被初始化 
-
-- Java虚拟机启动时被标明为启动类的类(Java Test)，直接使用java.exe命令来运行某个主类
-
-
-### 卸载
-
-Java虚拟机将结束生命周期的几种情况
-
-- 执行了System.exit()方法
-
-- 程序正常执行结束
-
-- 程序在执行过程中遇到了异常或错误而异常终止
-
-- 由于操作系统出现错误而导致Java虚拟机进程终止
-
-
-## 类加载器
-
-### 类加载器的层次
-
-![img](../_media/analysis/netty/wps335.tmp.jpg) 
-
-注意: 这里父类加载器并不是通过继承关系来实现的，而是采用组合实现的。
+7. 适配器模式 : Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配
 
  
 
-站在Java虚拟机的角度来讲，只存在两种不同的类加载器: 
+## IoC
 
-- 启动类加载器: 它使用C++实现(这里仅限于Hotspot，也就是JDK1.5之后默认的虚拟机，有很多其他的虚拟机是用Java语言实现的)，是虚拟机自身的一部分；
+IoC很好的体现了面向对象设计法则之一—— 好莱坞法则：“别找我们，我们找你”；即由IoC容器帮对象找相应的依赖对象并注入，而不是由对象主动去找。
 
-- 所有其他的类加载器: 这些类加载器都由Java语言实现，独立于虚拟机之外，并且全部继承自抽象类java.lang.ClassLoader，这些类加载器需要由启动类加载器加载到内存中之后才能去加载其他的类。
+把创建和查找依赖对象的控制权交给了容器，由容器进行注入组合对象，所以对象与对象之间是 松散耦合，这样也方便测试，利于功能复用，更重要的是使得程序的整个体系结构变得非常灵活
 
+> 示例：
+>
+> 在实际项目中一个 Service 类可能依赖了很多其他的类，假如我们需要实例化这个 Service，你可能要每次都要搞清这个 Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IoC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+>
+> 开发过程中突然接到一个新的需求，针对对IUserDao 接口开发出另一个具体实现类。因为 Server 层依赖了IUserDao的具体实现，所以我们需要修改UserServiceImpl中 new 的对象。如果只有一个类引用了IUserDao的具体实现，可能觉得还好，修改起来也不是很费力气，但是如果有许许多多的地方都引用了IUserDao的具体实现的话，一旦需要更换IUserDao 的实现方式，那修改起来将会非常的头疼。
 
-站在Java开发人员的角度来看，类加载器可以大致划分为以下三类 :
+ico实现原理： 工厂模式加反射机制
 
-- 启动类加载器: Bootstrap ClassLoader，负责加载存放在JDK\jre\lib(JDK代表JDK的安装目录，下同)下，或被-Xbootclasspath参数指定的路径中的，并且能被虚拟机识别的类库(如rt.jar，所有的java.开头的类均被Bootstrap ClassLoader加载)。启动类加载器是无法被Java程序直接引用的。
+Spring Bean的创建是典型的工厂模式：
 
-- 扩展类加载器: Extension ClassLoader，该加载器由sun.misc.Launcher$ExtClassLoader实现，它负责加载JDK\jre\lib\ext目录中，或者由java.ext.dirs系统变量指定的路径中的所有类库(如javax.开头的类)，开发者可以直接使用扩展类加载器。 
+BeanFactory： 工厂模式定义了IOC容器的基本功能规范
 
-- 应用程序类加载器: Application ClassLoader，该类加载器由sun.misc.Launcher$AppClassLoader来实现，它负责加载用户类路径(ClassPath)所指定的类，开发者可以直接使用该类加载器，如果应用程序中没有自定义过自己的类加载器，一般情况下这个就是程序中默认的类加载器。
+BeanRegistry： 向IOC容器手工注册 BeanDefinition 对象的方法
 
+ **为什么叫控制反转**
 
-### 如果编写了自己的ClassLoader，便可以做到如下几点:
+控制 ：指的是对象创建（实例化、管理）的权力
 
-- 在执行非置信代码之前，自动验证数字签名。
+反转 ：控制权交给外部环境（Spring 框架、IoC 容器）
 
-- 动态地创建符合用户特定需要的定制化构建类。
+**IoC 解决了什么问题**
 
-- 从特定的场所取得java class，例如数据库中和网络中
+对象之间的耦合度或者说依赖程度降低；
 
+资源变的容易管理；比如你用 Spring 容器提供的话很容易就可以实现一个单例。
 
-### 类的加载
+**IOC 总结**
 
-命令行启动应用时候由JVM初始化加载
+IoC 在 Spring 里，只需要低级容器就可以实现，2 个步骤：
 
-- 通过Class.forName()方法动态加载
+1. 加载配置文件，解析成 BeanDefinition 放在 Map 里。
 
-- 通过ClassLoader.loadClass()方法动态加载
+2. 调用 getBean 的时候，从 BeanDefinition 所属的 Map 里，拿出 Class 对象进行实例化，同时，如果有依赖关系，将递归调用 getBean 方法 —— 完成依赖注入。
 
+至于高级容器 ApplicationContext，他包含了低级容器的功能，当他执行 refresh 模板方法的时候，将刷新整个容器的 Bean。同时其作为高级容器，包含了太多的功能。一句话，他不仅仅是 IoC。他支持不同信息源头，支持 BeanFactory 工具类，支持层级容器，支持访问文件资源，支持事件发布通知，支持接口回调等等。
 
-### Class.forName()和ClassLoader.loadClass()区别?
+## AOP
 
-- Class.forName(): 将类的.class文件加载到jvm中之外，还会对类进行解释，执行类中的static块；
+AOP 主要用来解决：在不改变原有业务逻辑的情况下，增强横切逻辑代码，根本上解耦合，避免横切逻辑代码重复。
 
-- ClassLoader.loadClass(): 只干一件事情，就是将.class文件加载到jvm中，不会执行static中的内容,只有在newInstance才会去执行static块。 
-- Class.forName(name, initialize, loader)带参函数也可控制是否加载static块。并且只有调用了newInstance()方法采用调用构造函数，创建类的对象 。
+**谈谈自己对于 AOP 的了解**
 
-## JVM类加载机制
+AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。
 
-- 全盘负责，当一个类加载器负责加载某个Class时，该Class所依赖的和引用的其他Class也将由该类加载器负责载入，除非显示使用另外一个类加载器来载入 
+Spring AOP 就是基于动态代理的，如果要代理的对象，实现了某个接口，那么 Spring AOP 会使用 JDK Proxy，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候 Spring AOP 会使用 Cglib 生成一个被代理对象的子类来作为代理
 
-- 父类委托，先让父类加载器试图加载该类，只有在父类加载器无法加载该类时才尝试从自己的类路径中加载该类 
+当然你也可以使用 AspectJ ！Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了
 
-- 缓存机制，缓存机制将会保证所有加载过的Class都会被缓存，当程序中需要使用某个Class时，类加载器先从缓存区寻找该Class，只有缓存区不存在，系统才会读取该类对应的二进制数据，并将其转换成Class对象，存入缓存区。这就是为什么修改了Class后，必须重启JVM，程序的修改才会生效 
+**AOP通知**
 
-- 双亲委派机制, 如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类加载器中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。
+- 前置通知（Before advice）：在某连接点之前执行的通知，但这个通知不能阻止连接点之前的执行流程（除非它抛出一个异常）。 
+- 后置通知（After returning advice）：在某连接点正常完成后执行的通知：例如，一个方法没有抛出任何异常，正常返回。 
+- 异常通知（After throwing advice）：在方法抛出异常退出时执行的通知。 最终通知（After (finally) advice）：当某连接点退出的时候执行的通知（不论是正常返回还是异常退出）。
+- 环绕通知（Around Advice）：包围一个连接点的通知，如方法调用。这是最强大的一种通知类型。环绕通知可以在方法调用前后完成自定义的行为。它也会选择是否继续执行连接点或直接返回它自己的返回值或抛出异常来结束执行。
 
+**AOP 领域中的特性术语**
 
-### 双亲委派机制过程？
+- 通知（Advice）: AOP 框架中的增强处理。通知描述了切面何时执行以及如何执行增强处理。
+- 连接点（join point）: 连接点表示应用执行过程中能够插入切面的一个点，这个点可以是方法的调用、异常的抛出。在 Spring AOP 中，连接点总是方法的调用。
+- 切点（PointCut）: 可以插入增强处理的连接点。
+- 切面（Aspect）: 切面是通知和切点的结合。
+- 引入（Introduction）：引入允许我们向现有的类添加新的方法或者属性。
+- 织入（Weaving）: 将增强处理添加到目标对象中，并创建一个被增强的对象，这个过程就是织入。
 
-- 当AppClassLoader加载一个class时，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成。 
+## Spring Bean
 
-- 当ExtClassLoader加载一个class时，它首先也不会自己去尝试加载这个类，而是把类加载请求委派给BootStrapClassLoader去完成。 
+什么是 Spring Bean？
 
-- 如果BootStrapClassLoader加载失败(例如在$JAVA_HOME/jre/lib里未查找到该class)，会使用ExtClassLoader来尝试加载； 
+简单来说，Bean 代指的就是那些被 IoC 容器所管理的对象。
 
-- 若ExtClassLoader也加载失败，则会使用AppClassLoader来加载，如果AppClassLoader也加载失败，则会报出异常ClassNotFoundException。
+## Spring 框架中 bean 的生命周期
 
+![流程图](http://static.iocoder.cn/images/Spring/2018-12-24/08.png)
 
+![img](_media/analysis/netty/wps7F39.tmp.jpg) 
 
-## JVM内存结构
+1. 调用 Bean 构造方法或工厂方法实例化 Bean
+2. 利用依赖注入完成 Bean 中所有属性值的配置注入
+3. 如果 Bean 实现了 BeanNameAware(这个接口表面上的作用就是让实现这个接口的bean知道自己在spring容器里的名字) 接口，则 Spring 调用 Bean 的 setBeanName() 方法传入当前 Bean 的 id 值
+4. 如果 Bean 实现了 BeanFactoryAware 接口，则 Spring 调用 setBeanFactory() 方法传入当前工厂实例的引用
+5. 如果 Bean 实现了 ApplicationContextAware 接口，则 Spring 调用 setApplicationContext() 方法传入当前 ApplicationContext 实例的引用
+6. 如果 BeanPostProcessor 和 Bean 关联，则 Spring 将调用该接口的预初始化方法 postProcessBeforeInitialzation() 对 Bean 进行加工操作，此处非常重要，Spring 的 AOP 就是利用它实现的
+7. 如果 Bean 实现了 InitializingBean 接口，则 Spring 将调用 afterPropertiesSet() 方法（这个方法可以用在一些特殊情况中，也就是某个对象的某个属性需要经过外界得到，比如说查询数据库等方式，这时候可以用到spring的该特性，只需要实现InitializingBean即可）
+8. 如果在配置文件中通过 init-method 属性指定了初始化方法，则调用该初始化方法
+9. 如果 BeanPostProcessor 和 Bean 关联，则 Spring 将调用该接口的初始化方法 postProcessAfterInitialization()。此时，Bean 已经可以被应用系统使用了
+10. 如果在<bean> 中指定了该 Bean 的作用范围为 scope=“singleton”，则将该 Bean 放入 Spring IoC 的缓存池中，将触发 Spring 对该 Bean 的生命周期管理；如果在 中指定了该 Bean 的作用范围为 scope=“prototype”，则将该 Bean 交给调用者，调用者管理该 Bean 的生命周期，Spring 不再管理该 Bean
+11. 如果 Bean 实现了 DisposableBean 接口，则 Spring 会调用 destory() 方法将 Spring 中的 Bean 销毁；如果在配置文件中通过 destory-method 属性指定了 Bean 的销毁方法，则 Spring 将调用该方法对 Bean 进行销毁
 
- 
+## 在 Spring 框架 xm配置中共有 5 种自动装配
 
-![img](../_media/analysis/netty/wps336.tmp.jpg) 
+- no：默认的方式是不进行自动装配的，通过手工设置 ref 属性来进行装配 bean。
+- • byName：通过 bean 的名称进行自动装配，如果一个 bean 的 property 与另一 bean 的 name 相同，就进行自动装配。
+- • byType：通过参数的数据类型进行自动装配。
+- • constructor：利用构造函数进行装配，并且构造函数的参数通过 byType 进行装配。
+- • autodetect：自动探测，如果有构造方法，通过 construct 的方式自动装配，否则使用 byType的方式自动装配。
 
-![img](../_media/analysis/netty/wps337.tmp.jpg)![img](../_media/analysis/netty/wps338.tmp.jpg) 
+## 循环依赖
+
+[堂妹让我聊：Spring循环依赖 (qq.com)](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
+
+假设只设计二级缓存能否解决循环依赖？
+
+> 只用二级缓存是可以解决缓存依赖的，（废弃第三级，保留第一第二）但是会有一个问题，在配置AOP切面的时候会出错，因为无法生成代理对象。
+>
+> 所以三级缓存是为了处理AOP中的循环依赖。因为当配置了切面之后，在getEarlyBeanReference方法中，有可能会把之前的原始对象替换成代理对象，导致Bean的版本不是最终的版本，所以报错。
+
+## 详细讲解核心容器（spring context 应用上下文) 模块
 
  
 
 
 
-### 本地方法栈
+## Spring 事务
 
-### 堆内存
+**Spring 的事务传播行为**
 
-Java 堆是 Java 虚拟机管理的内存中最大的一块，被所有线程共享。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例以及数据都在这里分配内存。
+- ① PROPAGATION_REQUIRED：如果当前没有事务，就创建一个新事务，如果当前存在事务，就加入该事务，该设置是最常用的设置。
+- ③ PROPAGATION_MANDATORY：支持当前事务，如果当前存在事务，就加入该事务，如果当前不存在事务，就抛出异常。
+- ② PROPAGATION_SUPPORTS：支持当前事务，如果当前存在事务，就加入该事务，如果当前不存在事务，就以非事务执行。
+- ⑦ PROPAGATION_NESTED：如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则按 REQUIRED属性执行。
+- ④ PROPAGATION_REQUIRES_NEW：创建新事务，无论当前存不存在事务，都创建新事务。
+- ⑤ PROPAGATION_NOT_SUPPORTED：以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+- ⑥ PROPAGATION_NEVER：以非事务方式执行，如果当前存在事务，则抛出异常。
 
-为了进行高效的垃圾回收，虚拟机把堆内存逻辑上划分成三块区域（分代的唯一理由就是优化 GC 性能）： 
+**spring 的事务隔离**
 
-- 新生带（年轻代）：新对象和没达到一定年龄的对象都在新生代 
+spring 有五大隔离级别，默认值为 ISOLATION_DEFAULT（使用数据库的设置），其他四个隔离级别和数据库的隔离级别一致：
 
-- 老年代（养老区）：被长时间使用的对象，老年代的内存空间应该要比年轻代更大 
+1. ISOLATION_DEFAULT：用底层数据库的设置隔离级别，数据库设置的是什么我就用什么；
+2. ISOLATION_READ_UNCOMMITTED：未提交读，最低隔离级别、事务未提交前，就可被其他事务读取（会出现幻读、脏读、不可重复读）；
+3. ISOLATION_READ_COMMITTED：提交读，一个事务提交后才能被其他事务读取到（会造成幻读、不可重复读），SQserver 的默认级别；
+4. ISOLATION_REPEATABLE_READ：可重复读，保证多次读取同一个数据时，其值都和事务开始时候的内容是一致，禁止读取到别的事务未提交的数据（会造成幻读），MySQ的默认级别；
+5. ISOLATION_SERIALIZABLE：序列化，代价最高最可靠的隔离级别，该隔离级别能防止脏读、不可重复读、幻读。
 
-- 元空间（JDK1.8 之前叫永久代）：像一些方法中的操作临时对象等，JDK1.8 之前是占用 JVM 内存，JDK1.8 之后直接使用物理内存
+**目前 Spring 提供两种类型的事务管理：**
 
+- **声明式**事务：通过使用注解或基于 XML 的配置事务，从而事务管理与业务代码分离。
+- **编程式**事务：通过编码的方式实现事务管理，需要在代码中显式的调用事务的获得、提交、回滚。它为您提供极大的灵活性，但维护起来非常困难。
 
-**年轻代 (Young Generation)**
+### **Spring 事务如何和不同的数据持久层框架做集成？**
 
-年轻代是所有新对象创建的地方。当填充年轻代时，执行垃圾收集。这种垃圾收集称为 Minor GC。年轻一代被分为三个部分——伊甸园（Eden Memory）和两个幸存区（Survivor Memory，被称为from/to或s0/s1），默认比例是8:1:1
+① 首先，我们先明确下，这里数据持久层框架，指的是 Spring JDBC、Hibernate、Spring JPA、MyBatis 等等。
 
-大多数新创建的对象都位于 Eden 内存空间中 
+② 然后，Spring 事务的管理，是通过 `org.springframework.transaction.PlatformTransactionManager` 进行管理，定义如下：
 
-当 Eden 空间被对象填充时，执行Minor GC，并将所有幸存者对象移动到一个幸存者空间中 
+```
+// PlatformTransactionManager.java
 
-Minor GC 检查幸存者对象，并将它们移动到另一个幸存者空间。所以每次，一个幸存者空间总是空的 
+public interface PlatformTransactionManager {
 
-经过多次 GC 循环后存活下来的对象被移动到老年代。通常，这是通过设置年轻一代对象的年龄阈值来实现的，然后他们才有资格提升到老一代
+    // 根据事务定义 TransactionDefinition ，获得 TransactionStatus 。 
+    TransactionStatus getTransaction(@Nullable TransactionDefinition definition) throws TransactionException;
 
-**老年代(Old Generation)**
+    // 根据情况，提交事务
+    void commit(TransactionStatus status) throws TransactionException;
+    
+    // 根据情况，回滚事务
+    void rollback(TransactionStatus status) throws TransactionException;
+    
+}
+```
 
-旧的一代内存包含那些经过许多轮小型 GC 后仍然存活的对象。通常，垃圾收集是在老年代内存满时执行的。老年代垃圾收集称为 主GC（Major GC），通常需要更长的时间。
+- PlatformTransactionManager 是负责事务管理的接口，一共有三个接口方法，分别负责事务的获得、提交、回滚。
 
-大对象直接进入老年代（大对象是指需要大量连续内存空间的对象）。这样做的目的是避免在 Eden 区和两个Survivor 区之间发生大量的内存拷贝
-
-**元空间**
-
-**设置堆内存大小和 OOM**
-
-- -Xms 用来表示堆的起始内存，等价于 -XX:InitialHeapSize
-- -Xmx 用来表示堆的最大内存，等价于 -XX:MaxHeapSize
-
-**Minor GC（新生代）、Major GC（老年代）、FulGC整个堆**
-
-**FulGC 的触发条件**
-
-- 调用 System.gc()
-
-- 老年代空间不足
-
-- 空间分配担保失败，使用复制算法的 Minor GC 需要老年代的内存空间作担保，如果担保失败会执行一次 FulGC
-
-
-**逃逸分析**
-
-逃逸分析(Escape Analysis)是目前 Java 虚拟机中比较前沿的优化技术。这是一种可以有效减少 Java 程序中同步负载和内存堆分配压力的跨函数全局数据流分析算法。通过逃逸分析，Java Hotspot 编译器能够分析出一个新的对象的引用的使用范围从而决定是否要将这个对象分配到堆上，如果没逃逸优先分配到栈上，否则分配到堆上。
-
-
-
-
- 
-
-## 垃圾回收原理
-
-垃圾收集主要是针对堆和方法区进行；程序计数器、虚拟机栈和本地方法栈这三个区域属于线程私有的，只存在于线程的生命周期内，线程结束之后也会消失，因此不需要对这三个区域进行垃圾回收。
-
-### 判断一个对象是否可被回收
-
-- 引用计数算法
-
-- 可达性分析算法  （通过 GC Roots 作为起始点进行搜索，能够到达到的对象都是存活的，不可达的对象可被回收。）
-
-
-### 方法区的回收
-
-因为方法区主要存放永久代对象，而永久代对象的回收率比新生代低很多，因此在方法区上进行回收性价比不高。
-
-主要是对常量池的回收和对类的卸载。
-
-类的卸载条件很多，需要满足以下三个条件，并且满足了也不一定会被卸载: 
-
-- 该类所有的实例都已经被回收，也就是堆中不存在该类的任何实例。 
-
-- 加载该类的 ClassLoader 已经被回收。 
-
-- 该类对应的 Class 对象没有在任何地方被引用，也就无法在任何地方通过反射访问该类方法。
-
-
-### 引用类型
-
-- 强引用：被强引用关联的对象不会被回收。Object obj = new Object();
-
-- 软引用：被软引用关联的对象只有在内存不够的情况下才会被回收。
-
-  ```java
-  Object obj = new Object();
-  
-  SoftReference<Object> sf = new SoftReference<Object>(obj);
-  
-  obj = null;  // 使对象只被软引用关联
+- ```
+  #getTransaction(TransactionDefinition definition)
   ```
 
-  
+   
 
-- 弱引用：被弱引用关联的对象一定会被回收，也就是说它只能存活到下一次垃圾回收发生之前。
+  方法，根据事务定义 TransactionDefinition ，获得 TransactionStatus 。
 
-  ```java
-  Object obj = new Object();
-  
-  WeakReference<Object> wf = new WeakReference<Object>(obj);
-  
-  obj = null;
+  - 为什么不是创建事务呢？因为如果当前如果已经有事务，则不会进行创建，一般来说会跟当前线程进行绑定。如果不存在事务，则进行创建。
+  - 为什么返回的是 TransactionStatus 对象？在 TransactionStatus 中，不仅仅包含事务属性，还包含事务的其它信息，例如是否只读、是否为新创建的事务等等。😈 下面，也会详细解析 TransactionStatus 。
+  - 事务 TransactionDefinition 是什么？😈 下面，也会详细解析 TransactionStatus 。
+
+- ```
+  #commit(TransactionStatus status)
   ```
 
-  虚引用：又称为幽灵引用或者幻影引用。一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用取得一个对象。为一个对象设置虚引用关联的唯一目的就是能在这个对象被回收时收到一个系统通知。
+   
 
-  ```java
-  Object obj = new Object();
-  
-  PhantomReference<Object> pf = new PhantomReference<Object>(obj);
-  
-  obj = null;
+  方法，根据 TransactionStatus 情况，提交事务。
+
+  - 为什么根据 TransactionStatus 情况，进行提交？例如说，带
+
+    ```
+    @Transactional
+    ```
+
+     
+
+    注解的的 A 方法，会调用
+
+     
+
+    ```
+    @Transactional
+    ```
+
+     
+
+    注解的的 B 方法。
+
+    - 在 B 方法结束调用后，会执行 `PlatformTransactionManager#commit(TransactionStatus status)` 方法，此处事务**是不能**、**也不会**提交的。
+    - 而是在 A 方法结束调用后，执行 `PlatformTransactionManager#commit(TransactionStatus status)` 方法，提交事务。
+
+- ```
+  #rollback(TransactionStatus status)
   ```
 
-  
+   
 
-### 垃圾回收算法
+  方法，根据 TransactionStatus 情况，回滚事务。
 
-- 标记 - 清除 老年代使用
+  - 为什么根据 TransactionStatus 情况，进行回滚？原因同 `#commit(TransactionStatus status)` 方法。
 
-- 标记 - 整理 新生代使用
+③ 再之后，PlatformTransactionManager 有**抽象子**类 `org.springframework.transaction.support.AbstractPlatformTransactionManager` ，基于 [模板方法模式](https://blog.csdn.net/carson_ho/article/details/54910518) ，实现事务整体逻辑的骨架，而抽象 `#doCommit(DefaultTransactionStatus status)`、`#doRollback(DefaultTransactionStatus status)` 等等方法，交由子类类来实现。
 
-- 复制  老年代使用
+> 前方高能，即将进入关键的 ④ 步骤。
+
+④ 最后，不同的数据持久层框架，会有其对应的 PlatformTransactionManager 实现类，如下图所示：[![事务的特性](http://static.iocoder.cn/images/Spring/2018-12-24/07.png)](http://static.iocoder.cn/images/Spring/2018-12-24/07.png)事务的特性
+
+- 所有的实现类，都基于 AbstractPlatformTransactionManager 这个骨架类。
+- HibernateTransactionManager ，和 Hibernate5 的事务管理做集成。
+- DataSourceTransactionManager ，和 JDBC 的事务管理做集成。所以，它也适用于 MyBatis、Spring JDBC 等等。
+- JpaTransactionManager ，和 JPA 的事务管理做集成。
+
+如下，是一个比较常见的 XML 方式来配置的事务管理器，使用的是 DataSourceTransactionManager 。代码如下：
+
+```
+<!-- 事务管理器 -->
+<bean id="transactionManager"
+class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <!-- 数据源 -->
+    <property name="dataSource" ref="dataSource" />
+</bean>
+```
 
 
-### 垃圾回收器
+
+### 为什么在 Spring 事务中不能切换数据源？
+
+做过 Spring 多数据源的胖友，都会有个惨痛的经历，为什么在开启事务的 Service 层的方法中，无法切换数据源呢？因为，在 Spring 的事务管理中，**所使用的数据库连接会和当前线程所绑定**，即使我们设置了另外一个数据源，使用的还是当前的数据源连接。
+
+另外，多个数据源且需要事务的场景，本身会带来**多事务一致性**的问题，暂时没有特别好的解决方案。
+
+所以一般一个应用，推荐除非了读写分离所带来的多数据源，其它情况下，建议只有一个数据源。并且，随着微服务日益身形，一个服务对应一个 DB 是比较常见的架构选择。
+
+### 什么是事务的回滚规则？
+
+回滚规则，定义了哪些异常会导致事务回滚而哪些不会。
+
+- 默认情况下，事务只有遇到运行期异常时才会回滚，而在遇到检查型异常时不会回滚（这一行为与EJB的回滚行为是一致的）。
+- 但是你可以声明事务在遇到特定的检查型异常时像遇到运行期异常那样回滚。同样，你还可以声明事务遇到特定的异常不回滚，即使这些异常是运行期异常。
+
+注意，事务的回滚规则，并不是数据库事务规范中的名词，**而是 Spring 自身所定义的**。
+
+
+
+
+
+##  面试
+
+### @Autowired和@Resource以及@Inject等注解注入有何区别？
+
+@Autowired  默认是根据类型（byType ）进行自动装配的，默认是根据类型（byType ）进行自动装配的 通过与@Qualifier配合实现byName
+
+@Resource  是默认根据属性名称进行自动装配的，如果有多个类型一样的Bean候选者，则可以通过name进行指定进行注入
+
+@Autowired、@Inject是默认按照类型匹配的，@Resource是按照名称匹配的
+
+### 什么是 Spring 装配？
+
+当 Bean 在 Spring 容器中组合在一起时，它被称为**装配**或 **Bean 装配**。Spring 容器需要知道需要什么 Bean 以及容器应该如何使用依赖注入来将 Bean 绑定在一起，同时装配 Bean 。
+
+> 装配，和上文提到的 DI 依赖注入，实际是一个东西。
+
+### **自动装配有哪些方式？**
+
+Spring 容器能够自动装配 Bean 。也就是说，可以通过检查 BeanFactory 的内容让 Spring 自动解析 Bean 的协作者。
+
+自动装配的不同模式：
+
+- no - 这是默认设置，表示没有自动装配。应使用显式 Bean 引用进行装配。
+- byName - 它根据 Bean 的名称注入对象依赖项。它匹配并装配其属性与 XML 文件中由相同名称定义的 Bean 。
+- 【最常用】**byType** - 它根据类型注入对象依赖项。如果属性的类型与 XML 文件中的一个 Bean 类型匹配，则匹配并装配属性。
+- 构造函数 - 它通过调用类的构造函数来注入依赖项。它有大量的参数。
+- autodetect - 首先容器尝试通过构造函数使用 autowire 装配，如果不能，则尝试通过 byType 自动装配。
+
+**自动装配有什么局限？**
+
+> 艿艿：这个题目，了解下即可，也不是很准确。
+
+- 覆盖的可能性 - 您始终可以使用 `<constructor-arg>` 和 `<property>` 设置指定依赖项，这将覆盖自动装配。
+
+- 基本元数据类型 - 简单属性（如原数据类型，字符串和类）无法自动装配。
+
+  > 这种，严格来说，也不能称为局限。因为可以通过配置文件来解决。
+
+- 令人困惑的性质 - 总是喜欢使用明确的装配，因为自动装配不太精确。
+
+### 使用@Autowired 注解自动装配的过程是怎样的？
+
+在启动 spring IoC 时，容器自动装载了一个 AutowiredAnnotationBeanPostProcessor 后置处理器，当容器扫描到@Autowied、@Resource 或@Inject 时，就会在 IoC 容器自动查找需要的 bean，并装配给该对象的属性。在使用@Autowired 时，首先在容器中查询对应类型的 bean： 
+
+• 如果查询结果刚好为一个，就将该 bean 装配给@Autowired 指定的数据；
+
+• 如果查询的结果不止一个，那么@Autowired 会根据名称来查找；
+
+• 如果上述查找的结果为空，那么会抛出异常。解决方法时，使用 required=false。
+
+### Spring AOP 和 AspectJ AOP 有什么区别？
+
+Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。 Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
+
+Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。AspectJ 相比于 Spring AOP 功能更加强大，但是 Spring AOP 相对来说更简单，
+
+如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比 Spring AOP 快很多。
+
+### **Spring AOP和AspectJ是什么关系？**
+
+AspectJ是更强的AOP框架，是实际意义的AOP标准；
+
+- Spring为何不写类似AspectJ的框架？ Spring AOP使用纯Java实现, 它不需要专门的编译过程, 它一个重要的原则就是无侵入性（non-invasiveness）
+- 互补而不是竞争的关系。
+- Spring AOP采用的就是基于运行时增强的代理技术,Java JDK的动态代理(Proxy，底层通过反射实现)或者CGLIB的动态代理(底层通过继承实现)
+- ApectJ采用的就是静态织入的方式。ApectJ主要采用的是编译期织入
+- Spring AOP更易用，AspectJ更强大
+
+### JDK 动态代理和 CGLIB 动态代理的区别
+
+Spring AOP 中的动态代理主要有两种方式，JDK 动态代理和 CGLIB 动态代理：
+
+- JDK 动态代理只提供接口的代理，不支持类的代理
+- CGLIB（Code Generation Library），是一个代码生成的类库，可以在运行时动态的生成指定类的一个子类对象，并覆盖其中特定方法并添加增强代码，从而实现 AOP。CGLIB是通过继承的方式做的动态代理，因此如果某个类被标记为 final，那么它是无法使用 CGLIB做动态代理的。
+
+### @Component 和 @Bean 的区别是什么？
+
+- @Component 注解作用于类，而@Bean注解作用于方法。
+- @Component通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中（我们可以使用 @ComponentScan注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。 @Bean注解通常是我们在标有该注解的方法中定义产生这个 bean,告诉了 Spring 这是某个类的实例，当我需要用它的时候还给我。
+- @Bean 注解比 @Component注解的自定义性更强，而且很多地方我们只能通过 @Bean注解来注册 bean。比如当我们引用第三方库中的类需要装配到Spring 容器时，则只能通过@Bean 来实现。
+
+### Spring 基于 xm注入 bean 的几种方式
+
+1. Set 方法注入；
+2. 构造器注入：①通过 index 设置参数的位置；②通过 type 设置参数类型；
+3. 静态工厂注入；
+4. 实例工厂；
+
+### Spring 支持的几种 bean 的作用域
+
+- singleton : bean 在每个 Spring ioc 容器中只有一个实例。
+- prototype：一个 bean 的定义可以有多个实例。
+- request：每次 http 请求都会创建一个 bean，该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。
+- session：在一个 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web的 Spring ApplicationContext 情形下有效。
+- global-session：在一个全局的 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。
+
+另外，网络上很多文章说有 Global-session 级别，它是 Portlet 模块独有，目前已经废弃，在 Spring5 中是找不到的。
+
+### Spring 框架中的单例 bean 是线程安全的吗？
+
+不是，Spring 框架中的单例 bean 不是线程安全的。spring 中的 bean 默认是单例模式，spring 框架并没有对单例 bean 进行多线程的封装处理。那就要开发者自己去保证线程安全了，最简单的就是改变 bean 的作用域，把“singleton”变更为“prototype”，这样请求 bean 相当于 new Bean()了，所以就可以保证线程安全了
+
+### Spring 如何处理线程并发问题？
+
+• 有状态就是有数据存储功能。
+
+• 无状态就是不会保存数据。
+
+在一般情况下，只有无状态的 Bean 才可以在多线程环境下共享，在 Spring 中，绝大部分 Bean 都可以声明为 singleton 作用域
+
+在类中定义一个 ThreadLocal成员变量，将需要的可变成员变量保存在 ThreadLocal中（推荐的一种方式）
+
+### Spring 中有多少种 IoC 容器？
+
+Spring 提供了两种( 不是“个” ) IoC 容器，分别是 BeanFactory、ApplicationContext 。
+
+### BeanFactory 和 ApplicationContext 有什么区别？
+
+BeanFactory 和 ApplicationContext 是 Spring 的两大核心接口，都可以当做 Spring 的容器。其中ApplicationContext 是 BeanFactory 的子接口。
+
+BeanFactory 简单粗暴，可以理解为就是个 HashMap，Key 是 BeanName，Value 是 Bean 实例。通常只提供注册（put），获取（get）这两个功能。我们可以称之为 “低级容器”。ApplicationContext 可以称之为 “高级容器”。因为他比 BeanFactory 多了更多的功能。他继承了多个接口。因此具备了更多的功能。
+
+**依赖关系：**
+
+BeanFactory：是 Spring 里面最底层的接口，包含了各种 Bean 的定义，读取 bean 配置文档，管理bean 的加载、实例化，控制 bean 的生命周期，维护 bean 之间的依赖关系。ApplicationContext 接口作为 BeanFactory 的派生，除了提供 BeanFactory 所具有的功能外，还提供了更完整的框架功能：
+
+- MessageSource ：管理 message ，实现国际化等功能。
+- ApplicationEventPublisher ：事件发布。
+- ResourcePatternResolver ：多资源加载。
+- EnvironmentCapable ：系统 Environment（profile + Properties）相关。
+- Lifecycle ：管理生命周期。
+- Closable ：关闭，释放资源
+- InitializingBean：自定义初始化。
+- BeanNameAware：设置 beanName 的 Aware 接口。
+
+**加载方式：**
+
+- BeanFactroy 采用的是延迟加载形式来注入 Bean 的，即只有在使用到某个 Bean 时(调用getBean())，才对该 Bean 进行加载实例化。
+- ApplicationContext，它是在容器启动时，一次性创建了所有的 Bean。
+
+**创建方式：**
+
+BeanFactory 通常以编程的方式被创建，ApplicationContext 还能以声明的方式创建，如使用ContextLoader。
+
+**注册方式：**
+
+BeanFactory 和 ApplicationContext 都支持 BeanPostProcessor，BeanFactoryPostProcessor 的使用，但两者之间的区别是：BeanFactory 需要手动注册，而 ApplicationContext 则是自动注册
+
+### @Transactional(rollbackFor = Exception.class)注解了解吗？
+
+我们知道 Exception 分为运行时异常 RuntimeException 和非运行时异常。在@Transactional注解中如果不配置rollbackFor属性,那么事务只会在遇到RuntimeException的时候才会回滚,加上rollbackFor=Exception.class,可以让事务在遇到非运行时异常时也回滚。
+
+@Transactiona注解一般可以作用在类或者方法上。
+
+作用于类：当把@Transactiona注解放在类上时，表示所有该类的 public 方法都配置相同的事务属性信息。
+
+作用于方法：当类配置了@Transactional，方法也配置了@Transactional，方法的事务会覆盖类的事务配置信息。
 
  
 
-![img](../_media/analysis/netty/wps349.tmp.jpg) 
+### 什么是依赖注入？
 
-以上是 HotSpot 虚拟机中的 7 个垃圾收集器，连线表示垃圾收集器可以配合使用。 
+在依赖注入中，你不必主动、手动创建对象，但必须描述如何创建它们。
 
-单线程与多线程: 单线程指的是垃圾收集器只使用一个线程进行收集，而多线程使用多个线程； 
+- 你不是直接在代码中将组件和服务连接在一起，而是描述配置文件中哪些组件需要哪些服务。
+- 然后，再由 IoC 容器将它们装配在一起。
 
-串行与并行: 串行指的是垃圾收集器与用户程序交替执行，这意味着在执行垃圾收集的时候需要停顿用户程序；并形指的是垃圾收集器和用户程序同时执行。除了 CMS 和 G1 之外，其它垃圾收集器都是以串行的方式执行。
+### 可以通过多少种方式完成依赖注入？
 
-**GC考虑的指标**
+- 接口注入
+- 构造函数注入
+- setter 注入
 
-吞吐量: 应用耗时和实际耗时的比值； 
+### 请介绍下常用的 BeanFactory 容器？
 
-停顿时间: 垃圾回收的时候，由于Stop the World，应用程序的所有线程会挂起，造成应用停顿。 
+BeanFactory 最常用的是 XmlBeanFactory 。它可以根据 XML 文件中定义的内容，创建相应的 Bean。
 
-吞吐量和停顿时间是互斥的。
+### 请介绍下常用的 ApplicationContext 容器？
 
-对于后端服务(比如后台计算任务)，吞吐量优先考虑(并行垃圾回收)；
+以下是三种较常见的 ApplicationContext 实现方式：
 
-对于前端应用，RT响应时间优先考虑，减少垃圾收集时的停顿时间，适用场景是Web系统(并发垃圾回收)
+- 1、ClassPathXmlApplicationContext ：从 ClassPath 的 XML 配置文件中读取上下文，并生成上下文定义。应用程序上下文从程序环境变量中取得。示例代码如下：
 
-- Seria收集器  也就是说它以串行的方式执行，新生代
+  ```
+  ApplicationContext context = new ClassPathXmlApplicationContext(“bean.xml”);
+  ```
 
-- SeriaOld 收集器  老年代
+- 2、FileSystemXmlApplicationContext ：由文件系统中的XML配置文件读取上下文。示例代码如下：
 
-- ParNew 收集器   Seria收集器的多线程版本。
+  ```
+  ApplicationContext context = new FileSystemXmlApplicationContext(“bean.xml”);
+  ```
 
-- Paralle 收集器 （1.8默认）
-- ParalleScavenge收集器是用来回收新生代的垃圾收集器 同样是并行收集器，采用复制算法和STW机制其它收集器关注点是尽可能缩短垃圾收集时用户线程的停顿时间，而它的目标是达到一个可控制的吞吐量，它被称为“吞吐量优先”收集器。这里的吞吐量指 CPU 用于运行用户代码的时间占总时间的比值。高吞吐量则可以高效率利用CPU时间，尽快完成程序的运算任务，主要是和在后台运算而不需要太多交互的任务，一般都是在服务器环境上使用，比如执行批量处理，订单处理，工资支付，科学计算的应用程序![img](../_media/analysis/netty/wps34A.tmp.jpg) 
-- ParalleOld 收集器
-- CMS 收集器![img](../_media/analysis/netty/wps34B.tmp.jpg) 
+- 3、XmlWebApplicationContext ：由 Web 应用的XML文件读取上下文。例如我们在 Spring MVC 使用的情况。
 
- 
+当然，目前我们更多的是使用 Spring Boot 为主，所以使用的是第四种 ApplicationContext 容器，ConfigServletWebServerApplicationContext 。
 
-### CMS(Concurrent Mark Sweep)
+### 简述 Spring IoC 的实现机制？
 
-Mark Sweep 指的是标记 - 清除算法。
+简单来说，Spring 中的 IoC 的实现原理，就是**工厂模式**加**反射机制**。代码如下：
 
-分为以下四个流程:
+```java
+interface Fruit {
 
-1. 初始标记: 仅仅只是标记一下 GC Roots 能直接关联到的对象，速度很快，需要停顿。 
+     public abstract void eat();
+     
+}
+class Apple implements Fruit {
 
-2. 并发标记: 进行 GC Roots Tracing 的过程，它在整个回收过程中耗时最长，不需要停顿。 
+    public void eat(){
+        System.out.println("Apple");
+    }
+    
+}
+class Orange implements Fruit {
+    public void eat(){
+        System.out.println("Orange");
+    }
+}
 
-3. 重新标记: 为了修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，需要停顿。 
+class Factory {
 
-4. 并发清除: 不需要停顿。
+    public static Fruit getInstance(String className) {
+        Fruit f = null;
+        try {
+            f = (Fruit) Class.forName(className).newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return f;
+    }
+    
+}
 
+class Client {
 
-在整个过程中耗时最长的并发标记和并发清除过程中，收集器线程都可以与用户线程一起工作，不需要进行停顿。
-
-特点
-
-- 吞吐量低: 低停顿时间是以牺牲吞吐量为代价的，导致 CPU 利用率不够高。 
-
-- 无法处理浮动垃圾，可能出现 Concurrent Mode Failure。浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾，这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，因此需要预留出一部分内存，意味着 CMS 收集不能像其它收集器那样等待老年代快满的时候再回收。如果预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 SeriaOld 来替代 CMS。 
-
-- 标记 - 清除算法导致的空间碎片，往往出现老年代空间剩余，但无法找到足够大连续空间来分配当前对象，不得不提前触发一次 FulGC。
-
-
-### G1 收集器
-
-G1(Garbage-First)，它是一款面向服务端应用的垃圾收集器，在多 CPU 和大内存的场景下有很好的性能。HotSpot 开发团队赋予它的使命是未来可以替换掉 CMS 收集器。
-
-堆被分为新生代和老年代，其它收集器进行收集的范围都是整个新生代或者老年代，而 G1 可以直接对新生代和老年代一起回收。
-
-G1垃圾回收器是在Java7 update 4之后引入的一个新的垃圾回收器。同优秀的CMS垃圾回收器一样，G1也是关注最小时延的垃圾回收器，也同样适合大尺寸堆内存的垃圾收集，官方在ZGC还没有出现时也推荐使用G1来代替选择CMS。G1最大的特点是引入分区的思路，弱化了分代的概念，合理利用垃圾收集各个周期的资源，解决了其他收集器甚至CMS的众多缺陷
-
-G1回收器和CMS比起来，有以下不同：![img](../_media/analysis/netty/wps34C.tmp.jpg)
-
-- G1空间是连续的
-
-- G1回收器的内存与CMS回收器要求的内存模型有极大的不同。G1将内存划分一个个固定大小的region，每个region可以是年轻代、老年代的一个。内存的回收是以region作为基本单位的；
-
-- G1还有一个及其重要的特性：软实时（soft real-time）。所谓的实时垃圾回收，是指在要求的时间内完成垃圾回收。“软实时”则是指，用户可以指定垃圾回收时间的限时，G1会努力在这个时限内完成垃圾回收，但是G1并不担保每次都能在这个时限内完成垃圾回收。通过设定一个合理的目标，可以让达到90%以上的垃圾回收时间都在这个时限内。
-
-
-G1的内存模型
-
-![img](../_media/analysis/netty/wps34D.tmp.jpg) 
-
-G1采用了分区(Region)的思路，将整个堆空间分成若干个大小相等的内存区域，每次分配对象空间将逐段地使用内存。因此，在堆的使用上，G1并不要求对象的存储一定是物理上连续的，只要逻辑上连续即可；每个分区也不会确定地为某个代服务，可以按需在年轻代和老年代之间切换。启动时可以通过参数-XX:G1HeapRegionSize=n可指定分区大小(1MB~32MB，且必须是2的幂)，默认将整堆划分为2048个分区。
-
-在每个分区内部又被分成了若干个大小为512 Byte卡片(Card)，标识堆内存最小可用粒度所有分区的卡片将会记录在全局卡片表(GlobaCard Table)中，分配的对象会占用物理上连续的若干个卡片，当查找对分区内对象的引用时便可通过记录卡片来查找该引用对象(见RSet)。每次对内存的回收，都是对指定分区的卡片进行处理。
-
-G1同样可以通过-Xms/-Xmx来指定堆空间大小。当发生年轻代收集或混合收集时，通过计算GC与应用的耗费时间比，自动调整堆空间大小。如果GC频率太高，则通过增加堆尺寸，来减少GC频率，相应地GC占用的时间也随之降低；目标参数-XX:GCTimeRatio即为GC与应用的耗费时间比，G1默认为9，而CMS默认为99，因为CMS的设计原则是耗费在GC上的时间尽可能的少。另外，当空间不足，如对象空间分配或转移失败时，G1会首先尝试增加堆空间，如果扩容失败，则发起担保的FulGC。FulGC后，堆尺寸计算结果也会调整堆空间。
-
-**分代模型**
-
-G1将内存在逻辑上划分为年轻代和老年代，其中年轻代又划分为Eden空间和Survivor空间。但年轻代空间并不是固定不变的，当现有年轻代分区占满时，JVM会分配新的空闲分区加入到年轻代空间。
-
-整个年轻代内存会在初始空间-XX:G1NewSizePercent(默认整堆5%)与最大空间(默认60%)之间动态变化，且由参数目标暂停时间-XX:MaxGCPauseMillis(默认200ms)、需要扩缩容的大小以-XX:G1MaxNewSizePercent及分区的已记忆集合(RSet)计算得到。当然，G1依然可以设置固定的年轻代大小(参数-XX:NewRatio、-Xmn)，但同时暂停目标将失去意义。
-
-## JVM调优参数
-
-### JVM参数
-
-```
--Xms  堆最小值
--Xmx  堆最大堆值
--Xmn  新生代大小
--Xss  每个线程池的堆栈大小。
--XX:NewRatio  设置新生代与老年代比值，-XX:NewRatio=4 表示新生代与老年代所占比例为1:4 
--XX:PermSize  设置持久代初始值，默认是物理内存的六十四分之一
--XX:MaxPermSize 设置持久代最大值，默认是物理内存的四分之一 
--XX:MaxTenuringThreshold 新生代中对象存活次数，默认15。(若对象在eden区，经历一次MinorGC后还活着，则被移动到Survior区，年龄加1。以后，对象每次经历MinorGC，年龄都加1。达到阀值，则移入老年代) 
--XX:SurvivorRatio Eden区与Subrvivor区大小的比值，如果设置为8，两个Subrvivor区与一个Eden区的比值为2:8，一个Survivor区占整个新生代的十分之一 
--XX:+UseFastAccessorMethods 原始类型快速优化
--XX:+AggressiveOpts 编译速度加快 
--XX:PretenureSizeThreshold 对象超过多大值时直接在老年代中分配
--XX:TargetSurvivorRatio 表示当经历Minor GC后，survivor空间占有量(百分比)超过它的时候，就会压缩进入老年代(当然，如果survivor空间不够，则直接进入老年代)。默认值为50%。 
+    public static void main(String[] args) {
+        Fruit f = Factory.getInstance("io.github.dunwu.spring.Apple");
+        if(f != null){
+            f.eat();
+        }
+    }
+    
+}
 ```
 
-1. Xmn用于设置新生代的大小。过小会增加Minor GC频率，过大会减小老年代的大小。一般设为整个堆空间的1/4或1/3。  
-2. 为了性能考虑，一开始尽量将新生代对象留在新生代，避免新生的大对象直接进入老年代。因为新生对象大部分都是短期的，这就造成了老年代的内存浪费，并且回收代价也高(FulGC发生在老年代和方法区Perm)。   
-3. 当Xms=Xmx，可以使得堆相对稳定，避免不停震荡。  
-4. 一般来说，MaxPermSize设为64MB可以满足绝大多数的应用了。若依然出现方法区溢出，则可以设为128MB。若128MB还不能满足需求，那么就应该考虑程序优化了，减少动态类的产生。 
+### Spring 提供了以下五种标准的事件：
 
+1. 上下文更新事件（ContextRefreshedEvent）：该事件会在ApplicationContext 被初始化或者更新时发布。也可以在调用ConfigurableApplicationContext 接口中的 `#refresh()` 方法时被触发。
+2. 上下文开始事件（ContextStartedEvent）：当容器调用ConfigurableApplicationContext 的 `#start()` 方法开始/重新开始容器时触发该事件。
+3. 上下文停止事件（ContextStoppedEvent）：当容器调用 ConfigurableApplicationContext 的 `#stop()` 方法停止容器时触发该事件。
+4. 上下文关闭事件（ContextClosedEvent）：当ApplicationContext 被关闭时触发该事件。容器被关闭时，其管理的所有单例 Bean 都被销毁。
+5. 请求处理事件（RequestHandledEvent）：在 We b应用中，当一个HTTP 请求（request）结束触发该事件。
 
+------
 
--Xms 堆最小值
+除了上面介绍的事件以外，还可以通过扩展 ApplicationEvent 类来开发**自定义**的事件。
 
--Xmx  堆最大堆值
+① 示例自定义的事件的类，代码如下：
 
--Xmn  新生代大小
+```java
+public class CustomApplicationEvent extends ApplicationEvent{  
 
--Xss  每个线程池的堆栈大小。
+    public CustomApplicationEvent(Object source, final String msg) {  
+        super(source);
+    }  
 
--XX:NewRatio  设置新生代与老年代比值，-XX:NewRatio=4 表示新生代与老年代所占比例为1:4 
-
--XX:PermSize  设置持久代初始值，默认是物理内存的六十四分之一
-
--XX:MaxPermSize 设置持久代最大值，默认是物理内存的四分之一 
-
--XX:MaxTenuringThreshold 新生代中对象存活次数，默认15。(若对象在eden区，经历一次MinorGC后还活着，则被移动到Survior区，年龄加1。以后，对象每次经历MinorGC，年龄都加1。达到阀值，则移入老年代) 
-
--XX:SurvivorRatio Eden区与Subrvivor区大小的比值，如果设置为8，两个Subrvivor区与一个Eden区的比值为2:8，一个Survivor区占整个新生代的十分之一 
-
--XX:+UseFastAccessorMethods 原始类型快速优化
-
--XX:+AggressiveOpts 编译速度加快 
-
--XX:PretenureSizeThreshold 对象超过多大值时直接在老年代中分配
-
-经验 :
-
-Xmn用于设置新生代的大小。过小会增加Minor GC频率，过大会减小老年代的大小。一般设为整个堆空间的1/4或1/3.
-
-XX:SurvivorRatio用于设置新生代中survivor空间(from/to)和eden空间的大小比例；
-
-XX:TargetSurvivorRatio表示，当经历Minor GC后，survivor空间占有量(百分比)超过它的时候，就会压缩进入老年代(当然，如果survivor空间不够，则直接进入老年代)。默认值为50%。 
-
-为了性能考虑，一开始尽量将新生代对象留在新生代，避免新生的大对象直接进入老年代。因为新生对象大部分都是短期的，这就造成了老年代的内存浪费，并且回收代价也高(FulGC发生在老年代和方法区Perm). 
-
-当Xms=Xmx，可以使得堆相对稳定，避免不停震荡 
-
-一般来说，MaxPermSize设为64MB可以满足绝大多数的应用了。若依然出现方法区溢出，则可以设为128MB。若128MB还不能满足需求，那么就应该考虑程序优化了，减少动态类的产生。
-
-垃圾回收参数
-
-<<<<<<< HEAD
-## 问题排查
-
-### 线上服务的FGC问题排查
-
-[线上服务的FGC问题排查，看这篇就够了！](https://mp.weixin.qq.com/s/P8s3kuceBNovUP5adXpFCQ)
-
-去年10月份，我们的广告召回系统在程序上线后收到了FGC频繁的系统告警，通过下面的监控图可以看到：平均每35分钟就进行了一次FGC。而程序上线前，我们的FGC频次大概是2天一次。下面，详细介绍下该问题的排查过程。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kbo3d18WZsey7GqTSBxR7OfI15BdBhQPy2Q7Zd0k1S5drjWQFk59fte4mMyRXaHOIPnOZwYyfb8cQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
-
-**1. 检查JVM配置**
-
-通过以下命令查看JVM的启动参数：
-
-`ps aux | grep "java"` 
-
-![image-20230207150519007](../_media/analysis/netty/image-20230207150519007.png)
-
-> -Xms4g -Xmx4g -Xmn2g -Xss1024K 
->
-> -XX:ParallelGCThreads=5 
->
-> -XX:+UseConcMarkSweepGC 
->
-> -XX:+UseParNewGC 
->
-> -XX:+UseCMSCompactAtFullCollection 
->
-> -XX:CMSInitiatingOccupancyFraction=80
-
-可以看到堆内存为4G，新生代为2G，老年代也为2G，新生代采用ParNew收集器，老年代采用并发标记清除的CMS收集器，当老年代的内存占用率达到80%时会进行FGC。
-
-进一步通过 jmap -heap 7276 | head -n20 可以得知新生代的Eden区为1.6G，S0和S1区均为0.2G。
-
-**2. 观察老年代的内存变化**
-
-通过观察老年代的使用情况，可以看到：每次FGC后，内存都能回到500M左右，因此我们排除了内存泄漏的情况。
-
-**3. 通过jmap命令查看堆内存中的对象**
-
-通过命令 jmap -histo 7276 | head -n20
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kaC5QYpq19F4wmibn6r3RnsHryPDnC3BgqsfYZIDc9ag1ksiaAnKZTDU373Ew4Z5wawEj7Ym2AaKHyQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
-
-上图中，按照对象所占内存大小排序，显示了存活对象的实例数、所占内存、类名。可以看到排名第一的是：int[]，而且所占内存大小远远超过其他存活对象。至此，我们将怀疑目标锁定在了 int[] .
-
-**4. 进一步dump堆内存文件进行分析**
-
-锁定 int[] 后，我们打算dump堆内存文件，通过可视化工具进一步跟踪对象的来源。考虑堆转储过程中会暂停程序，因此我们先从服务管理平台摘掉了此节点，然后通过以下命令dump堆内存：
-
-jmap -dump:format=b,file=heap 7276
-
-通过JVisualVM工具导入dump出来的堆内存文件，同样可以看到各个对象所占空间，其中int[]占到了50%以上的内存，进一步往下便可以找到 int[] 所属的业务对象，发现它来自于架构团队提供的codis基础组件。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kbo3d18WZsey7GqTSBxR7Of8ywpnt4SVicaWAONmkaHicf6neDIQTIC4GPepa1ic0ibaLIf2PUwiazSLqQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
-
-**5.** **通过代码分析可疑对象**
-
-通过代码分析，codis基础组件每分钟会生成约40M大小的int数组，用于统计TP99 和 TP90，数组的生命周期是一分钟。而根据第2步观察老年代的内存变化时，发现老年代的内存基本上也是每分钟增加40多M，因此推断：这40M的int数组应该是从新生代晋升到老年代。
-
-我们进一步查看了YGC的频次监控，通过下图可以看到大概1分钟有8次左右的YGC，这样基本验证了我们的推断：因为CMS收集器默认的分代年龄是6次，即YGC 6次后还存活的对象就会晋升到老年代，而codis组件中的大数组生命周期是1分钟，刚好满足这个要求。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/AaabKZjib2kaC5QYpq19F4wmibn6r3RnsH2o7bIKqUJqM3IkMbTVQlnO1Oo1YYcK4oAJUuShsEYdwRNyOzY60gfg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
-
-至此，整个排查过程基本结束了，那为什么程序上线前没出现此问题呢？通过上图可以看到：程序上线前YGC的频次在5次左右，此次上线后YGC频次变成了8次左右，从而引发了此问题。
-
-**6. 解决方案**
-
-为了快速解决问题，我们将CMS收集器的分代年龄改成了15次，改完后FGC频次恢复到了2天一次，后续如果YGC（Minor GC）的频次超过每分钟15次还会再次触发此问题。当然，我们最根本的解决方案是：优化程序以降低YGC的频率，同时缩短codis组件中int数组的生命周期，这里就不做展开了。
-
-
-
-### JVM堆外内存泄漏故障排查
-
-[记一次大促期间JVM堆外内存泄漏故障排查记录](https://mp.weixin.qq.com/s/yutHXOi6Xl3-Qn91Pvg9wA)
-
-8月12日中午午休时间，我们商业服务收到告警，服务进程占用容器的物理内存（16G）超过了80%的阈值，并且还在不断上升。
-
-![图片](../_media/analysis/netty/640.png)
-
-监控系统调出图表查看：
-
-![图片](../_media/analysis/netty/640-1676439035395-3.png)
-
-像是Java进程发生了内存泄漏，而我们堆内存的限制是4G，这种大于4G快要吃满内存应该是JVM堆外内存泄漏。
-
-确认了下当时服务进程的启动配置：
-
-```
--Xms4g -Xmx4g -Xmn2g -Xss1024K -XX:PermSize=256m -XX:MaxPermSize=512m -XX:ParallelGCThreads=20 -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCMSCompactAtFullCollection -XX:CMSInitiatingOccupancyFraction=80
+}
 ```
 
-虽然当天没有上线新代码，但是**「当天上午我们正在使用消息队列推送历史数据的修复脚本，该任务会大量调用我们服务其中的某一个接口」**，所以初步怀疑和该接口有关。
+② 为了监听这个事件，还需要创建一个监听器。示例代码如下：
 
-下图是该调用接口当天的访问量变化：
+```
+public class CustomEventListener implements ApplicationListener<CustomApplicationEvent> {
 
-![图片](../_media/analysis/netty/640-1676439039842-6.png)
+    @Override  
+    public void onApplicationEvent(CustomApplicationEvent applicationEvent) {  
+        // handle event  
+    }
+    
+}
+```
 
-可以看到案发当时调用量相比正常情况（每分钟200+次）提高了很多（每分钟5000+次）。
+③ 之后通过 ApplicationContext 接口的 `#publishEvent(Object event)` 方法，来发布自定义事件。示例代码如下：
 
-**「我们暂时让脚本停止发送消息，该接口调用量下降到每分钟200+次，容器内存不再以极高斜率上升，一切似乎恢复了正常。」**
+```
+// 创建 CustomApplicationEvent 事件
+CustomApplicationEvent customEvent = new CustomApplicationEvent(applicationContext, "Test message");
+// 发布事件
+applicationContext.publishEvent(customEvent);
+```
 
-接下来排查这个接口是不是发生了内存泄漏。
+### Spring 有哪些配置方式
 
-**排查过程**
+单纯从 Spring Framework 提供的方式，一共有三种：
 
-**堆内存分析**
+- 1、XML 配置文件。
 
-虽说一开始就基本确认与堆内存无关，因为泄露的内存占用超过了堆内存限制4G，但是我们为了保险起见先看下堆内存有什么线索。
+  Bean 所需的依赖项和服务在 XML 格式的配置文件中指定。这些配置文件通常包含许多 bean 定义和特定于应用程序的配置选项。它们通常以 bean 标签开头。例如：
 
-我们观察了新生代和老年代内存占用曲线以及回收次数统计，和往常一样没有大问题，我们接着在事故现场的容器上dump了一份JVM堆内存的日志。
+  ```
+  <bean id="studentBean" class="org.edureka.firstSpring.StudentBean">
+      <property name="name" value="Edureka"></property>
+  </bean>
+  ```
 
-[怎么排查堆内存溢出啊？](https://mp.weixin.qq.com/s/7XGD-Z3wrThv5HyoK3B8AQ)
+- 2、注解配置。
 
-[CPU100%，排查](https://mp.weixin.qq.com/s/roEMz-5tzBZvGxbjq8NhOQ)
+  您可以通过在相关的类，方法或字段声明上使用注解，将 Bean 配置为组件类本身，而不是使用 XML 来描述 Bean 装配。默认情况下，Spring 容器中未打开注解装配。因此，您需要在使用它之前在 Spring 配置文件中启用它。例如：
 
-[排查YGC问题](https://mp.weixin.qq.com/s/LRx9tLtx1tficWPvUWUTuQ)
+  ```
+  <beans>
+  <context:annotation-config/>
+  <!-- bean definitions go here -->
+  </beans>
+  ```
 
-[CPU飙高排查](https://mp.weixin.qq.com/s/nWghy4McYx6Ix3QPSLSmkQ)
+- 3、Java Config 配置。
 
+  Spring 的 Java 配置是通过使用 @Bean 和 @Configuration 来实现。
+
+  - `@Bean` 注解扮演与 `<bean />` 元素相同的角色。
+
+  - `@Configuration` 类允许通过简单地调用同一个类中的其他 `@Bean` 方法来定义 Bean 间依赖关系。
+
+  - 例如：
+
+    ```
+    @Configuration
+    public class StudentConfig {
+        
+        @Bean
+        public StudentBean myStudent() {
+            return new StudentBean();
+        }
+        
+    }
+    ```
+
+    - 是不是很熟悉 😈
+
+目前主要使用 **Java Config** 配置为主。当然，三种配置方式是可以混合使用的。例如说：
+
+- Dubbo 服务的配置，艿艿喜欢使用 XML 。
+- Spring MVC 请求的配置，艿艿喜欢使用 `@RequestMapping` 注解。
+- Spring MVC 拦截器的配置，艿艿喜欢 Java Config 配置。
+
+------
+
+另外，现在已经是 Spring Boot 的天下，所以更加是 **Java Config** 配置为主。
+
+### 如何在 Spring 中启动注解装配？
+
+默认情况下，Spring 容器中未打开注解装配。因此，要使用基于注解装配，我们必须通过配置 `<context：annotation-config />` 元素在 Spring 配置文件中启用它。
+
+### @Required 注解有什么用？
+
+`@Required` 注解，应用于 Bean 属性 setter 方法。
+
+- 此注解仅指示必须在配置时使用 Bean 定义中的显式属性值或使用自动装配填充受影响的 Bean 属性。
+- 如果尚未填充受影响的 Bean 属性，则容器将抛出 BeanInitializationException 异常。
