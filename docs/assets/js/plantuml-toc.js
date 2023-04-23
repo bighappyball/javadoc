@@ -39,7 +39,18 @@ var activeClass = function (e) {
 
 
 
-var getHeaders = function (selector) {
+var getHeaders = function (baseSelect, headings) {
+  
+  var titles = headings.split(",");
+  var selector = ''
+  for (var i = 0; i < titles.length; i++) {
+    if (i === titles.length - 1) {
+      selector += baseSelect + ' ' + titles[i]
+    } else {
+      selector += baseSelect + ' ' + titles[i] + ',';
+    }
+  }
+  console.log(selector)
   var allHeadings = document.querySelectorAll(selector);
   var ret = [];
 
@@ -76,15 +87,13 @@ var buildTOC = function (options) {
   var skin = options.skin ? options.skin : "cerulean-outline"
   // scale ${height} height\n scale ${width} width\n
   var data = `@startmindmap\n  !theme ${skin}\n`
-  var selector = '.markdown-section ' + options.headings ? options.headings : defaultOptions
-  var headers = getHeaders(selector).filter(h => h.id);
+  var headers = getHeaders(`.markdown-section`, options.headings).filter(h => h.id);
   var baseURL = window.location.href.split("?", 1)[0]
   var levels = new Array(10).fill(0)
 
   headers.reduce(function (prev, curr, index) {
     var currentLevel = getLevel(curr.tagName);
     var autoHeaderText = '';
-    debugger
     levels[currentLevel - 1]++
     if (prev > currentLevel) {
       for (var i = currentLevel; i < levels.length; i++) {
@@ -95,11 +104,11 @@ var buildTOC = function (options) {
       data += '+';
       autoHeaderText += `${levels[j]}.`
     }
-    
+
     data += `_ [[${baseURL}?id=${curr.innerText.toLowerCase()} ${autoHeaderText}]]${curr.innerText}\n`
     // data += `_ <color:black>${curr.innerText}</color>\n`
     console.log(curr.innerHTML)
-    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText+curr.innerText}</span>`)
+    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + curr.innerText}</span>`)
     // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
   }, getLevel(options.headings));
