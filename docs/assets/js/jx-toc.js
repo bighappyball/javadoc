@@ -126,7 +126,6 @@ var goTopFunction = function(e) {
 
 // Docsify plugin functions
 function plugin(hook, vm) {
-  debugger
   var userOptions = vm.config.plantumltoc;
 
   hook.mounted(function () {

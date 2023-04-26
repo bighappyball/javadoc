@@ -25,3 +25,10 @@
        - [第17节: 🎊Dubbo](/md/cloud/dubbo.md)
        - [第18节: ✨Zookeeper](/md/cloud/zookeeper.md)
        - [第19节: :cloud: Spring Cloud](/md/cloud/spring-cloud.md)
+   - 🗂️ 第6章：源码系列
+       - [第16节: ✨Spring源码](/md/analysis/spring/)
+         - [✨IOC 原理](/md/analysis/spring/spring-ioc.md)
+         - [✨Bean 原理](/md/analysis/spring/spring-bean.md)
+       - [第17节: 🎊Dubbo](/md/cloud/dubbo.md)
+       - [第18节: ✨Zookeeper](/md/cloud/zookeeper.md)
+       - [第19节: :cloud: Spring Cloud](/md/cloud/spring-cloud.md)

@@ -1,6 +1,12 @@
+# IoC 原理
+
 ## IoC 理论
 
-[谈谈对 Spring IoC 的理解](https://www.cnblogs.com/xdp-gacl/p/4249939.html)  |  [Spring 的 IoC 原理](https://blog.csdn.net/m13666368773/article/details/7802126) |  [Spring IoC 原理](https://blog.csdn.net/it_man/article/details/4402245)
+>[谈谈对 Spring IoC 的理解](https://www.cnblogs.com/xdp-gacl/p/4249939.html) 
+>
+>[Spring 的 IoC 原理](https://blog.csdn.net/m13666368773/article/details/7802126) 
+>
+>[Spring IoC 原理](https://blog.csdn.net/it_man/article/details/4402245)
 
 IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么技术，而是一种设计思想, 它还有一个别名为 DI（Dependency Injection）,即依赖注入。
 
@@ -12,52 +18,54 @@ IoC 全称为 Inversion of Control，翻译为 “控制反转”，不是什么
 > 4. 哪些方面反转了? 所依赖对象的获取被反转了。
 >
 
-### 1. 注入形式
+### 注入形式
+
+>[IOC注入实例](https://www.cnblogs.com/tanghaorong/p/13364634.html#_label4_0)
 
 IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、setter方法注入、接口注入。接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。
 
-[IOC注入实例](https://www.cnblogs.com/tanghaorong/p/13364634.html#_label4_0)
 
-## IoC 之IoC各个组件
 
-![alt IoC各个组件](../../_media/analysis/spring/企业微信截图_20221213163541.png)  
+## IoC各个组件
+
+![alt IoC各个组件](../../../_media/analysis/spring/企业微信截图_20221213163541.png)  
 
 该图为 `ClassPathXmlApplicationContext` 的类继承体系结构，虽然只有一部分，但是它基本上包含了 IoC 体系中大部分的核心类和接口。
 
-### 1. Resource 体系
+### Resource 体系
 
 `org.springframework.core.io.Resource`，对资源的抽象。它的每一个实现类都代表了一种资源的访问策略，如 ClassPathResource、URLResource、FileSystemResource 等。
 
-![alt Resource](../../_media/analysis/spring/企业微信截图_20221213163941.png)  
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213163941.png)  
 
-### 2. ResourceLoader 体系
+### ResourceLoader 体系
 
 有了资源，就应该有资源加载，Spring 利用 org.springframework.core.io.ResourceLoader 来进行统一资源加载，类图如下：
 
-![alt Resource](../../_media/analysis/spring/企业微信截图_20221213164138.png)    
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213164138.png)    
 
-### 3. BeanDefinition 体系
+### BeanDefinition 体系
 
 org.springframework.beans.factory.config.BeanDefinition ，用来描述 Spring 中的 Bean 对象。
 
-![alt Resource](../../_media/analysis/spring/企业微信截图_20221213164357.png)  
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213164357.png)  
 
-### 4. BeanDefinitionReader 体系
+### BeanDefinitionReader 体系
 
 org.springframework.beans.factory.support.BeanDefinitionReader 的作用是读取 Spring 的配置文件的内容，并将其转换成 Ioc 容器内部的数据结构 ：BeanDefinition 。
 
-![alt Resource](../../_media/analysis/spring/企业微信截图_20221213164453.png)
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213164453.png)
 
-### 5. BeanFactory 体系
+### BeanFactory 体系
 
 org.springframework.beans.factory.BeanFactory，是一个非常纯粹的 bean 容器，它是 IoC 必备的数据结构，其中 BeanDefinition 是它的基本结构。BeanFactory 内部维护着一个BeanDefinition map ，并可根据 BeanDefinition 的描述进行 bean 的创建和管理。
 
 BeanFactory 有三个直接子类 ListableBeanFactory、HierarchicalBeanFactory 和 AutowireCapableBeanFactory 。  
 DefaultListableBeanFactory 为最终默认实现，它实现了所有接口。
 
-![alt Resource](../../_media/analysis/spring/企业微信截图_20221213164244.png)  
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213164244.png)  
 
-### 6. ApplicationContext 体系
+### ApplicationContext 体系
 
 org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Spring 容器，它叫做应用上下文，与我们应用息息相关。它继承 BeanFactory ，所以它是 BeanFactory 的扩展升级版，如果BeanFactory 是屌丝的话，那么 ApplicationContext 则是名副其实的高富帅。由于 ApplicationContext 的结构就决定了它与 BeanFactory 的不同，其主要区别有：
 
@@ -66,24 +74,24 @@ org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Sp
 * 扩展 ResourceLoader ，可以用来加载多种 Resource ，可以灵活访问不同的资源。
 * 对 Web 应用的支持。
 
-![alt Resource](/../../_media/analysis/spring/企业微信截图_20221213164658.png)
+![alt Resource](../../../_media/analysis/spring/企业微信截图_20221213164658.png)
 
 通过上面五个体系，我们可以看出，IoC 主要由 spring-beans 和 spring-context 项目，进行实现。
 
-## IoC 之统一资源加载策略
+## 统一资源加载策略
 
 在学 Java SE 的时候，我们学习了一个标准类 `java.net.URL`，该类在 Java SE 中的定位为统一资源定位器（Uniform Resource Locator），但是我们知道它的实现基本只限于网络形式发布的资源的查找和定位。然而，实际上资源的定义比较广泛，除了网络形式的资源，还有以二进制形式存在的、以文件形式存在的、以字节流形式存在的等等。而且它可以存在于任何场所，比如网络、文件系统、应用程序中。所以 `java.net.URL` 的局限性迫使 Spring 必须实现自己的资源加载策略，该资源加载策略需要满足如下要求：
 
 1. 职能划分清楚。资源的定义和资源的加载应该要有一个清晰的**界限**；
 2. 统一的抽象。统一的资源**定义**和资源加载**策略**。资源加载后要返回统一的抽象给客户端，客户端要对资源进行怎样的处理，应该由抽象资源接口来界定。
 
-### 1. 统一资源 Resource
+### 统一资源 Resource
 
 `org.springframework.core.io.Resource` 为 Spring 框架所有资源的抽象和访问接口，它继承 `org.springframework.core.io.InputStreamSource`接口。作为所有资源的统一抽象，Resource 定义了一些通用的方法，由子类 `AbstractResource` 提供统一的默认实现。
 
-#### 1.1 子类结构
+#### 子类结构
 
-![image-20221214132812028](../../_media/analysis/spring/image-20221214132812028.png)
+![image-20221214132812028](../../../_media/analysis/spring/image-20221214132812028.png)
 
 - FileSystemResource ：对 `java.io.File` 类型资源的封装，只要是跟 File 打交道的，基本上与 FileSystemResource 也可以打交道。支持文件和 URL 的形式，实现 WritableResource 接口，且从 Spring Framework 5.0 开始，FileSystemResource 使用 NIO2 API进行读/写交互。
 - ByteArrayResource ：对字节数组提供的数据的封装。如果通过 InputStream 形式访问该类型的资源，该实现会根据字节数组的数据构造一个相应的 ByteArrayInputStream。
@@ -91,13 +99,13 @@ org.springframework.context.ApplicationContext ，这个就是大名鼎鼎的 Sp
 - ClassPathResource ：class path 类型资源的实现。使用给定的 ClassLoader 或者给定的 Class 来加载资源。
 - InputStreamResource ：将给定的 InputStream 作为一种资源的 Resource 的实现类。
 
-#### 1.2 AbstractResource
+#### AbstractResource
 
 `org.springframework.core.io.AbstractResource` ，为 Resource 接口的默认**抽象**实现。它实现了 Resource 接口的**大部分的公共实现**，作为 Resource 接口中的重中之重
 
 如果我们想要实现自定义的 Resource ，记住不要实现 Resource 接口，而应该继承 AbstractResource 抽象类，然后根据当前的具体资源特性覆盖相应的方法即可。
 
-### 2. 统一资源定位 ResourceLoader
+### 统一资源定位 ResourceLoader
 
 `org.springframework.core.io.ResourceLoader` 为 Spring 资源加载的统一抽象，具体的资源加载则由相应的实现类来完成，所以我们可以将 ResourceLoader 称作为统一资源定位器。其定义如下：
 
@@ -126,15 +134,15 @@ public interface ResourceLoader {
 
 2.`getClassLoader()` 方法，返回 ClassLoader 实例，对于想要获取 ResourceLoader 使用的 ClassLoader 用户来说，可以直接调用该方法来获取。在分析 Resource 时，提到了一个类 ClassPathResource ，这个类是可以根据指定的 ClassLoader 来加载资源的。
 
-#### 2.1 子类结构
+#### 子类结构
 
-![image-20221214133639178](../../_media/analysis/spring/image-20221214133639178.png)
+![image-20221214133639178](../../../_media/analysis/spring/image-20221214133639178.png)
 
-#### 2.1 DefaultResourceLoader
+#### DefaultResourceLoader
 
 与 AbstractResource 相似，`org.springframework.core.io.DefaultResourceLoader` 是 ResourceLoader 的默认实现。
 
-##### 2.1.1 构造函数
+##### 构造函数
 
 它接收 ClassLoader 作为构造函数的参数，或者使用不带参数的构造函数。
 
@@ -168,7 +176,7 @@ public ClassLoader getClassLoader() {
 
 - 另外，也可以调用 `#setClassLoader()` 方法进行后续设置。
 
-##### 2.1.2 getResource 方法
+##### getResource 方法
 
 ResourceLoader 中最核心的方法为 `#getResource(String location)` ，它根据提供的 location 返回相应的 Resource 。而 DefaultResourceLoader 对该方法提供了**核心实现**（因为，它的两个子类都没有提供覆盖该方法，所以可以断定 ResourceLoader 的资源加载策略就封装在 DefaultResourceLoader 中)，代码如下：
 
@@ -213,7 +221,7 @@ public Resource getResource(String location) {
 - 然后，构造 URL ，尝试通过它进行资源定位，若没有抛出 MalformedURLException 异常，则判断是否为 FileURL , 如果是则构造 FileUrlResource 类型的资源，否则构造 UrlResource 类型的资源。
 - 最后，若在加载过程中抛出 MalformedURLException 异常，则委派 `getResourceByPath()` 方法，实现资源定位加载。😈 实际上，和【其次】相同落。
 
-##### 2.1.3 ProtocolResolver
+##### ProtocolResolver
 
 `org.springframework.core.io.ProtocolResolver` ，用户自定义协议资源解决策略，作为 DefaultResourceLoader 的 **SPI**：它允许用户自定义资源加载协议，而不需要继承 ResourceLoader 的子类。
 
@@ -223,7 +231,7 @@ ProtocolResolver 接口，仅有一个方法 `Resource resolve(String location, 
 
 在 Spring 中你会发现该接口并没有实现类，它需要用户自定义，自定义的 Resolver 如何加入 Spring 体系呢？调用 `DefaultResourceLoader.addProtocolResolver(ProtocolResolver)` 方法即可。
 
-##### 2.1.4 示例
+##### 示例
 
 下面示例是演示 DefaultResourceLoader 加载资源的具体策略，代码如下:
 
@@ -255,7 +263,7 @@ urlResource1 is urlResource:true
 - 其实对于 `fileResource1` ，我们更加希望是 FileSystemResource 资源类型。但是，事与愿违，它是 ClassPathResource 类型。为什么呢？在 `DefaultResourceLoader.getResource()` 方法的资源加载策略中，我们知道 `"D:/Users/chenming673/Documents/spark.txt"` 地址，其实在该方法中没有相应的资源类型，那么它就会在抛出 MalformedURLException 异常时，通过 `DefaultResourceLoader.getResourceByPath(...)` 方法，构造一个 ClassPathResource 类型的资源。
 - 而 `urlResource1` 和 `urlResource2` ，指定有协议前缀的资源路径，则通过 URL 就可以定义，所以返回的都是 UrlResource 类型。
 
-#### 2.2 FileSystemResourceLoader
+#### FileSystemResourceLoader
 
 从上面的示例，我们看到，其实 DefaultResourceLoader 对`getResourceByPath(String)` 方法处理其实不是很恰当，这个时候我们可以使用 `org.springframework.core.io.FileSystemResourceLoader` 。它继承 DefaultResourceLoader ，且覆写了 `getResourceByPath(String)` 方法，使之从文件系统加载资源并以 FileSystemResource 类型返回，这样我们就可以得到想要的资源类型。
 
@@ -271,7 +279,7 @@ protected Resource getResourceByPath(String path) {
 }
 ```
 
-##### 2.2.1 FileSystemContextResource
+##### FileSystemContextResource
 
 FileSystemContextResource ，为 FileSystemResourceLoader 的内部类，它继承 FileSystemResource 类，实现 ContextResource 接口。代码如下：
 
@@ -298,7 +306,7 @@ private static class FileSystemContextResource extends FileSystemResource implem
 
 > ContextResource   从外围加载资源的扩展接口 'context'，例如来自一个{@link javax.servlet. context。ServletContext} 从普通类路径路径或相对文件系统路径(指定没有显式前缀，因此相对于本地应用 {@link ResourceLoader}的上下文)。
 
-#### 2.3 ClassRelativeResourceLoader
+#### ClassRelativeResourceLoader
 
 `org.springframework.core.io.ClassRelativeResourceLoader` ，是 DefaultResourceLoader 的另一个子类的实现。和 FileSystemResourceLoader 类似，在实现代码的结构上类似，也是覆写 `getResourceByPath(String path)` 方法，并返回其对应的 ClassRelativeContextResource 的资源类型。
 
@@ -306,7 +314,7 @@ private static class FileSystemContextResource extends FileSystemResource implem
 >
 > ClassRelativeResourceLoader 扩展的功能是，可以根据给定的`class` 所在包或者所在包的子包下加载资源。
 
-#### 2.4 ResourcePatternResolver
+#### ResourcePatternResolver
 
 ResourceLoader 的 `Resource getResource(String location)` 方法，每次只能根据 location 返回**一个** Resource 。当需要加载多个资源时，我们除了多次调用 `#getResource(String location)` 方法外，别无他法。`org.springframework.core.io.support.ResourcePatternResolver` 是 ResourceLoader 的扩展，它支持根据指定的资源路径匹配模式每次返回**多个** Resource 实例
 
@@ -326,11 +334,11 @@ public interface ResourcePatternResolver extends ResourceLoader {
 
   
 
-#### 2.5 PathMatchingResourcePatternResolver
+#### PathMatchingResourcePatternResolver
 
 `org.springframework.core.io.support.PathMatchingResourcePatternResolver` ，为 ResourcePatternResolver 最常用的子类，它除了支持 ResourceLoader 和 ResourcePatternResolver 新增的 `"classpath*:"` 前缀外，**还支持 Ant 风格的路径匹配模式**（类似于 `"**/*.xml"`）。
 
-##### 2.5.1 构造函数
+##### 构造函数
 
 PathMatchingResourcePatternResolver 提供了三个构造函数，如下：
 
@@ -361,7 +369,7 @@ public PathMatchingResourcePatternResolver(@Nullable ClassLoader classLoader) {
 - PathMatchingResourcePatternResolver 在实例化的时候，可以指定一个 ResourceLoader，如果不指定的话，它会在内部构造一个 DefaultResourceLoader 。
 - `pathMatcher` 属性，默认为 AntPathMatcher 对象，用于支持 Ant 类型的路径匹配。
 
-##### 2.5.2 getResource
+##### getResource
 
 ```java
 @Override
@@ -378,7 +386,7 @@ public ResourceLoader getResourceLoader() {
 
 其实在下面介绍的 `Resource[] getResources(String locationPattern)` 方法也相同，只不过返回的资源是**多个**而已。
 
-##### 2.5.2 getResources
+##### getResources
 
 ```java
 @Override
@@ -418,7 +426,7 @@ public Resource[] getResources(String locationPattern) throws IOException {
 - **非** `"classpath*:"` 开头，且路径**不包含**通配符，直接委托给相应的 ResourceLoader 来实现。
 - 其他情况，调用 `#findAllClassPathResources(...)`、或 `#findPathMatchingResources(...)` 方法，返回多个 Resource 。下面，我们来详细分析。
 
-##### 2.5.4 findAllClassPathResources
+##### findAllClassPathResources
 
 当 `locationPattern` 以 `"classpath*:"` 开头但是不包含通配符，则调用 `#findAllClassPathResources(...)` 方法加载资源。该方法返回 classes 路径下和所有 jar 包中的所有相匹配的资源。
 
@@ -495,7 +503,7 @@ protected Resource convertClassLoaderURL(URL url) {
 
 通过上面的分析，我们知道 `#findAllClassPathResources(...)` 方法，其实就是利用 ClassLoader 来加载指定路径下的资源，不论它是在 class 路径下还是在 jar 包中。如果我们传入的路径为空或者 `/`，则会调用 `#addAllClassLoaderJarRoots(...)` 方法，加载所有的 jar 包。
 
-##### 2.5.5 findPathMatchingResources
+##### findPathMatchingResources
 
 当 `locationPattern` 中包含了**通配符**，则调用该方法进行资源加载。代码如下：
 
@@ -546,7 +554,7 @@ protected Resource[] findPathMatchingResources(String locationPattern) throws IO
 
 在这个方法里面，我们要关注两个方法，一个是 `#determineRootDir(String location)` 方法，一个是 `#doFindPathMatchingXXXResources(...)` 等方法。
 
-###### 2.5.5.1 determineRootDir
+###### determineRootDir
 
 `determineRootDir(String location)` 方法，主要是用于确定根路径。代码如下：
 
@@ -578,7 +586,7 @@ protected String determineRootDir(String location) {
 | `classpath*:test/cc*/spring-*.xml` |  `classpath*:test/`   |
 | `classpath*:test/aa/spring-*.xml`  | `classpath*:test/aa/` |
 
-###### 2.5.5.2 doFindPathMatchingXXXResources
+###### doFindPathMatchingXXXResources
 
 `#doFindPathMatchingXXXResources(...)` 方法，是个泛指，一共对应三个方法：
 
@@ -590,7 +598,7 @@ protected String determineRootDir(String location) {
 - [深入 Spring IoC 源码之 ResourceLoader](http://www.blogjava.net/DLevin/archive/2012/12/01/392337.html) ，主要针对 `#doFindPathMatchingFileResources(rootDirResource, subPattern)` 方法。
 - [Spring 源码学习 —— 含有通配符路径解析（上）](http://www.coderli.com/spring-wildpath-parse/) 
 
-### 3.  小结
+### 小结
 
 至此 Spring 整个资源记载过程已经分析完毕。下面简要总结下：
 
@@ -619,7 +627,7 @@ reader.loadBeanDefinitions(resource); // <4>
 
 整个过程就分为三个步骤：资源定位、装载、注册，如下：
 
-![image-20221214143206474](../../_media/analysis/spring/image-20221214143206474.png)
+![image-20221214143206474](../../../_media/analysis/spring/image-20221214143206474.png)
 
 - **资源定位**。我们一般用外部资源来描述 Bean 对象，所以在初始化 IoC 容器的第一步就是需要定位这个外部资源。即统一资源加载,见[统一资源加载策略](#统一资源加载策略)
 - **装载/加载**。装载就是 BeanDefinition 的载入。BeanDefinitionReader 读取、解析 Resource 资源，也就是将用户定义的 Bean 表示成 IoC 容器的内部数据结构：BeanDefinition 。
@@ -1875,7 +1883,7 @@ public XmlReaderContext createReaderContext(Resource resource) {
 
 另外，`XmlBeanDefinitionReader#doLoadBeanDefinitions(InputSource inputSource, Resource resource)` 方法，整体时序图如下：
 
-![image-20221214210844891](../../_media/analysis/spring/image-20221214210844891.png)
+![image-20221214210844891](../../../_media/analysis/spring/image-20221214210844891.png)
 
 - 红框部分，就是 **BeanDefinition 的解析过程**。
 
@@ -2563,7 +2571,7 @@ BeanDefinition 继承 AttributeAccessor 和 BeanMetadataElement 接口。两个�
 
 BeanDefinition 子关系，结构如下图：
 
-![image-20221214213815489](../../_media/analysis/spring/image-20221214213815489.png)
+![image-20221214213815489](../../../_media/analysis/spring/image-20221214213815489.png)
 
 我们常用的三个实现类有：
 
@@ -2621,7 +2629,7 @@ protected AbstractBeanDefinition createBeanDefinition(@Nullable String className
 
   创建完 GenericBeanDefinition 实例后，再调用 `#parseBeanDefinitionAttributes(Element ele, String beanName, BeanDefinition containingBean, AbstractBeanDefinition bd)` 方法，该方法将创建好的 GenericBeanDefinition 实例当做参数，对 `bean` 标签的所有属性进行解析，如下：
 
-  ```java
+```java
   // BeanDefinitionParserDelegate.java
   
   public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
@@ -2703,7 +2711,7 @@ protected AbstractBeanDefinition createBeanDefinition(@Nullable String className
   
       return bd;
   }
-  ```
+```
 
   从上面代码我们可以清晰地看到对 `bean` 标签属性的解析，这些属性我们在工作中都或多或少用到过。
 
@@ -3673,7 +3681,7 @@ public static void main(String[] args){
 
 运行结果如下图：
 
-![image-20221215173123793](../../_media/analysis/spring/image-20221215173123793.png)
+![image-20221215173123793](../../../_media/analysis/spring/image-20221215173123793.png)
 
 ### 2. 解析自定义标签
 
@@ -4082,7 +4090,7 @@ protected final AbstractBeanDefinition parseInternal(Element element, ParserCont
 
 整体流程如：
 
-![image-20221215174547466](../../_media/analysis/spring/image-20221215174547466.png)
+![image-20221215174547466](../../../_media/analysis/spring/image-20221215174547466.png)
 
 ##  IoC 之注册解析的 BeanDefinitions
 
@@ -4374,7 +4382,7 @@ public void registerAlias(String name, String alias) {
 
 在前文提过，IoC 容器的初始化过程分为三步骤：Resource 定位、BeanDefinition 的载入和解析，BeanDefinition 注册。
 
-![image-20221215175153635](../../_media/analysis/spring/image-20221215175153635.png)
+![image-20221215175153635](../../../_media/analysis/spring/image-20221215175153635.png)
 
 整体步骤
 
@@ -4784,7 +4792,7 @@ protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate d
 
 至此，整个 IoC 的初始化过程就已经完成了，从 Bean 资源的定位，转换为 Document 对象，接着对其进行解析，最后注册到 IoC 容器中，都已经完美地完成了。现在 IoC 容器中已经建立了整个 Bean 的配置信息，这些 Bean 可以被检索、使用、维护，他们是控制反转的基础，是后面注入 Bean 的依赖。最后用一张流程图来结束这篇总结之文。
 
-![image-20221215175756519](../../_media/analysis/spring/image-20221215175756519.png)
+![image-20221215175756519](../../../_media/analysis/spring/image-20221215175756519.png)
 
 另外，艿艿推荐几篇不错的 Srping IoC 容器相关的博客：
 

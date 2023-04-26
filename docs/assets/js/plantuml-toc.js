@@ -50,7 +50,7 @@ var getHeaders = function (baseSelect, headings) {
       selector += baseSelect + ' ' + titles[i] + ',';
     }
   }
-  console.log(selector)
+  // console.log(selector)
   var allHeadings = document.querySelectorAll(selector);
   var ret = [];
 
@@ -75,6 +75,7 @@ var handleUrl = function (url) {
   url = url.replace(" ", '-')
   // ()
   url = url.replace("(", "").replace(")", "")
+  return url
 }
 
 
@@ -107,10 +108,10 @@ var buildTOC = function (options) {
         autoHeaderText+='.'
       }
     }
-    autoHeaderText
-    data += `_ [[${baseURL}?id=${curr.innerText.toLowerCase()} ${autoHeaderText}]]${curr.innerText}\n`
+    
+    data += `_ [[${baseURL}?id=${handleUrl(curr.innerText.toLowerCase())} ${autoHeaderText}]] ${curr.innerText}\n`
     // data += `_ <color:black>${curr.innerText}</color>\n`
-    console.log(curr.innerHTML)
+    // console.log(curr.innerHTML)
     curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText +' '+ curr.innerText}</span>`)
     // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
