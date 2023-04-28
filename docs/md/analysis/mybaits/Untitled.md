@@ -931,7 +931,7 @@ public static boolean canControlMemberAccessible() {
 
 
 
-## 2.2 addGetMethods
+## 2.2 add GetMethods
 
 \#addGetMethods(Class<?> cls) 方法，初始化 getMethods 和 getTypes ，通过遍历 getting 方法。代码如下：
 
