@@ -4,32 +4,50 @@
   max-height: 400px;
   overflow-x: auto;
   width: 100%;
+
 }
 
-
-
-
-#plantuml-control{
-  /* background-color: var(--sidebar-background, #fff);
-
-  border-top-left-radius: 35px;
-  border-bottom-left-radius: 35px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-  padding: 5px ;
+#plantuml-control {
   position: fixed;
-  right: 0px;
-  top: 300px;
-  font-size: 14px;
-  white-space: nowrap;
-  z-index: 999;
-  cursor: pointer;
-  text-align: right;
-  width: 30px;
-  height: 30px; */
+  display: inline-block;
+  z-index: 10000;
 }
+.g-resize { 
+  content: "";
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  resize: both;
+  z-index: 1;
+}
+.g-content {
+  position: absolute;
+  bottom: -80px;
+  right: -80px;
+  width: 100px;
+  height: 100px;
+  background: black;
 
+}
+.g-content::before{
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: yellow;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+}
+#plantuml-control:hover .g-content::before {
+  transform: scale(1.1);
+  box-shadow: -2px 2px 4px -4px #333, -4px 4px 8px -4px #333;
+}
+.g-resize::-webkit-resizer {
+  background-color: transparent;
+}
 
 
 #plantuml-content {

@@ -1,4 +1,7 @@
-body{
-    background-color: #CCE8CF;
-    /* background-color: #E3EDCD; */
+body,.markdown-section{
+ 
+    background-image: url(../img/texture.png);
+    /* position: fixed; */
+    background-color: #c6dfc8;
 }
+

@@ -22,7 +22,7 @@ function compress(s) {
 }
 
 var activeClass = function (e) {
-  debugger
+
   var divs = document.querySelectorAll('#plantuml-content');
 
   // 删除之前的样式
@@ -40,7 +40,7 @@ var activeClass = function (e) {
 
 
 var getHeaders = function (baseSelect, headings) {
-  
+
   var titles = headings.split(",");
   var selector = ''
   for (var i = 0; i < titles.length; i++) {
@@ -104,15 +104,15 @@ var buildTOC = function (options) {
     for (var j = 0; j < currentLevel; j++) {
       data += '+';
       autoHeaderText += `${levels[j]}`
-      if(j!=currentLevel-1){
-        autoHeaderText+='.'
+      if (j != currentLevel - 1) {
+        autoHeaderText += '.'
       }
     }
-    
+
     data += `_ [[${baseURL}?id=${handleUrl(curr.innerText.toLowerCase())} ${autoHeaderText}]] ${curr.innerText}\n`
     // data += `_ <color:black>${curr.innerText}</color>\n`
     // console.log(curr.innerHTML)
-    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText +' '+ curr.innerText}</span>`)
+    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + ' ' + curr.innerText}</span>`)
     // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
   }, getLevel(options.headings));
@@ -147,11 +147,20 @@ function plugin(hook, vm) {
       plantumltoc.id = "plantuml-toc"
       window.Docsify.dom.before(content, plantumltoc);
 
-      // var plantumlcontrol = window.Docsify.dom.create("div", "");
-      // plantumlcontrol.id = "plantuml-control"
-      // window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
+      var plantumlcontrol = window.Docsify.dom.create("div", "");
+      plantumlcontrol.id = "plantuml-control"
+      window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
+      var plantumlresize = window.Docsify.dom.create("div", "");
+   
+      // plantumlresize.className="g-resize"
+      // window.Docsify.dom.appendTo(plantumlcontrol, plantumlresize);
+      // var plantumlcontent = window.Docsify.dom.create("div", "");
+      // plantumlcontent.className="g-content"
+      // window.Docsify.dom.appendTo(plantumlcontrol, plantumlcontent);
+      
       // plantumlcontrol.innerHTML="<span>目录</span>"
       // plantumlcontrol.onclick = activeClass;
+
 
       var plantumlcontent = window.Docsify.dom.create("div", "");
       plantumlcontent.id = "plantuml-content"
