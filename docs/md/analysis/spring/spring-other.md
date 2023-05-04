@@ -740,7 +740,7 @@ public class InitializingBeanTest {
 
 `#getBean(...)` 方法，只是 bean 实例化进程的入口，真正的实现逻辑其实是在 AbstractAutowireCapableBeanFactory 的 `#doCreateBean(...)` 中实现，实例化过程如下图：
 
-![image-20230109174739000](../../_media/analysis/spring/image-20230109174739000.png)
+![image-20230109174739000](../../../_media/analysis/spring/image-20230109174739000.png)
 
 原来我们采用 new 的方式创建一个对象，用完该对象在其脱离作用域后就会被回收，对于后续操作我们无权也没法干涉，但是采用 Spring 容器后，我们完全摆脱了这种命运，Spring 容器将会对其所有管理的 Bean 对象全部给予一个**统一的生命周期管理**，同时在这个阶段我们也可以对其进行干涉（比如对 bean 进行增强处理，对 bean 进行篡改），如上图。
 
