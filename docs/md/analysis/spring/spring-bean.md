@@ -4074,7 +4074,7 @@ protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrap
 
 循环依赖，其实就是循环引用，就是两个或者两个以上的 bean 互相引用对方，最终形成一个闭环，如 A 依赖 B，B 依赖 C，C 依赖 A。如下图所示：
 
-![image-20221219160245205](../../_media/analysis/spring/image-20221219160245205.png)
+![image-20221219160245205](../../../_media/analysis/spring/image-20221219160245205.png)
 
 循环依赖，其实就是一个**死循环**的过程，在初始化 A 的时候发现引用了 B，这时就会去初始化 B，然后又发现 B 引用 C，跑去初始化 C，初始化 C 的时候发现引用了 A，则又会去初始化 A，依次循环永不退出，除非有**终结条件**。
 

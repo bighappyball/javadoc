@@ -21,25 +21,8 @@ function compress(s) {
   return dest
 }
 
-var activeClass = function (e) {
 
-  var divs = document.querySelectorAll('#plantuml-content');
-
-  // 删除之前的样式
-  [].forEach.call(divs, function (div) {
-    div.setAttribute('class', '')
-  });
-
-  // 给当前点击的项加入新的样式
-  divs.setAttribute('class', '.plantuml-active')
-};
-
-
-
-
-
-
-var getHeaders = function (baseSelect, headings) {
+var getPlantumlHeaders = function (baseSelect, headings) {
 
   var titles = headings.split(",");
   var selector = ''
@@ -61,7 +44,7 @@ var getHeaders = function (baseSelect, headings) {
   return ret;
 };
 
-var getLevel = function (header) {
+var getPlantumlLevel = function (header) {
   var decs = header.match(/\d/g);
 
   return decs ? Math.min.apply(null, decs) : 1;
@@ -80,15 +63,14 @@ var handleUrl = function (url) {
 
 
 
-
-var buildTOC = function (options) {
+var buildPlantumlToc = function (options) {
   var ret = document.createElement('div');
   // var height=options.height?options.height:1000;
   var width = options.width ? options.width : 900;
   var skin = options.skin ? options.skin : "cerulean-outline"
   // scale ${height} height\n scale ${width} width\n
   var data = `@startmindmap\n  !theme ${skin}\n`
-  var headers = getHeaders(`.markdown-section`, options.headings).filter(h => h.id);
+  var headers = getPlantumlHeaders(`.markdown-section`, options.headings).filter(h => h.id);
   var baseURL = window.location.href.split("?", 1)[0]
   var levels = new Array(10).fill(0)
 
@@ -115,31 +97,19 @@ var buildTOC = function (options) {
     curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + ' ' + curr.innerText}</span>`)
     // curr.outerText= autoHeaderText+curr.outerText
     return currentLevel;
-  }, getLevel(options.headings));
+  }, getPlantumlLevel(options.headings));
   data += ` @endmindmap`
   var eleStr = `<p data-lang="plantuml">${compress(data)}</p>`
   ret.innerHTML = eleStr
   return ret;
 };
 
-// var goTopFunction = function (e) {
-//   e.stopPropagation();
-//   var step = window.scrollY / 50;
-//   var scroll = function () {
-//     window.scrollTo(0, window.scrollY - step);
-//     if (window.scrollY > 0) {
-//       setTimeout(scroll, 10);
-//     }
-//   };
-//   scroll();
-// };
 
 // Docsify plugin functions
 function plugin(hook, vm) {
   var userOptions = vm.config.plantumltoc;
 
   hook.mounted(function () {
-    var mainElm = document.querySelector("main");
     var content = window.Docsify.dom.find(".content");
     if (content) {
 
@@ -147,10 +117,11 @@ function plugin(hook, vm) {
       plantumltoc.id = "plantuml-toc"
       window.Docsify.dom.before(content, plantumltoc);
 
-      var plantumlcontrol = window.Docsify.dom.create("div", "");
-      plantumlcontrol.id = "plantuml-control"
-      window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
-      var plantumlresize = window.Docsify.dom.create("div", "");
+      // var plantumlcontrol = window.Docsify.dom.create("div", "");
+      // plantumlcontrol.id = "plantuml-control"
+      // plantumlcontrol.onclick=activeClass
+      // window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
+      // var plantumlresize = window.Docsify.dom.create("div", "");
    
       // plantumlresize.className="g-resize"
       // window.Docsify.dom.appendTo(plantumlcontrol, plantumlresize);
@@ -178,12 +149,8 @@ function plugin(hook, vm) {
     if (!plantumltoc) {
       return;
     }
-
     plantumltoc.innerHTML = null
-
-
-
-    const toc = buildTOC(userOptions);
+    const toc = buildPlantumlToc(userOptions);
 
     if (!toc.innerHTML) {
       return;
@@ -193,6 +160,6 @@ function plugin(hook, vm) {
   });
 }
 
-// Docsify plugin options
+// // Docsify plugin options
 window.$docsify['plantuml-toc'] = Object.assign(defaultOptions, window.$docsify['plantuml-toc']);
 window.$docsify.plugins = [].concat(plugin, window.$docsify.plugins);
