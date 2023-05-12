@@ -60,6 +60,8 @@
   font-weight: normal;
   color: #71717A;
   line-height: 25px;
+  font-size: inherit;
+  font-weight: 300;
 }
 #jx-toc ul li a:hover {
   text-decoration: none;
