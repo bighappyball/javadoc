@@ -3,6 +3,8 @@
 ## 源码
 
 > [tuguangquan/mybatis: mybatis源码中文注释 (github.com)](https://github.com/tuguangquan/mybatis)
+>
+> [Mybatis系列8-缓存机制 · java核心知识整理 · 看云 (kancloud.cn)](https://www.kancloud.cn/imnotdown1019/java_core_full/2177332)
 
 
 
