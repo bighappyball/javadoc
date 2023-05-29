@@ -810,6 +810,8 @@ jmap -dump:format=b,file=heap 7276
 
 ### CPU100%
 
+>[java 应用cpu飙升(超过100%)故障排查_java应用cpu过高原因_java路飞的博客-CSDN博客](https://blog.csdn.net/qq_33129875/article/details/129283010)
+
 - topc -c
 - top -Hp pid
 - jstack
