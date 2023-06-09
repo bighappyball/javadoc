@@ -1,7 +1,7 @@
 - [:octocat: 首页](/README)
 - :memo: 目录
    - 🗂️ 第1章：Java入门
-       - [第1节：基础](/md/java/base.md)
+       - [第1节：基础](/md/01-java-base.md)
        - [第2节：容器](/md/java/collection.md)
        - [第3节：线程与并发](/md/java/thread.md)
        - [第4节：虚拟机](/md/java/jvm.md)
@@ -22,7 +22,7 @@
        - [第15节: 🎊Nginx](/md/middle/nginx.md)
    - 🗂️ 第5章：分布式
        - [第16节: ✨分布式基础](/md/cloud/base.md)
-       - [第17节: 🎊Dubbo](/md/cloud/dubbo.md)
+       - [第17节: 🎊Dubbo](/md/10-cloud-dubbo.md)
        - [第18节: ✨Zookeeper](/md/cloud/zookeeper.md)
        - [第19节: :cloud: Spring Cloud](/md/cloud/spring-cloud.md)
    - 🗂️ 第6章：源码系列
