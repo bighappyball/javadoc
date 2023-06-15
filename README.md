@@ -1,5 +1,9 @@
 # javadoc
 
+## github
+git remote add newRepository https://github.com/bighappyball/javadoc
+git push -u newRepository develop
+
 ## 介绍
 java知识文档
 
