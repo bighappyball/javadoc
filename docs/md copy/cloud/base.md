@@ -313,7 +313,7 @@ Sowflake 是 Twitter 开源的分布式 ID 生成算法。Snowflake 由 64 bit �
 
 3PC 包含了三个阶段，分别是准备阶段、预提交阶段和提交阶段，对应的英文就是：CanCommit、PreCommit 和 DoCommit。
 
-![img](../_media/analysis/netty/wpsA4BF.tmp.jpg) 
+![img](../../_media/analysis/netty/wpsA4BF.tmp.jpg) 
 
 我们知道 2PC 是同步阻塞的，上面我们已经分析了协调者挂在了提交请求还未发出去的时候是最伤的，所有参与者都已经锁定资源并且阻塞等待着。
 
@@ -338,7 +338,7 @@ TCC 的全称是： Try 、 Confirm 、 Cance。
 
 但是说实话，一般尽量别这么搞，自己手写回滚逻辑，或者是补偿逻辑，实在太恶心了，那个业务代码是很难维护的。
 
-![img](../_media/analysis/netty/wpsA4BA.tmp.jpg) 
+![img](../../_media/analysis/netty/wpsA4BA.tmp.jpg) 
 
 ##### Saga 方案
 

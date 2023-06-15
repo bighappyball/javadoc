@@ -12,7 +12,7 @@
        - [第7节: 🥉spring Boot](/md/frame/spring-boot.md)
        - [第8节: ✨Mybatis](/md/frame/mybaits.md)
        - [第9节: 🎊Tomcat](/md/frame/tomcat.md)
-       - [第10节: 🎉Netty](/md/frame/netty.md)
+       - [第10节: 🎉Netty](/md/10-netty.md)
    - 🗂️ 第3章：数据库
        - [第11节: ✨Mysql](/md/sql/mysql.md)
        - [第12节: 🎊Redis](/md/sql/redis.md)
