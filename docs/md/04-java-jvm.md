@@ -198,6 +198,12 @@ Java虚拟机将结束生命周期的几种情况
 
 - 若ExtClassLoader也加载失败，则会使用AppClassLoader来加载，如果AppClassLoader也加载失败，则会报出异常ClassNotFoundException。
 
+## 编译流程
+
+>[爆爆：JAVA代码编译流程是怎样的？ (qq.com)](https://mp.weixin.qq.com/s/q4q-jr-6NDXxkXuC2ZegJQ)
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpwv4xyas1smicH3Vt9IK4afCtsRHYiaoACXDmjJK5fTNL14hPKTCHmvR5hfRcTZIO5hib4FAic9zT8okQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
 ## JVM内存模型
 
 ### 运行时私有数据区

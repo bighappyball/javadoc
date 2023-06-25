@@ -1,8 +1,14 @@
 # javadoc
 
 ## github
-git remote add newRepository https://github.com/bighappyball/javadoc
-git push -u newRepository develop
+1
+git remote add github https://github.com/bighappyball/javadoc
+git push -u github develop
+git remote add code https://codeup.aliyun.com/5f4328f4d24814603933b775/bighappyball/javadoc.git
+git push -u code develop
+
+2
+git remote set-url --add origin <origin_url>
 
 ## 介绍
 java知识文档

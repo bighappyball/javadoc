@@ -1430,34 +1430,34 @@ Netty 中的零拷贝体现在以下几个方面：
 >
 > ```java
 > public class NettyServer {
->     public static void main(String[] args) throws InterruptedException {
->         EventLoopGroup parentGroup = new NioEventLoopGroup();
->         EventLoopGroup childGroup = new NioEventLoopGroup();
->         try {
->             ServerBootstrap bootstrap = new ServerBootstrap();
->             bootstrap.group(parentGroup, childGroup)
->                     .channel(NioServerSocketChannel.class)
->                      .childHandler(new ChannelInitializer<SocketChannel>() {
+>  public static void main(String[] args) throws InterruptedException {
+>      EventLoopGroup parentGroup = new NioEventLoopGroup();
+>      EventLoopGroup childGroup = new NioEventLoopGroup();
+>      try {
+>          ServerBootstrap bootstrap = new ServerBootstrap();
+>          bootstrap.group(parentGroup, childGroup)
+>                  .channel(NioServerSocketChannel.class)
+>                   .childHandler(new ChannelInitializer<SocketChannel>() {
 > 
->                         @Override
->                         protected void initChannel(SocketChannel ch) throws Exception {
+>                      @Override
+>                      protected void initChannel(SocketChannel ch) throws Exception {
 > 
->                             ChannelPipeline pipeline = ch.pipeline();
->                             pipeline.addLast(new StringDecoder());
->                             pipeline.addLast(new StringEncoder());
->                             pipeline.addLast(new SomeSocketServerHandler());
->                          }
->                     });
+>                          ChannelPipeline pipeline = ch.pipeline();
+>                          pipeline.addLast(new StringDecoder());
+>                          pipeline.addLast(new StringEncoder());
+>                          pipeline.addLast(new SomeSocketServerHandler());
+>                       }
+>                  });
 > 
->             ChannelFuture future = bootstrap.bind(8888).sync();
->             System.out.println("服务器已启动。。。");
+>          ChannelFuture future = bootstrap.bind(8888).sync();
+>          System.out.println("服务器已启动。。。");
 > 
->             future.channel().closeFuture().sync();
->         } finally {
->             parentGroup.shutdownGracefully();
->             childGroup.shutdownGracefully();
->         }
->     }
+>          future.channel().closeFuture().sync();
+>      } finally {
+>          parentGroup.shutdownGracefully();
+>          childGroup.shutdownGracefully();
+>      }
+>  }
 > }
 > ```
 >
@@ -1465,21 +1465,21 @@ Netty 中的零拷贝体现在以下几个方面：
 >
 > ```java
 > public class DemoSocketServerHandler
->                        extends ChannelInboundHandlerAdapter {
->     @Override
->     public void channelRead(ChannelHandlerContext ctx, Object msg)
->             throws Exception {
->         System.out.println("Client Address ====== " + ctx.channel().remoteAddress());
->         ctx.channel().writeAndFlush("from server:" + UUID.randomUUID());
->         ctx.fireChannelActive();
->         TimeUnit.MILLISECONDS.sleep(500);
->     }
->     @Override
->     public void exceptionCaught(ChannelHandlerContext ctx,
->                                 Throwable cause) throws Exception {
->         cause.printStackTrace();
->         ctx.close();
->     }
+>                     extends ChannelInboundHandlerAdapter {
+>  @Override
+>  public void channelRead(ChannelHandlerContext ctx, Object msg)
+>          throws Exception {
+>      System.out.println("Client Address ====== " + ctx.channel().remoteAddress());
+>      ctx.channel().writeAndFlush("from server:" + UUID.randomUUID());
+>      ctx.fireChannelActive();
+>      TimeUnit.MILLISECONDS.sleep(500);
+>  }
+>  @Override
+>  public void exceptionCaught(ChannelHandlerContext ctx,
+>                              Throwable cause) throws Exception {
+>      cause.printStackTrace();
+>      ctx.close();
+>  }
 > }
 > ```
 >
@@ -1487,30 +1487,30 @@ Netty 中的零拷贝体现在以下几个方面：
 >
 > ```java
 > public class NettyClient {
->     public static void main(String[] args) throws InterruptedException {
->         NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
->         try {
->             Bootstrap bootstrap = new Bootstrap();
->             bootstrap.group(eventLoopGroup)
->                     .channel(NioSocketChannel.class)
->                     .handler(new ChannelInitializer<SocketChannel>() {
->                         @Override
->                         protected void initChannel(SocketChannel ch) throws Exception {
->                             ChannelPipeline pipeline = ch.pipeline();
->                             pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
->                             pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
->                             pipeline.addLast(new DemoSocketClientHandler());
->                         }
->                     });
+>  public static void main(String[] args) throws InterruptedException {
+>      NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+>      try {
+>          Bootstrap bootstrap = new Bootstrap();
+>          bootstrap.group(eventLoopGroup)
+>                  .channel(NioSocketChannel.class)
+>                  .handler(new ChannelInitializer<SocketChannel>() {
+>                      @Override
+>                      protected void initChannel(SocketChannel ch) throws Exception {
+>                          ChannelPipeline pipeline = ch.pipeline();
+>                          pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+>                          pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
+>                          pipeline.addLast(new DemoSocketClientHandler());
+>                      }
+>                  });
 > 
->             ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
->             future.channel().closeFuture().sync();
->         } finally {
->             if(eventLoopGroup != null) {
->                 eventLoopGroup.shutdownGracefully();
->             }
->         }
->     }
+>          ChannelFuture future = bootstrap.connect("localhost", 8888).sync();
+>          future.channel().closeFuture().sync();
+>      } finally {
+>          if(eventLoopGroup != null) {
+>              eventLoopGroup.shutdownGracefully();
+>          }
+>      }
+>  }
 > }
 > ```
 >
@@ -1518,27 +1518,27 @@ Netty 中的零拷贝体现在以下几个方面：
 >
 > ```java
 > public class DemoSocketClientHandler
->                extends ChannelInboundHandlerAdapter {
->     @Override
->     public void channelRead(ChannelHandlerContext ctx, Object msg)
->             throws Exception {
->         System.out.println(msg);
->         ctx.channel().writeAndFlush("from client: " + System.currentTimeMillis());
->         TimeUnit.MILLISECONDS.sleep(5000);
->     }
+>             extends ChannelInboundHandlerAdapter {
+>  @Override
+>  public void channelRead(ChannelHandlerContext ctx, Object msg)
+>          throws Exception {
+>      System.out.println(msg);
+>      ctx.channel().writeAndFlush("from client: " + System.currentTimeMillis());
+>      TimeUnit.MILLISECONDS.sleep(5000);
+>  }
 > 
->     @Override
->     public void channelActive(ChannelHandlerContext ctx)
->             throws Exception {
->         ctx.channel().writeAndFlush("from client：begin talking");
->     }
+>  @Override
+>  public void channelActive(ChannelHandlerContext ctx)
+>          throws Exception {
+>      ctx.channel().writeAndFlush("from client：begin talking");
+>  }
 > 
->     @Override
->     public void exceptionCaught(ChannelHandlerContext ctx,
->                                 Throwable cause) throws Exception {
->         cause.printStackTrace();
->         ctx.close();
->     }
+>  @Override
+>  public void exceptionCaught(ChannelHandlerContext ctx,
+>                              Throwable cause) throws Exception {
+>      cause.printStackTrace();
+>      ctx.close();
+>  }
 > }
 > ```
 >
@@ -1555,35 +1555,35 @@ Netty 中的零拷贝体现在以下几个方面：
 > 从 NioEventLoop 的继承体系中可以看到，NioEventLoop  本身就是一个 Executor，并且还是一个 单线程的 Executor。Executor  必然拥有一个 `execute(Runnable command)` 的实现方法，而 NioEventLoop 的 `execute()` 实现方法在其父类  SingleThreadEventExecutor 中，找到具体代码：
 >
 > ```java
->     public void execute(Runnable task) {
->         if (task == null) {
->             throw new NullPointerException("task");
->         }
+>  public void execute(Runnable task) {
+>      if (task == null) {
+>          throw new NullPointerException("task");
+>      }
 > 
->         boolean inEventLoop = inEventLoop();
->         addTask(task);
->         if (!inEventLoop) {
->             startThread();
->             if (isShutdown()) {
->                 boolean reject = false;
->                 try {
->                     if (removeTask(task)) {
->                         reject = true;
->                     }
->                 } catch (UnsupportedOperationException e) {
->                     // The task queue does not support removal so the best thing we can do is to just move on and
->                     // hope we will be able to pick-up the task before its completely terminated.
->                     // In worst case we will log on termination.
->                 }
->                 if (reject) {
->                     reject();
->                 }
->             }
->         }
->         if (!addTaskWakesUp && wakesUpForTask(task)) {
->             wakeup(inEventLoop);
->         }
->     }
+>      boolean inEventLoop = inEventLoop();
+>      addTask(task);
+>      if (!inEventLoop) {
+>          startThread();
+>          if (isShutdown()) {
+>              boolean reject = false;
+>              try {
+>                  if (removeTask(task)) {
+>                      reject = true;
+>                  }
+>              } catch (UnsupportedOperationException e) {
+>                  // The task queue does not support removal so the best thing we can do is to just move on and
+>                  // hope we will be able to pick-up the task before its completely terminated.
+>                  // In worst case we will log on termination.
+>              }
+>              if (reject) {
+>                  reject();
+>              }
+>          }
+>      }
+>      if (!addTaskWakesUp && wakesUpForTask(task)) {
+>          wakeup(inEventLoop);
+>      }
+>  }
 > ```
 >
 > 这里不细说，但是贴出这段代码主要为了引出 `startThread();` 这句代码，在跟这句代码会发现，它最终调用了 NioEventLoop 的一个成员 Executor 执行了当前成员的 `execute()` 方法。对应的成员 `io.netty.util.concurrent.SingleThreadEventExecutor#executor`
@@ -2571,12 +2571,12 @@ Netty 中的零拷贝体现在以下几个方面：
 >         doRegister();  // 绑定
 >         neverRegistered = false;
 >         registered = true;
->         
+> 
 >         pipeline.invokeHandlerAddedIfNeeded();
 > 
 >         safeSetSuccess(promise);
 >         pipeline.fireChannelRegistered();
->         
+> 
 >         if (isActive()) {
 >             if (firstRegistration) {
 >                 pipeline.fireChannelActive();
@@ -2979,7 +2979,7 @@ Netty 中的零拷贝体现在以下几个方面：
 >         continue;
 > 
 >     case SelectStrategy.BUSY_WAIT:  // -3 NioEventLoop不支持
->    
+> 
 >     case SelectStrategy.SELECT:  // -1 能走到这里，说明当前任务队列中没有任务
 >         // 进行阻塞式选择
 >         select(wakenUp.getAndSet(false));
@@ -3021,7 +3021,7 @@ Netty 中的零拷贝体现在以下几个方面：
 >                 selectCnt = 1;
 >                 break;
 >             }
->             
+> 
 >             int selectedKeys = selector.select(timeoutMillis);
 >             selectCnt ++;
 >             // 若有就绪的channel了，则直接结束
@@ -4147,7 +4147,7 @@ Netty 中的零拷贝体现在以下几个方面：
 > 
 >         // 将新的节点添加到pipeline
 >         addLast0(newCtx);
->         
+> 
 >         if (!registered) {
 >             newCtx.setAddPending();
 >             callHandlerCallbackLater(newCtx, true);
@@ -4203,7 +4203,7 @@ Netty 中的零拷贝体现在以下几个方面：
 >     if (group == null) {
 >         return null;
 >     }
->     
+> 
 >     Boolean pinEventExecutor = channel.config().getOption(ChannelOption.SINGLE_EVENTEXECUTOR_PER_GROUP);
 >     if (pinEventExecutor != null && !pinEventExecutor) {
 >         return group.next();
