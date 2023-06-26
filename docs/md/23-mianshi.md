@@ -44,7 +44,7 @@
 
   - [IO](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/基础核心/io.md)
 
-    - [迄今为止把同步/异步/阻塞/非阻塞/BIO/NIO/AIO讲的这么清楚的好文章（快快珍藏）](https://mp.weixin.qq.com/s/EVequWGVMWV5Ki2llFzdHg)
+    - :ballot_box_with_check:[迄今为止把同步/异步/阻塞/非阻塞/BIO/NIO/AIO讲的这么清楚的好文章（快快珍藏）](https://mp.weixin.qq.com/s/EVequWGVMWV5Ki2llFzdHg)
 
       [原来 8 张图，就能学废 Reactor 和 Proactor](https://mp.weixin.qq.com/s/px6-YnPEUCEqYIp_YHhDzg)
 
@@ -66,9 +66,9 @@
 
       [大厂面试Linux就这5个问题](https://mp.weixin.qq.com/s/24vBHgtw5efC9V9yYqknNg)
 
-      [Linux 内核 vs Windows 内核](https://mp.weixin.qq.com/s/7iQ5jO_qfYbwKdM21qywYg)
+      :ballot_box_with_check:[Linux 内核 vs Windows 内核](https://mp.weixin.qq.com/s/7iQ5jO_qfYbwKdM21qywYg)
 
-      [学习linux命令，看这篇2w多字的命令详解就够了](https://mp.weixin.qq.com/s/7bSwKiPmtJbs7FtRWZZqpA)
+      :ballot_box_with_check:[学习linux命令，看这篇2w多字的命令详解就够了](https://mp.weixin.qq.com/s/7bSwKiPmtJbs7FtRWZZqpA)
 
       [Linux IO 模型](https://mp.weixin.qq.com/s/TbIPlBtkK_zCyt54cCX8dw)
 
@@ -80,7 +80,7 @@
 
     - 网络基础
 
-      - [计算机网络](https://mp.weixin.qq.com/s/WfcozFAdXbOJ0EIcZEfLVg)
+      - :ballot_box_with_check:[计算机网络](https://mp.weixin.qq.com/s/WfcozFAdXbOJ0EIcZEfLVg)
 
         [拔掉网线后， 原本的 TCP 连接还存在吗？](https://mp.weixin.qq.com/s/0YFsUWL6e9r_aDrCZeTK3w)
 
@@ -97,37 +97,37 @@
         [全网最透彻HTTPS（面试常问）](https://mp.weixin.qq.com/s/21JaXwdfSjItj5SgOwhapg)
 
 
-        [一文领略 HTTP 的前世今生](https://mp.weixin.qq.com/s/ljtDM1d2KgtxAAhwUFSHkg)
+​			 [一文领略 HTTP 的前世今生](https://mp.weixin.qq.com/s/ljtDM1d2KgtxAAhwUFSHkg)
 
-        [硬核！30 张图解 HTTP 常见的面试题](https://mp.weixin.qq.com/s/amOya0M00LwpL5kCS96Y6w)
+​		    [硬核！30 张图解 HTTP 常见的面试题](https://mp.weixin.qq.com/s/amOya0M00LwpL5kCS96Y6w)
 
-        [面试 HTTP ，99% 的面试官都爱问这些问题](https://mp.weixin.qq.com/s/t7ZYT6wBBbFYVBPOSztpRg)
+​			[面试 HTTP ，99% 的面试官都爱问这些问题](https://mp.weixin.qq.com/s/t7ZYT6wBBbFYVBPOSztpRg)
 
-        [中间人攻击](https://mp.weixin.qq.com/s/Mi3zM-oyMoxxdzSlSnHpQQ)
+​			[中间人攻击](https://mp.weixin.qq.com/s/Mi3zM-oyMoxxdzSlSnHpQQ)
 
-    - [TCP/IP](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/计算机网络/TCP/IP.md)
+- [TCP/IP](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/计算机网络/TCP/IP.md)
 
-      -  [万字长文 | 23 个问题 TCP 疑难杂症全解析](https://mp.weixin.qq.com/s/LUtk6u_zv0w8g8GIGWEuCw)
+  -  [万字长文 | 23 个问题 TCP 疑难杂症全解析](https://mp.weixin.qq.com/s/LUtk6u_zv0w8g8GIGWEuCw)
 
-         [实战！敖丙用“大白鲨”让你看见 TCP](https://mp.weixin.qq.com/s/jTDU-zxP1INTYLpGLypjXQ)
+     [实战！敖丙用“大白鲨”让你看见 TCP](https://mp.weixin.qq.com/s/jTDU-zxP1INTYLpGLypjXQ)
 
-         [面试官：换人！他连 TCP 这几个参数都不懂](https://mp.weixin.qq.com/s/ytV7RZSyFXyvPW_lKhv8hw)
+     [面试官：换人！他连 TCP 这几个参数都不懂](https://mp.weixin.qq.com/s/ytV7RZSyFXyvPW_lKhv8hw)
 
-         [TCP/IP 基础知识总结](https://mp.weixin.qq.com/s/lkX2Mb2aCj8ugOaRmVVBqw)
+     [TCP/IP 基础知识总结](https://mp.weixin.qq.com/s/lkX2Mb2aCj8ugOaRmVVBqw)
 
-         [TCP 半连接队列和全连接队列满了会发生什么？又该如何应对？](https://mp.weixin.qq.com/s/tRXlq1hErqKQLMMLcxoXvg)
+     [TCP 半连接队列和全连接队列满了会发生什么？又该如何应对？](https://mp.weixin.qq.com/s/tRXlq1hErqKQLMMLcxoXvg)
 
-         [跟着动画学习TCP三次握手和四次挥手](https://mp.weixin.qq.com/s/NL7Jzh0lYoA395yzaGxBHw)
+     [跟着动画学习TCP三次握手和四次挥手](https://mp.weixin.qq.com/s/NL7Jzh0lYoA395yzaGxBHw)
 
-         [敖丙用近 40 张图解被问千百遍的 TCP 三次握手和四次挥手面试题](https://mp.weixin.qq.com/s/rX3A_FA19n4pI9HicIEsXg)
+     [敖丙用近 40 张图解被问千百遍的 TCP 三次握手和四次挥手面试题](https://mp.weixin.qq.com/s/rX3A_FA19n4pI9HicIEsXg)
 
-         [你还在为 TCP 重传、滑动窗口、流量控制、拥塞控制发愁吗？看完图解就不愁了](https://mp.weixin.qq.com/s/HjOUsKn8eLfDogbBX3hPnA)
+     [你还在为 TCP 重传、滑动窗口、流量控制、拥塞控制发愁吗？看完图解就不愁了](https://mp.weixin.qq.com/s/HjOUsKn8eLfDogbBX3hPnA)
 
-         [IP 基础知识“全家桶”，敖丙45 张图一套带走你](https://mp.weixin.qq.com/s/p9oA9YTZLoXVooUOSNQCMg)
+     [IP 基础知识“全家桶”，敖丙45 张图一套带走你](https://mp.weixin.qq.com/s/p9oA9YTZLoXVooUOSNQCMg)
 
-         [敖丙听说你 ping 用的很 6 ？给我图解一下 ping 的工作原理！](https://mp.weixin.qq.com/s/3KF0IxLum8EOtcF0ZNIiPA)
+     [敖丙听说你 ping 用的很 6 ？给我图解一下 ping 的工作原理！](https://mp.weixin.qq.com/s/3KF0IxLum8EOtcF0ZNIiPA)
 
-         [一文搞定 UDP 和 TCP 高频面试题！](https://mp.weixin.qq.com/s/BK2H7JQIo6zOrXYg9RcbeA)
+     [一文搞定 UDP 和 TCP 高频面试题！](https://mp.weixin.qq.com/s/BK2H7JQIo6zOrXYg9RcbeA)
 
   - [7种常见的设计模式和使用场景](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/设计模式和使用场景.md)
 
@@ -234,6 +234,10 @@
     - [Netty](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/RPC/Netty.md)
   - ORM框架Mybatis源码分析
   - [Zookeeper](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/Zookeeper.md)
+    -  [什么是Zookeeper](https://mp.weixin.qq.com/s/gphDLJMO3QcRoN3zkco4EA)
+    -  [分布式锁之Zookeeper](https://mp.weixin.qq.com/s/ZqQHWLfVD1Rz1agmH3LWrg)
+    -   [Zookeeper之ZAB协议](https://mp.weixin.qq.com/s/k0zAExTvMsrugCaNJxs7hQ)
+    -   [Zookeeper夺命连环9问](https://mp.weixin.qq.com/s/YawG0GqznDHaiHXZuTsCjA)
 
 - 高并发架构基石-缓存
 
