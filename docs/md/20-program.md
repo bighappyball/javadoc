@@ -92,6 +92,11 @@
 
 ## 千万级、亿级流量怎么处理？
 
+> [压测都做些什么?](https://mp.weixin.qq.com/s/RzJkQuMAszkC8jw8hF-k1w)
+>
+>  [千万级、亿级流量怎么处理？](https://mp.weixin.qq.com/s/CxqnaB9cUemvCcWkw2nUcw)
+
+
 “千万、亿级别的流量应该怎么处理”，这是一道很常见的面试题，我之前面试的时候也被问过几次，还被问过以下问题：
 
 - 面对业务急剧增长你怎么处理？

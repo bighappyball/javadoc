@@ -1,50 +1,48 @@
-# 第10节 分布式RPC框架Dubbo
+# RPC
 
 ## RPC基础
 
-### 什么是 RPC
-
 RPC，Remote Procedure Call 即远程过程调用，远程过程调用其实对标的是本地过程调用
 
-### RPC 框架设计
+## RPC框架设计
 
-#### 服务消费者
+### 服务消费者
 
-##### 提供代理类
+#### 提供代理类
 
 首先消费者面向接口编程，所以需要得知有哪些接口可以调用，可以通过公用 jar 包的方式来维护接口。现在知道有哪些接口可以调用了，但是只有接口啊，具体的实现怎么来？这事必须框架给处理了！所以还需要来个代理类，让消费者只管调，啥事都别管了，我代理帮你搞定。
 
-##### 负载均衡
+#### 负载均衡
 
 一般而言提供方不止一个，毕竟只有一个挂了那不就没了。所以提供方一般都是集群部署，那调用方需要通过负载均衡来选择一个调用，可以通过某些策略例如同机房优先调用啊啥的。
 
-##### 容错机制
+#### 容错机制
 
 当然还需要有容错机制，毕竟这是远程调用，网络是不可靠的，所以可能需要重试什么的。
 
-##### 约定通信协议和序列化
+#### 约定通信协议和序列化
 
 还要和服务提供方约定一个协议，例如我们就用 HTTP 来通信就好啦，也就是大家要讲一样的话，不然可能听不懂了。
 
 当然序列化必不可少，毕竟我们本地的结构是“立体”的，需要序列化之后才能传输，因此还需要约定序列化格式。
 
-#### 服务提供者
+### 服务提供者
 
-##### 实现对应的接口
+#### 实现对应的接口
 
 服务提供者肯定要实现对应的接口这是毋庸置疑的。然后需要把自己的接口暴露出去，向注册中心注册自己，暴露自己所能提供的服务。
 
-##### 反序列化
+#### 反序列化
 
 有消费者请求过来需要处理，提供者需要用和消费者协商好的协议来处理这个请求，然后做反序列化。
 
-##### 线程池
+#### 线程池
 
 序列化完的请求应该扔到线程池里面做处理，某个线程接受到这个请求之后找到对应的实现调用，然后再将结果原路返回。
 
-#### 注册中心
+### 注册中心
 
-#### 监控运维
+### 监控运维
 
 ## Dubbo基础
 
@@ -64,7 +62,7 @@ RPC，Remote Procedure Call 即远程过程调用，远程过程调用其实对�
 
 ### 总体架构
 
-![图片](../_media/dubbo/640.jpeg)
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpysOH9vvW1SMXroibXRCiaJz3eNQBQ3nAcsibCX2mdibg9yX6xic2ld0Ezb76lLrQsdAzuoE3FAB5Reib8A/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
 
 | 节点      | 角色说明                     |
 | :-------- | :--------------------------- |
@@ -108,10 +106,6 @@ SPI（Service Provider Interface），是 JDK 内置的一个服务发现机制�
 
 具体的就是你定义了一个接口，然后在`META-INF/services`目录下**放置一个与接口同名的文本文件**，文件的内容为**接口的实现类**，多个实现类用换行符分隔。
 
-
-
-
-
 ### 服务暴露过程
 
 ![图片](../_media/dubbo/640-1686205372407-6.jpeg)
@@ -136,6 +130,10 @@ Proxy 持有一个 Invoker 对象，调用 invoke 之后需要通过 Cluster 先
 
 完成整个调用过程！
 
+## Dubbo负载均衡
+
+>[妹妹问我：Dubbo集群容错负载均衡 (qq.com)](https://mp.weixin.qq.com/s/-IkHNAM4B0R_j50LkQunig)
+
 ## Dubbo调用过程
 
 >[堂妹问我：Dubbo的服务暴露过程 (qq.com)](https://mp.weixin.qq.com/s/ISiN06QynyE2pPtX3cGQ9w)
@@ -144,7 +142,7 @@ Proxy 持有一个 Invoker 对象，调用 invoke 之后需要通过 Cluster 先
 
 一般而言我们说的 URL 指的就是统一资源定位符，在网络上一般指代地址，本质上看其实就是一串包含特殊格式的字符串，标准格式如下：
 
-```
+```http
 protocol://username:password@host:port/path?key=value&key=value
 ```
 
@@ -1089,3 +1087,375 @@ Protocol 没有实现类注释了 Adaptive ，但是接口上有两个方法注�
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpw2oMzXxojtaJ9TARZP6z3RgiaKYdlGaHTkMdgoLg7YaBb5uGB9DY3Uyyq0B9GGlh7agyRR67Tvoqg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
+
+
+## Dubbo超时机制
+
+>[敖丙RPC的超时设置，一不小心搞了线上事故](https://mp.weixin.qq.com/s/pkWkD1VhMxhZPRrybLcQjA)
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaO3RZRrSdTw24ol4mdWpxThg9HXzrKzHNUrhWzk72icTmVNqAEH8icecpH6FLMh0QUKcKRFldACUBA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+上面这张监控图，对于服务端的研发同学来说再熟悉不过了。在日常的系统维护中，『服务超时』应该属于监控报警最多的一类问题。
+
+尤其在微服务架构下，一次请求可能要经过一条很长的链路，跨多个服务调用后才能返回结果。当服务超时发生时，研发同学往往要抽丝剥茧般去分析自身系统的性能以及依赖服务的性能，这也是为什么服务超时相对于服务出错和服务调用量异常更难调查的原因。
+
+这篇文章将通过一个真实的线上事故，系统性地介绍下：**在微服务架构下，该如何正确理解并设置RPC接口的超时时间**，让大家在开发服务端接口时有更全局的视野。内容将分成以下4个部分：
+
+- 从一次RPC接口超时引发的线上事故说起
+- 超时的实现原理是什么？
+- 设置超时时间到底是为了解决什么问题？
+- 应该如何合理的设置超时时间？
+
+### 从一次线上事故说起
+
+事故发生在电商APP的首页推荐模块，某天中午突然收到用户反馈：APP首页除了banner图和导航区域，下方的推荐模块变成空白页了（推荐模块占到首页2/3的空间，是根据用户兴趣由算法实时推荐的商品list）。
+
+上面的业务场景可以借助下面的调用链来理解
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaO3RZRrSdTw24ol4mdWpxT0ibfq3y0DbarM9xjC0NFkS6k7QRQfmmYs9A4fQa6TsbmnibAnBlCJVFQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+- APP端发起一个HTTP请求到业务网关
+- 业务网关RPC调用推荐服务，获取推荐商品list
+- 如果第2步调用失败，则服务降级，改成RPC调用商品排序服务，获取热销商品list进行托底
+- 如果第3步调用失败，则再次降级，直接获取Redis缓存中的热销商品list
+
+粗看起来，两个依赖服务的降级策略都考虑进去了，理论上就算推荐服务或者商品排序服务全部挂掉，服务端都应该可以返回数据给APP端。但是APP端的推荐模块确实出现空白了，降级策略可能并未生效，下面详细说下定位过程。
+
+**1、问题定位过程**
+
+第1步：APP端通过抓包发现：HTTP请求存在接口超时（超时时间设置的是5秒）。
+
+第2步：业务网关通过日志发现：调用推荐服务的RPC接口出现了大面积超时（超时时间设置的是3秒），错误信息如下：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaO3RZRrSdTw24ol4mdWpxT3s2icq5HH2yk25iaMITa6jrMKSL9EpMhPMoZzUCxFpRzth6J8IGM7vibQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+第3步：推荐服务通过日志发现：dubbo的线程池耗尽，错误信息如下：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaP1hviaduiaoiaX5WkeQD7I2D22ib1esphvnPBKHicj674z3wwQFq9xfpsJJIH0Ee0ud5NlLZIo24Dq0g/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+通过以上3步，基本就定位到了问题出现在推荐服务，后来进一步调查得出：是因为推荐服务依赖的redis集群不可用导致了超时，进而导致线程池耗尽。详细原因这里不作展开，跟本文要讨论的主题相关性不大。
+
+**2、降级策略未生效的原因分析**
+
+下面再接着分析下：当推荐服务调用失败时，为什么业务网关的降级策略没有生效呢？理论上来说，不应该降级去调用商品排序服务进行托底吗？
+
+最终跟踪分析找到了根本原因：APP端调用业务网关的超时时间是5秒，业务网关调用推荐服务的超时时间是3秒，同时还设置了3次超时重试，这样当推荐服务调用失败进行第2次重试时，HTTP请求就已经超时了，因此业务网关的所有降级策略都不会生效。下面是更加直观的示意图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaO3RZRrSdTw24ol4mdWpxT7StU4nEa9x2KXXpnZ6N0dNQmIQ9oPAh1RvyERwE84mGjIcTicHDmJrQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+**3、解决方案**
+
+- 将业务网关调用推荐服务的超时时间改成了800ms（推荐服务的TP99大约为540ms），超时重试次数改成了2次
+- 将业务网关调用商品排序服务的超时时间改成了600ms（商品排序服务的TP99大约为400ms），超时重试次数也改成了2次
+
+关于超时时间和重试次数的设置，需要考虑整个调用链中所有依赖服务的耗时、各个服务是否是核心服务等很多因素。这里先不作展开，后文会详细介绍具体方法。
+
+### 超时的实现原理是什么
+
+只有了解了RPC框架的超时实现原理，才能更好地去设置它。不论是dubbo、SpringCloud或者大厂自研的微服务框架（比如京东的JSF），超时的实现原理基本类似。下面以dubbo 2.8.4版本的源码为例来看下具体实现。
+
+熟悉dubbo的同学都知道，可在两个地方配置超时时间：分别是provider（服务端，服务提供方）和consumer（消费端，服务调用方）。
+
+服务端的超时配置是消费端的缺省配置，也就是说只要服务端设置了超时时间，则所有消费端都无需设置，可通过注册中心传递给消费端，这样：一方面简化了配置，另一方面因为服务端更清楚自己的接口性能，所以交给服务端进行设置也算合理。
+
+dubbo支持非常细粒度的超时设置，包括：方法级别、接口级别和全局。如果各个级别同时配置了，优先级为：消费端方法级 > 服务端方法级 > 消费端接口级 > 服务端接口级 > 消费端全局 > 服务端全局。
+
+通过源码，我们先看下服务端的超时处理逻辑
+
+```java
+ 1public class TimeoutFilter implements Filter {
+ 2
+ 3    public TimeoutFilter() {
+ 4    }
+ 5
+ 6    public Result invoke(...) throws RpcException {
+ 7        // 执行真正的逻辑调用，并统计耗时
+ 8        long start = System.currentTimeMillis();
+ 9        Result result = invoker.invoke(invocation);
+10        long elapsed = System.currentTimeMillis() - start;
+11
+12        // 判断是否超时
+13        if (invoker.getUrl() != null && elapsed > timeout) {
+14            // 打印warn日志
+15            logger.warn("invoke time out...");
+16        }
+17
+18        return result;
+19    }
+20}
+```
+
+可以看到，服务端即使超时，也只是打印了一个warn日志。因此，服务端的超时设置并不会影响实际的调用过程，就算超时也会执行完整个处理逻辑。
+
+再来看下消费端的超时处理逻辑
+
+```java
+ 1public class FailoverClusterInvoker {
+ 2
+ 3    public Result doInvoke(...)  {
+ 4        ...
+ 5        // 循环调用设定的重试次数
+ 6        for (int i = 0; i < retryTimes; ++i) {
+ 7            ...
+ 8            try {
+ 9                Result result = invoker.invoke(invocation);
+10                return result;
+11            } catch (RpcException e) {
+12                // 如果是业务异常，终止重试
+13                if (e.isBiz()) {
+14                    throw e;
+15                }
+16
+17                le = e;
+18            } catch (Throwable e) {
+19                le = new RpcException(...);
+20            } finally {
+21                ...
+22            }
+23        }
+24
+25        throw new RpcException("...");
+26    }
+27}
+```
+
+FailoverCluster是集群容错的缺省模式，当调用失败后会切换成调用其他服务器。再看下doInvoke方法，当调用失败时，会先判断是否是业务异常，如果是则终止重试，否则会一直重试直到达到重试次数。
+
+继续跟踪invoker的invoke方法，可以看到在请求发出后通过Future的get方法获取结果，源码如下：
+
+```java
+ 1public Object get(int timeout) {
+ 2        if (timeout <= 0) {
+ 3            timeout = 1000;
+ 4        }
+ 5
+ 6        if (!isDone()) {
+ 7            long start = System.currentTimeMillis();
+ 8            this.lock.lock();
+ 9
+10            try {
+11                // 循环判断
+12                while(!isDone()) {
+13                    // 放弃锁，进入等待状态
+14                    done.await((long)timeout, TimeUnit.MILLISECONDS);
+15
+16                    // 判断是否已经返回结果或者已经超时
+17                    long elapsed = System.currentTimeMillis() - start;
+18                    if (isDone() || elapsed > (long)timeout) {
+19                        break;
+20                    }
+21                }
+22            } catch (InterruptedException var8) {
+23                throw new RuntimeException(var8);
+24            } finally {
+25                this.lock.unlock();
+26            }
+27
+28            if (!isDone()) {
+29                // 如果未返回结果，则抛出超时异常
+30                throw new TimeoutException(...);
+31            }
+32        }
+33
+34        return returnFromResponse();
+35    }
+```
+
+进入方法后开始计时，如果在设定的超时时间内没有获得返回结果，则抛出TimeoutException。因此，消费端的超时逻辑同时受到超时时间和超时次数两个参数的控制，像网络异常、响应超时等都会一直重试，直到达到重试次数。
+
+### 设置超时时间是为了解决什么问题
+
+RPC框架的超时重试机制到底是为了解决什么问题呢？从微服务架构这个宏观角度来说，它是为了确保服务链路的稳定性，提供了一种框架级的容错能力。微观上如何理解呢？可以从下面几个具体case来看：
+
+1、consumer调用provider，如果不设置超时时间，则consumer的响应时间肯定会大于provider的响应时间。
+
+当provider性能变差时，consumer的性能也会受到影响，因为它必须无限期地等待provider的返回。
+
+假如整个调用链路经过了A、B、C、D多个服务，只要D的性能变差，就会自下而上影响到A、B、C，最终造成整个链路超时甚至瘫痪，因此设置超时时间是非常有必要的。
+
+2、假设consumer是核心的商品服务，provider是非核心的评论服务，当评价服务出现性能问题时，商品服务可以接受不返回评价信息，从而保证能继续对外提供服务。
+
+这样情况下，就必须设置一个超时时间，当评价服务超过这个阈值时，商品服务不用继续等待。
+
+3、provider很有可能是因为某个瞬间的网络抖动或者机器高负载引起的超时，如果超时后直接放弃，某些场景会造成业务损失（比如库存接口超时会导致下单失败）。
+
+因此，对于这种临时性的服务抖动，如果在超时后重试一下是可以挽救的，所以有必要通过重试机制来解决。
+
+
+
+**但是引入超时重试机制后，并非一切就完美了。它同样会带来副作用，这些是开发RPC接口必须要考虑，同时也是最容易忽视的问题：**
+
+1、重复请求：有可能provider执行完了，但是因为网络抖动consumer认为超时了，这种情况下重试机制就会导致重复请求，从而带来脏数据问题，因此服务端必须考虑接口的幂等性。
+
+2、降低consumer的负载能力：如果provider并不是临时性的抖动，而是确实存在性能问题，这样重试多次也是没法成功的，反而会使得consumer的平均响应时间变长。
+
+比如正常情况下provider的平均响应时间是1s，consumer将超时时间设置成1.5s，重试次数设置为2次，这样单次请求将耗时3s，consumer的整体负载就会被拉下来，如果consumer是一个高QPS的服务，还有可能引起连锁反应造成雪崩。
+
+3、爆炸式的重试风暴：假如一条调用链路经过了4个服务，最底层的服务D出现超时，这样上游服务都将发起重试，假设重试次数都设置的3次，那么B将面临正常情况下3倍的负载量，C是9倍，D是27倍，整个服务集群可能因此雪崩。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/aYNOWudT2ciaO3RZRrSdTw24ol4mdWpxTCsCgEjbIm8aH3HR1dhBjwPXqS5bNX2k3ykmH5eqVQjjvgiauw8GOC4w/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+
+
+### 应该如何合理的设置超时时间
+
+理解了RPC框架的超时实现原理和可能引入的副作用后，可以按照下面的方法进行超时设置：
+
+- 设置调用方的超时时间之前，先了解清楚依赖服务的TP99响应时间是多少（如果依赖服务性能波动大，也可以看TP95），调用方的超时时间可以在此基础上加50%
+
+- 如果RPC框架支持多粒度的超时设置，则：全局超时时间应该要略大于接口级别最长的耗时时间，每个接口的超时时间应该要略大于方法级别最长的耗时时间，每个方法的超时时间应该要略大于实际的方法执行时间
+
+- 区分是可重试服务还是不可重试服务，如果接口没实现幂等则不允许设置重试次数。
+
+  注意：读接口是天然幂等的，写接口则可以使用业务单据ID或者在调用方生成唯一ID传递给服务端，通过此ID进行防重避免引入脏数据
+
+- 如果RPC框架支持服务端的超时设置，同样基于前面3条规则依次进行设置，这样能避免客户端不设置的情况下配置是合理的，减少隐患
+
+- 如果从业务角度来看，服务可用性要求不用那么高（比如偏内部的应用系统），则可以不用设置超时重试次数，直接人工重试即可，这样能减少接口实现的复杂度，反而更利于后期维护
+
+- 重试次数设置越大，服务可用性越高，业务损失也能进一步降低，但是性能隐患也会更大，这个需要综合考虑设置成几次（一般是2次，最多3次）
+
+- 如果调用方是高QPS服务，则必须考虑服务方超时情况下的降级和熔断策略。（比如超过10%的请求出错，则停止重试机制直接熔断，改成调用其他服务、异步MQ机制、或者使用调用方的缓存数据）
+
+**最后，再简单总结下：**
+
+RPC接口的超时设置看似简单，实际上有很大学问。不仅涉及到很多技术层面的问题（比如接口幂等、服务降级和熔断、性能评估和优化），同时还需要从业务角度评估必要性。知其然知其所以然，希望这些知识能让你在开发RPC接口时，有更全局的视野。
+
+## Dubbo-Bug
+
+> [敖丙找出Dubbo源码BUG，三歪夸了我一天](https://mp.weixin.qq.com/s/_5YMfQK1tmYbmRMldBPlaQ)
+
+### 背景
+
+某天运营反馈，点了一次保存，但是后台出现了3条数据，我当时就想，不应该啊，这代码我几万年没动了，我当时就叫他先别操作了，保留一下现场，我去排查一下。
+
+我看了下新增的代码，直接右键查看作者
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonkKOFhvTrTSnGsuXk0Fw5A50wUoTAktXOrF1IHtuic6Pfq1dC07sHf4w/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+没想到三歪做过改动，我就去问三歪，XX模块的新增代码你是不是动过？
+
+他沉默了很久没说话，然后抓起桌子上用剩下来的纸擦了擦鬓角留下的汗水，咽了一下口水说，是的我改过，我把之前dubbo的xml配置方式改成了注解的方式。
+
+怎么了？现在出BUG了？
+
+你呀你，下次这种改动跟我说一下，我估计是dubbo源码的bug吧，不要慌，让我去看看什么问题。
+
+### 正文
+
+其实dubbo配置的方式有很多种，大家用的最多的就是xml配置的方式，如果不需要重试次数，我们会加上重试次数为0，因为他默认是有多次的。
+
+```
+<dubbo:reference id="testService" interface="heiidea.trade.service.sdk.interfice.TestService" retries="0"/> 
+```
+
+或者使用注解的方式
+
+```
+@Reference(retries =0) 
+```
+
+其实我已经大概知道是什么原因了，但是为了证实自己的猜想，于是开启了接下来的debug之旅~~~
+
+注：dubbo版本：2.6.2
+
+首先是在采用@Reference注解条件下：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonEYv06qxfSe1VpsQictp6ANVw8jyM7BaTf8TQ8H75qgrBAxIiaRaFrrow/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+采用@Reference注解配置重试次数
+
+首先是都找到了dubbo重试的代码位置（启动dubbo项目，到调用接口时，F5进入方法，会跳转到InvokerInvocationHandler中的invoke方法中，继续跟踪进入MockClusterInvoker中的invoke方法，然后进入AbstractClusterInvoker中的invoke方法中，这里主要是拿到配置的负载均衡策略，后面会到FailoverClusterInvoker的doInvoke方法中）。
+
+重点来了，这里会获取配置的retries值，可以看到上面配置的是0，但是取出来居然是null，如图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonREA2Nfu1YLOZyXnVQsT3AcQbXTX4JYo1yrIJl9L04QL062ib1Vc3lug/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)value为null
+
+所以会返回defaultValue，加上本身调用的那一次，计算之后就会为3，如图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonvoqw6LKYJCL9NDKzE0ibcf5LreBugfnyQHEXjVg9iaVGRQ8lD0g66Xeg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)值为3
+
+所以可以发现，采用@Reference注解的形式配置retries为0时，dubbo重试次数为2次（3中包含本身调用的那次）。
+
+后面是采用 dubbo:reference 标签的方式：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonIsOLKGMIR63kvpoyZVafV0iaDACfmorbNTfTovgWCaOkOkjoxFXstYg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)dubbo标签方式
+
+方式如上，在获取属性的时候，可以看到获得的值为0，和注解形式配置的一致，如图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuon1LSCZ0yKkN4eMRk6F5Bf1LhI3p22jG05AziblWZibff6qbk6ribUwn7vg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)value为0
+
+加上本身调用的那一次，计算之后就会为1，如图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuon1LSCZ0yKkN4eMRk6F5Bf1LhI3p22jG05AziblWZibff6qbk6ribUwn7vg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)value为1
+
+所以可以发现，采用 dubbo:reference 标签形式配置retries为0时，dubbo重试次数为0（1为本身调用的那次）。
+
+### 原因分析
+
+#### 首先是@Reference注解形式
+
+dubbo会把每个接口先解析为ReferenceBean，加上ReferenceBean实现了FactoryBean接口，所以在注入的时候，会调用getObject方法，生成代理对象。
+
+但是这不是关键，因为到这一步时，所有的属性都已经加载完成，所以需要找到dubbo解析注解中属性的代码位置。
+
+dubbo会使用自定义驱动器ReferenceAnnotationBeanPostProcessor来注入属性，而具体执行注入的代码位置是在ReferenceAnnotationBeanPostProcessor类的postProcessPropertyValues方法中调用inject方法执行的。
+
+重点来了，因为采用标签时，是采用@Autowired注解注入，所以是采用spring原生方式注入，而在采用@Reference注解时，注入时会走到dubbo自己的ReferenceAnnotationBeanPostProcessor中私有内部类ReferenceFieldElement的inject方法中，然后调用buildReferenceBean创建ReferenceBean。
+
+离原因越来越近了，在该方法中可以看到beanBuilder中的retries值还是0，说明到这一步还没有被解析为null，如图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonZTt3ea7ZC5XicIPJ6GQyOHg3aXDLKicUJuDS5lYE6RexxbkVDkRfZKYw/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)retries为“0”
+
+继续往下走，调用build方法中的configureBean时，在第一步preConfigureBean中方法，在该方法中会创建AnnotationPropertyValuesAdapter对象，在该对象构造方法中会调用adapt方法，然后走到AnnotationUtils中的getAttributes方法中，有一个关键方法nullSafeEquals，该方法会传入当前属性值和默认值。
+
+如果相等，则会忽略掉该属性，然后将符合条件的属性放入actualAttributes这个map中，而我们的retries属性是0，和默认值一致，所以map中不会保存retries属性的值，只有timeout属性，因此出现了后面获取的值为null。
+
+注解方式debug告一段落。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonyBadjYHgUwHmNwhAsX9h7ItPib4JavllMSzsIFdJDpedicfznuQlgMwA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)map不包含retries
+
+#### 后面是dubbo:reference标签形式
+
+上面说到了，标签形式走到inject时，会和注解形式有所不同，采用该标签时，dubbo会使用自定义的名称空间解析器去解析，很容易理解，spring也不知道它自定义标签里面那些玩意儿是什么意思，所以dubbo会继承spring的。
+
+NamespaceHandlerSupport，采用自定义的DubboNamespaceHandler解析器来解析的标签，如下图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonPypjvWm4ZBniaypwdpc6IJVN6tyDrUXIehDolrEVMz1PrEmMbm6FajA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)dubbo自定义名称空间解析器
+
+然后调用该类中的parse方法进行解析，而解析retries的地方就是获取class（此时的class就是上图绿色标明的ReferenceBean的class，其父类中有好多好多set方法，其中就包含setRetries方法）中所有的方法，过滤出set开头的方法，然后切割出属性名，放入属性池中，可以看到此处解析出的值为0，并不为null，如下图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonCianNyO9cRBufvnwy11f5yp4u3XtA6lg4guLfqrbv2AbiaZiczBkTdJ4Q/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)获取属性名的位置
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonGiakSon43ZlhyeFia6DicIcVPEVWsH9OeibWfvuPJ1micLRupAdCaoqDXaA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)获取retries值为0
+
+### 小结
+
+画个简单图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz6M8RsctiaQdCaxjnXcUuonatMicKPOcic9e09ohZbCDnHzS3wpBvzh0L6oicAHvEevGTTmI9icWFHBng/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)大致流程
+
+### 结论
+
+- 采用注解形式：不配置retries或者配置为0，都会重试两次，只有配置为 -1 或更小，才会不执行重试。
+- 采用标签形式：不配置retries会重试两次，配置为0或更小都不会重试。
+
+所以建议大家不需要重试时可以设置为-1，比如增删改操作的接口，否则需要保证幂等性。需要重试则设置为1或更大，其实这应该算dubbo的一个Bug吧？（我觉得是。。）
+
+到这里就结束了，而上面说到的调用getObject方法就是后续服务发现以及和服务端建立长连接并返回代理对象了。
+
+数据出现3条是因为我定义了接口超时的时间比较短，但是我们的新增涉及文件的操作，流程时间比较久，但是线程还是在的，所以dubbo重试了三次，三次也都是成功的了。
+
+我后面把文件操作改成异步，然后主流程是同步的时间就缩短了很多。
+
+补充：2.7.3版本已修复，就是在注解情况下，nullSafeEquals方法中的默认值和后面保持一致了，都是2，所以为0时也能保存到map中。
+
+我是敖丙，一个在互联网苟且偷生的工具人。
+
+
+
+## 面
+
+>   [Dubbo面试题](https://mp.weixin.qq.com/s/FwL6qArqYc2ENymXk1eZFQ)
+>
+>   [1w+字的 Dubbo 面试题/知识点总结！（2021 最新版）](https://mp.weixin.qq.com/s/2qSA6aJn6KRXrATVE44k0w)

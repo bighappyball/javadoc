@@ -227,17 +227,64 @@
 - 必会框架
 
   - [Spring全家桶以及源码分析](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/spring.md)
+
+    - [一分钟带你玩转 Spring IoC](https://mp.weixin.qq.com/s/WpRSitDqtgOuU9GnI1-HDw)
+
+      [AOP 面试造火箭事件始末](https://mp.weixin.qq.com/s/NXZp8a3n-ssnC6Y1Hy9lzw)
+
+      [SpringAOP面试题](https://mp.weixin.qq.com/s/qlAvW10TRNVak1oJyHO39Q)
+
+      [Spring事务传播行为](https://mp.weixin.qq.com/s/IglQITCkmx7Lpz60QOW7HA)
+
+      [什么是 Spring 循环依赖？](https://mp.weixin.qq.com/s/5mwkgJB7GyLdKDgzijyvXw)
+
+      [Spring常见问题总结（补充版）](https://mp.weixin.qq.com/s/wcK2qsZxKDJTLIGqEIyaNg)
+
+      [15个经典的Spring面试常见问题](https://mp.weixin.qq.com/s/OMlwHHnGcN7iZ8lerUvW7w)
+
+      [敖丙说精通字符串，面试官竟然问Java中的String有没有长度限制！](https://mp.weixin.qq.com/s/6YhpbuhdTX9BM_OimoW8MA)
+
+      [Spring中的循环依赖](https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ)
+
+      [Spring容器启动流程](https://mp.weixin.qq.com/s/ut3mRwhfqXNjrBtTmI0oWg)
+
+      [Spring循环依赖](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
+
+      [我是如何在面试别人Spring事务时“套路”对方的](https://mp.weixin.qq.com/s/JcHt99SAbNIlY063rmylpA)
+
+      [SpringIOC 面试题（下）](https://mp.weixin.qq.com/s/4z9V4-k2Whqiz69gXy5iMQ)
+
+      [SpringIOC 面试题（上）](https://mp.weixin.qq.com/s/SH4laewpIsio66MUJFLTyg)
+
+      [深入浅出Spring架构设计](https://mp.weixin.qq.com/s/wXkgudY0ThIRLFxUmohJog)
+
+      [Spring](https://mp.weixin.qq.com/s/liWn2Dn91cmuiqHSxVO_fA)
   - [SpringCloud](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/SpringCloud.md)
+
+    - :ballot_box_with_check: [外行人都能看懂的SpringCloud，错过了血亏！](https://mp.weixin.qq.com/s/MJrahcDXwxgDr5zBdO3XWw)
+    - :ballot_box_with_check: [20000 字的 Spring Cloud 总结](https://mp.weixin.qq.com/s/pGSx8eKFH3YnUos3SM2ITw)
   - 分布式框架基石-RPC
     - [Dubbo](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/RPC/Dubbo.md)
+      -  :ballot_box_with_check:[Dubbo基础](https://mp.weixin.qq.com/s/FPbu8rFOHyTGROIV8XJeTA)
+      -  :ballot_box_with_check:[Dubbo的服务暴露过程](https://mp.weixin.qq.com/s/ISiN06QynyE2pPtX3cGQ9w)
+      -  :ballot_box_with_check:[Dubbo的服务引用过程](https://mp.weixin.qq.com/s/9oDy1OPcfDaEhKD4eNUdOA)
+      -  :ballot_box_with_check:[Dubbo服务调用过程](https://mp.weixin.qq.com/s/oNR9v_ID2oAlEvDI93hRcw)
+      -  :ballot_box_with_check:[Dubbo的SPI机制是啥？](https://mp.weixin.qq.com/s/gwWOsdQGEN0t2GJVMQQexw)
+      -  :ballot_box_with_check:[Dubbo集群容错负载均衡](https://mp.weixin.qq.com/s/-IkHNAM4B0R_j50LkQunig)
+      -  :ballot_box_with_check:[Dubbo面试题](https://mp.weixin.qq.com/s/FwL6qArqYc2ENymXk1eZFQ)
+      -  :ballot_box_with_check:[1w+字的 Dubbo 面试题/知识点总结！（2021 最新版）](https://mp.weixin.qq.com/s/2qSA6aJn6KRXrATVE44k0w)
     - [RPC实践](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/RPC/RPC实践.md)
+      - :ballot_box_with_check:[敖丙RPC的超时设置，一不小心搞了线上事故](https://mp.weixin.qq.com/s/pkWkD1VhMxhZPRrybLcQjA)
+      - :ballot_box_with_check:[敖丙找出Dubbo源码BUG，三歪夸了我一天](https://mp.weixin.qq.com/s/_5YMfQK1tmYbmRMldBPlaQ)
     - [Netty](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/RPC/Netty.md)
+      - :ballot_box_with_check: [高性能NIO框架-Netty](https://mp.weixin.qq.com/s/I9PGsWo7-ykGf2diKklGtA)
+      - :ballot_box_with_check: [Netty常见面试题总结](https://mp.weixin.qq.com/s/eJ-dAtOYsxylGL7pBv7VVA)
   - ORM框架Mybatis源码分析
   - [Zookeeper](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/Zookeeper.md)
-    -  [什么是Zookeeper](https://mp.weixin.qq.com/s/gphDLJMO3QcRoN3zkco4EA)
-    -  [分布式锁之Zookeeper](https://mp.weixin.qq.com/s/ZqQHWLfVD1Rz1agmH3LWrg)
-    -   [Zookeeper之ZAB协议](https://mp.weixin.qq.com/s/k0zAExTvMsrugCaNJxs7hQ)
-    -   [Zookeeper夺命连环9问](https://mp.weixin.qq.com/s/YawG0GqznDHaiHXZuTsCjA)
+    -  :ballot_box_with_check: [什么是Zookeeper](https://mp.weixin.qq.com/s/gphDLJMO3QcRoN3zkco4EA)
+    -  :ballot_box_with_check: [分布式锁之Zookeeper](https://mp.weixin.qq.com/s/ZqQHWLfVD1Rz1agmH3LWrg)
+    -  :ballot_box_with_check: [Zookeeper之ZAB协议](https://mp.weixin.qq.com/s/k0zAExTvMsrugCaNJxs7hQ)
+    -  :ballot_box_with_check: [Zookeeper夺命连环9问](https://mp.weixin.qq.com/s/YawG0GqznDHaiHXZuTsCjA)
 
 - 高并发架构基石-缓存
 
@@ -276,6 +323,8 @@
 - 搜索引擎
 
   - [ElasticSearch](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/搜索引擎/es.md)
+    - :ballot_box_with_check: [Elasticsearch入门](https://mp.weixin.qq.com/s/AjGiMikSVgCk6INyf-m8hA)
+    - :ballot_box_with_check: [记一次害敖丙差点丢工作的线上P0事故](https://mp.weixin.qq.com/s/F8BsSg6R9LHxKt-gbH_JKQ)
   - Canal
   - Kibana
   - Lucene
@@ -288,7 +337,14 @@
   - 从All in one 到微服务
   - [互联网架构之路](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/架构演进之路/互联网架构之路.md)
   - [怎么设计一个能顶住双十一的系统？](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/架构演进之路/怎么设计一个能顶住双十一的系统.md)
+    - :ballot_box_with_check:[压测都做些什么?](https://mp.weixin.qq.com/s/RzJkQuMAszkC8jw8hF-k1w)
+    - :ballot_box_with_check:[千万级、亿级流量怎么处理？](https://mp.weixin.qq.com/s/CxqnaB9cUemvCcWkw2nUcw)
   - [分布式&分布式事务](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/架构演进之路/分布式%26分布式事务.md)
+    - :ballot_box_with_check:[分布式架构由来](https://mp.weixin.qq.com/s/uv9xYgYrHWqM5acXQYFegA)
+    - :ballot_box_with_check:[分布式事务](https://mp.weixin.qq.com/s/XknegP66mnYboiBx556Kzw)
+    - :ballot_box_with_check:[1.4 w字，25 张图让你彻底掌握分布式事务原理](https://mp.weixin.qq.com/s/ujRRtdLOeKEHsHrtDRNXGA)
+    - :ballot_box_with_check:[什么是分布式配置中心？](https://mp.weixin.qq.com/s/NY7_z7SpiHy7IMJglPUoMw)
+    - :ballot_box_with_check:[几种大厂分布式ID设计方案](https://mp.weixin.qq.com/s/pT2m_xqzcJkpV3Ql0o6dMw) 
 
 - 互联网前沿技术
 

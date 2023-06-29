@@ -1,8 +1,8 @@
+# Spring系列
 
+## Spring
 
-# Spring
-
-## Spring简介
+### 简介
 
 Spring 是一个轻量级 Java 开发框架，Spring 最根本的使命是解决企业级应用开发的复杂性，Java 开发者可以专注于应用程序的开发,即简化 Java 开发。
 
@@ -33,55 +33,75 @@ Spring 是一个轻量级 Java 开发框架，Spring 最根本的使命是解决
 - **spring Web：**提供了针对 Web 开发的集成特性，例如文件上传，利用 servlet listeners 进行ioc 容器初始化和针对 Web 的 ApplicationContext。 
 - **spring test：**主要为测试提供支持的，支持使用 JUnit 或 TestNG 对 Spring 组件进行单元测试和集成测试
 
-## 设计模式
+### 设计模式
 
-### 单例
+#### 单例
 
 Bean 默认为单例模式。
 
-### 工厂
+#### 工厂
 
 BeanFactory 就是简单工厂模式的体现，用BeanFactory  ApplicationContext来创建对象的实例；
 
-### 适配器
+#### 适配器
 
 根据不同商家适配
 
 Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配
 
-### 责任链
+#### 责任链
 
 继承 process 链路执行
 
-### 代理
+#### 代理
 
 Spring 的 AOP 功能用到了 JDK 的动态代理和 CGLIB 字节码生成技术；
 
-### 模板方法
+模板方法
 
 用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate。
 
-### 观察者
+#### 观察者
 
 定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，Spring中的事件编程模型就是观察者模式的实现。在Spring中定义了一个ApplicationListener接口，用来监听Application的事件，Application其实就是ApplicationContext，ApplicationContext内置了几个事件，其中比较容易理解的是：ContextRefreshedEvent、ContextStartedEvent、ContextStoppedEvent、ContextClosedEvent，从名称上来看，就知道这几个事件是什么时候被触发的了。接下来我们说一下如何利用Spring中的事件编程模型来定义自定义事件，并且发布事件。
 
-### 包装器
+#### 包装器
 
 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。
 
-## 源码
+### 
 
 ### IOC
 
 >[spring ioc](/md/analysis/spring/spring-ioc.md)
+>
+>[一分钟带你玩转 Spring IoC (qq.com)](https://mp.weixin.qq.com/s/WpRSitDqtgOuU9GnI1-HDw)
+>
+>[Spring IOC 容器源码分析_Javadoop](https://javadoop.com/post/spring-ioc)
 
+IoC（Inverse of Control:控制反转）是一种**设计思想**，就是 **将原本在程序中手动创建对象的控制权，交由Spring框架来管理。** IoC 在其他语言中也有应用，并非 Spirng 特有。 **IoC 容器是 Spring 用来实现 IoC 的载体， IoC 容器实际上就是个Map（key，value）,Map 中存放的是各种对象。**
 
+将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。 **IoC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。** 在实际项目中一个 Service 类可能有几百甚至上千个类作为它的底层，假如我们需要实例化这个 Service，你可能要每次都要搞清这个 Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IoC 的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。
+
+**Spring IoC的初始化过程：**
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/iaIdQfEric9TxiaKwgUUHQX0aVpNnuopm5wZ4f7md6eOwW9ZSpk2LV0C5FNYLlBgCIE2pFC6kswRIVsUc8z9jicBxA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
 ### AOP
 
 >[漫画:AOP 面试造火箭事件始末](https://mp.weixin.qq.com/s/NXZp8a3n-ssnC6Y1Hy9lzw)
 >
 >[给冰冰看的SpringAOP面试题](https://mp.weixin.qq.com/s/qlAvW10TRNVak1oJyHO39Q)
+
+AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，**却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来**，便于**减少系统的重复代码**，**降低模块间的耦合度**，并**有利于未来的可拓展性和可维护性**。
+
+**Spring AOP就是基于动态代理的**，如果要代理的对象，实现了某个接口，那么Spring AOP会使用**JDK Proxy**，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用**Cglib** ，这时候Spring AOP会使用 **Cglib** 生成一个被代理对象的子类来作为代理，如下图所示：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/iaIdQfEric9TxiaKwgUUHQX0aVpNnuopm5wIpBukqk0x4zl3jOOuhf7kUnzXkgRtaMF4CGKBnRP0axAeTc4TkbWkQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+当然你也可以使用 AspectJ ,Spring AOP 已经集成了AspectJ ，AspectJ 应该算的上是 Java 生态系统中最完整的 AOP 框架了。
+
+使用 AOP 之后我们可以把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。我们需要增加新功能时也方便，这样也提高了系统扩展性。日志功能、事务管理等等场景都用到了 AOP 。
 
 #### 特性术语
 
@@ -140,7 +160,7 @@ public class Test {
 }
 ```
 
-##### 原理
+**原理**
 
 >[cglib源码分析（四）：cglib 动态代理原理分析](https://www.cnblogs.com/cruze/p/3865180.html)
 
@@ -224,9 +244,9 @@ CGLIB$BIND_CALLBACKS 先从CGLIB$THREAD_CALLBACKS中get拦截对象，如果获�
 
 
 
-## Bean
+### Bean
 
-### 生命周期
+#### 生命周期
 
 >[bean的生命周期](/md/analysis/spring/spring-other?id=ioc之深入分析bean的生命周期)
 
@@ -274,7 +294,7 @@ CGLIB$BIND_CALLBACKS 先从CGLIB$THREAD_CALLBACKS中get拦截对象，如果获�
 - 放到单例池
 - 销毁
 
-### 作用域
+#### 作用域
 
 - singleton : bean 在每个 Spring ioc 容器中只有一个实例。
 - prototype：一个 bean 的定义可以有多个实例。
@@ -282,7 +302,7 @@ CGLIB$BIND_CALLBACKS 先从CGLIB$THREAD_CALLBACKS中get拦截对象，如果获�
 - session：在一个 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web的 Spring ApplicationContext 情形下有效。
 - global-session：在一个全局的 HTTP Session 中，一个 bean 定义对应一个实例。该作用域仅在基于 web 的 Spring ApplicationContext 情形下有效。
 
-## 循环依赖
+### 循环依赖
 
 >[堂妹让我聊：Spring循环依赖](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
 >
@@ -309,41 +329,43 @@ CGLIB$BIND_CALLBACKS 先从CGLIB$THREAD_CALLBACKS中get拦截对象，如果获�
 Spring就是在对象外面包一层`ObjectFactory`，提前曝光的是`ObjectFactory`对象，在被注入时才在`ObjectFactory.getObject`方式内实时生成代理对象，并将生成好的代理对象放入到第二级缓存`Map<String, Object> earlySingletonObjects`。
 `addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));`：
 
-## 父子容器
+### 父子容器
 
 > [阿里一面：Spring和SpringMvc父子容器你能说清楚吗 - 个人文章 - SegmentFault 思否](https://segmentfault.com/a/1190000039761203#comment-area)
 
-### 为什么需要父子容器？
+#### 为什么需要父子容器
 
 
 
-### 是否可以把所有类都通过`Spring`容器来管理？
+#### 是否可以把所有类都通过`Spring`容器来管理
 
 （`Spring`的`applicationContext.xml`中配置全局扫描)
 
-### 是否可以把我们所需的类都放入`Spring-mvc`子容器里面来管理
+#### 是否可以把我们所需的类都放入`Spring-mvc`子容器里面来管理
 
 （`springmvc`的`spring-servlet.xml`中配置全局扫描）
 
-### 同时通过两个容器同时来管理所有的类？
+#### 同时通过两个容器同时来管理所有的类
 
-## 事务
+### 事务
 
-### 事务传播
+>[太难了~面试官让我结合案例讲讲自己对Spring事务传播行为的理解 (qq.com)](https://mp.weixin.qq.com/s/IglQITCkmx7Lpz60QOW7HA)
+
+#### 事务传播
 
 - **REQUIRED **这是默认的传播属性，如果外部调用方有事务，将会加入到事务，没有的话新建一个。
 - **PROPAGATION_SUPPORTS** 如果当前存在事务，则加入到该事务；如果当前没有事务，则以非事务的方式继续运行。
 - **PROPAGATION_NOT_SUPPORTED** 以非事务方式运行，如果当前存在事务，则把当前事务挂起。
 - **PROPAGATION_NEVER** 以非事务方式运行，如果当前存在事务，则抛出异常。
 
-### 事务的隔离性 Isolation
+#### 事务的隔离性
 
 - **READ_UNCOMMITTED** 最低级别，只能保证不读取 物理上损害的数据，允许脏读
 - **READ_COMMITTED** 只能读到已经提交的数据
 - **REPEATABLE_READ** 可重复读
 - **SERIALIZABLE** 串行化读，读写相互阻塞
 
-### 实现原理
+#### 实现原理
 
 > [万字长文，带你从源码认识Spring事务原理，让Spring事务不再是面试噩梦 - java架构师成神之路 - SegmentFault 思否](https://segmentfault.com/a/1190000022754620)
 
@@ -353,46 +375,354 @@ Spring就是在对象外面包一层`ObjectFactory`，提前曝光的是`ObjectF
 - ThreadLocal 当前事务
 - 前提是 关闭AutoCommit
 
-## 类加载机制
-
-### 过程
-
-- 加载
-  - 生成一个class对象
-- 验证
-  - 文件格式验证
-  - 元数据验证
-  - 字节码验证
-  - 符号引用验证
-- 准备
-  - 默认值
-  - static会分配内存
-- 解析
-  - 解析具体类的信息
-    - 引用等
-- 初始化
-  - 父类没初始化 先初始化父类
-- 使用
-- 卸载
-
-### 加载方式
-
-- main（）
-- class。forName
-- ClassLoader。loadClass
-
-### 类加载器
-
-- Appclass Loade
-- Extention ClassLoader
-- Bootstrap ClassLoader
-
 ### 双亲委派原则
 
 - 可以避免重复加载
 - 安全
 
-## 其他
+
+
+## Spring-MVC
+
+### JWT
+
+通俗地说，JWT的本质就是一个字符串，它是将用户信息保存到一个Json字符串中，然后进行编码后得到一个JWT token，并且这个JWT token带有签名信息，接收后可以校验是否被篡改，所以可以用于在各方之间安全地将信息作为Json对象传输
+
+JWT由3部分组成：标头(Header)、有效载荷(Payload)和签名(Signature)。在传输的时候，会将JWT的3部分分别进行Base64编码后用.进行连接形成最终传输的字符串
+
+### servlet
+
+servlet是java提供的一门动态web资源开发技术，动态指的是区别于静态资源访问
+
+#### 如何完成的一次servlet请求
+
+以访问ur: ` http://localhost:8080/web-demo/demo1` 为例，首先请求会到localhost的8080接口，而8080接口被web服务器（比如tomcat）所监听，web服务器会找到部署的web应用路径web-demo，进而找到匹配/demo1的servlet实例，调用servlet实例的service方法。
+
+对于Servlet而言，多个匹配成功的话，优先级是：精确匹配优先，其次是最长匹配路径，最后是后缀匹配
+
+#### servlet的生命周期
+
+初始化：会调用实例的init()方法，里面通常是一些配置和连接，默认是在第一次接到servlet请求时进行的，如果loadOnStartup设定为0或正整数，则会在web应用启动时加载，以提高首次响应速度。
+
+响应请求：会调用实例的service()方法，根据需求实现，springMVC框架下的每个接口
+
+服务中止：会调用实例的destory()方法，回收资源。调用后，容器会释放servlet实例，后面会被java的垃圾回收器回收
+
+因此，可以理解servlet是一种规范的含义了，每个servlet类都会实现servlet接口，都存在这些方法
+
+#### 处理请求流程
+
+1. 用户点击一个链接，指向了一个servlet而不是一个静态页面。
+
+2. 容器“看出”这个请求是一个Servlet，所以它创建了两个对象HttpServletRequest和HttpServletResponse。
+
+3. 容器根据请求中的URL找到正确的Servlet，为这个请求创建或分配一个线程，并把请求和响应对象传递给这个Servlet线程。
+
+4. 容器调用Servlet的service()方法。根据请求的不同类型，service()方法会调用doGet()或doPost()方法。这里假设调用doGet()方法。
+
+5. doGet()方法生成动态页面，并把这个页面“塞到”响应对象里，需要注意的是，容器还有响应对象的一个引用！
+
+6. 线程结束，容器把响应对象转换为一个HTTP响应，并把它发回给客户，然后删除请求和响应对象。
+
+#### 工作原理
+
+1、首先简单解释一下Servlet接收和响应客户请求的过程，首先客户发送一个请求，Servlet是调用service()方法对请求进行响应的，通过源代码可见，service()方法中对请求的方式进行了匹配，选择调用doGet,doPost等这些方法，然后再进入对应的方法中调用逻辑层的方法，实现对客户的响应。在Servlet接口和GenericServlet中是没有doGet（）、doPost（）等等这些方法的，HttpServlet中定义了这些方法，但是都是返回error信息，所以，我们每次定义一个Servlet的时候，都必须实现doGet或doPost等这些方法。
+
+2、每一个自定义的Servlet都必须实现Servlet的接口，Servlet接口中定义了五个方法，其中比较重要的三个方法涉及到Servlet的生命周期，分别是上文提到的init(),service(),destroy()方法。GenericServlet是一个通用的，不特定于任何协议的Servlet,它实现了Servlet接口。而HttpServlet继承于GenericServlet，因此HttpServlet也实现了Servlet接口。所以我们定义Servlet的时候只需要继承HttpServlet即可。
+
+3、Servlet接口和GenericServlet是不特定于任何协议的，而HttpServlet是特定于HTTP协议的类，所以HttpServlet中实现了service()方法，并将请求ServletRequest、ServletResponse 强转为HttpRequest 和 HttpResponse。
+
+### SpringMVC理解
+
+谈到这个问题，我们不得不提提之前 Model1 和 Model2 这两个没有 Spring MVC 的时代。
+
+- **Model1 时代** : 很多学 Java 后端比较晚的朋友可能并没有接触过 Model1 模式下的 JavaWeb 应用开发。在 Model1 模式下，整个 Web 应用几乎全部用 JSP 页面组成，只用少量的 JavaBean 来处理数据库连接、访问等操作。这个模式下 JSP 即是控制层又是表现层。显而易见，这种模式存在很多问题。比如①将控制逻辑和表现逻辑混杂在一起，导致代码重用率极低；②前端和后端相互依赖，难以进行测试并且开发效率极低；
+- **Model2 时代** ：学过 Servlet 并做过相关 Demo 的朋友应该了解“Java Bean(Model)+ JSP（View,）+Servlet（Controller） ”这种开发模式,这就是早期的 JavaWeb MVC 开发模式。Model:系统涉及的数据，也就是 dao 和 bean。View：展示模型中的数据，只是用来展示。Controller：处理用户请求都发送给 ，返回数据给 JSP 并展示给用户。
+
+Model2 模式下还存在很多问题，Model2的抽象和封装程度还远远不够，使用Model2进行开发时不可避免地会重复造轮子，这就大大降低了程序的可维护性和复用性。于是很多JavaWeb开发相关的 MVC 框架应该运而生比如Struts2，但是 Struts2 比较笨重。随着 Spring 轻量级开发框架的流行，Spring 生态圈出现了 Spring MVC 框架， Spring MVC 是当前最优秀的 MVC 框架。相比于 Struts2 ， Spring MVC 使用更加简单和方便，开发效率更高，并且 Spring MVC 运行速度更快。
+
+MVC 是一种设计模式,Spring MVC 是一款很优秀的 MVC 框架。Spring MVC 可以帮助我们进行更简洁的Web层的开发，并且它天生与 Spring 框架集成。Spring MVC 下我们一般把后端项目分为 Service层（处理业务）、Dao层（数据库操作）、Entity层（实体类）、Controller层(控制层，返回数据给前台页面)。
+
+**Spring MVC 的简单原理图如下：**
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/iaIdQfEric9TxiaKwgUUHQX0aVpNnuopm5whFU7fqDAcRplGePmg7p4rdxp7VaG9AuWnsAZdBOicttLYDpcldjsvRQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+Spring MVC 是一个基于 Java 的实现了 MVC 设计模式的请求驱动类型的轻量级 Web 框架，通过把模型-视图-控制器分离，将 web 层进行职责解耦，把复杂的 web 应用分成逻辑清晰的几部分，简化开发，减少出错，方便组内开发人员之间的配合。
+
+**Spring MVC 的优点**
+
+- （1） 可以支持各种视图技术,而不仅仅局限于 JSP； 
+
+- （2） 与 Spring 框架集成（如 IoC 容器、AOP 等）；
+
+- （3） 清晰的角色分配：前端控制器(dispatcherServlet) , 请求到处理器映射（handlerMapping), 处理器适配器（HandlerAdapter), 视图解析器（ViewResolver）。
+
+- （4） 支持各种请求资源的映射策略。
+
+- （5） 分层设计，实现了业务系统各个组件之间的解耦，有利于业务系统的可扩展性，可维护性。
+
+- （6） 有利于系统的并行开发，提升开发效率。
+
+**给MVC三层架构加了Manager层**
+
+ ```java
+@Transactional(rollbackFor = Throwable.class)
+public Result<String> upOrDown(Long departmentId, Long swapId) {
+ // 验证 1
+ DepartmentEntity departmentEntity = departmentDao.selectById(departmentId);
+ if (departmentEntity == null) {
+  return Result.error("部门xxx不存在");
+ }
+ // 验证 2
+ DepartmentEntity swapEntity = departmentDao.selectById(swapId);
+ if (swapEntity == null) {
+  return Result.error("部门xxx不存在");
+ }
+ // 验证 3
+ Long count = employeeDao.countByDepartmentId(departmentId);
+ if (count != nul&& count > 0) {
+  return Result.error("员工不存在");
+ }
+ // 操作数据库 4
+ Long departmentSort = departmentEntity.getSort();
+ departmentEntity.setSort(swapEntity.getSort());
+ departmentDao.updateById(departmentEntity);
+ swapEntity.setSort(departmentSort);
+ departmentDao.updateById(swapEntity);
+ return Result.OK("success");
+}
+ ```
+
+
+
+上面的代码是典型的长事务问题（类似的还有调用第三方接口），前三步都是使用 connection 进行验证操作，但是由于方法上有@Transactiona注解，所以这三个验证都是使用的同一个 connection。
+
+总结 Manager层主要是把service层对数据库操作抽离出来，防止service其他方法占用过长的数据库连接。
+
+
+
+### 主要组件
+
+1. **前端控制器 DispatcherServlet**（不需要程序员开发）作用：接收请求、响应结果，相当于转发器，有了 DispatcherServlet 就减少了其它组件之间的耦合度。
+2. **处理器映射器 HandlerMapping**（不需要程序员开发）作用：根据请求的 URL来查找 Handler
+3. **处理器适配器 HandlerAdapter**  注意：在编写 Handler 的时候要按照 HandlerAdapter 要求的规则去编写，这样适配器HandlerAdapter 才可以正确的去执行 Handler。 
+4. **处理器 Handler**（需要程序员开发）
+5. **视图解析器 ViewResolver**（不需要程序员开发）作用：进行视图的解析，根据视图逻辑名解析成真正的视图（view） （6）视图 View（需要程序员开发 jsp）View 是一个接口， 它的实现类支持不同的视图类型（jsp，freemarker，pdf 等等）
+
+
+### 工作原理
+
+![图片](https://mmbiz.qpic.cn/mmbiz_png/iaIdQfEric9TxiaKwgUUHQX0aVpNnuopm5wvNYJUuopN5R9BDcW2wxDdnEVyzke9a2paria5AcekHmVaFxicu6qV4kA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1) 
+
+ 
+
+核心架构的具体流程步骤如下： 
+
+1. 客户端（浏览器）发送请求，直接请求到 `DispatcherServlet`。
+2. `DispatcherServlet` 根据请求信息调用 `HandlerMapping`，解析请求对应的 `Handler`。
+3. 解析到对应的 `Handler`（也就是我们平常说的 `Controller` 控制器）后，开始由 `HandlerAdapter` 适配器处理。
+4. `HandlerAdapter` 会根据 `Handler`来调用真正的处理器开处理请求，并处理相应的业务逻辑。
+5. 处理器处理完业务后，会返回一个 `ModelAndView` 对象，`Model` 是返回的数据对象，`View` 是个逻辑上的 `View`。
+6. `ViewResolver` 会根据逻辑 `View` 查找实际的 `View`。
+7. `DispaterServlet` 把返回的 `Model` 传给 `View`（视图渲染）。
+8. 把 `View` 返回给请求者（浏览器）
+
+> 1. 首先用户发送请求——>DispatcherServlet，前端控制器收到请求后自己不进行处理，而是委托给其他的解析器进行处理，作为统一访问点，进行全局的流程控制； 
+> 2. DispatcherServlet——>HandlerMapping， HandlerMapping 将会把请求映射为 HandlerExecutionChain 对象（包含一个Handler 处理器（页面控制器）对象、多个HandlerInterceptor 拦截器）对象，通过这种策略模式，很容易添加新的映射策略； 
+> 3. DispatcherServlet——>HandlerAdapter，HandlerAdapter 将会把处理器包装为适配器，从而支持多种类型的处理器，即适配器设计模式的应用，从而很容易支持很多类型的处理器；
+> 4. HandlerAdapter——>处理器功能处理方法的调用，HandlerAdapter 将会根据适配的结果调用真正的处理器的功能处理方法，完成功能处理；并返回一个ModelAndView 对象（包含模型数据、逻辑视图名）； 
+> 5. ModelAndView 的逻辑视图名——> ViewResolver，ViewResolver 将把逻辑视图名解析为具体的View，通过这种策略模式，很容易更换其他视图技术； 
+> 6. View——>渲染，View 会根据传进来的Mode模型数据进行渲染，此处的Mode实际是一个Map 数据结构，因此很容易支持其他视图技术； 
+> 7. 返回控制权给DispatcherServlet，由DispatcherServlet 返回响应给用户，到此一个流程结束。
+>
+
+
+## 面
+
+### Spring MVC 的控制器是不是单例模式,如果是,有什么问题,怎么解决？
+
+答：是单例模式,所以在多线程访问的时候有线程安全问题,不要用同步,会影响性能的,解决方案是在控制器里面不能写共享字段
+
+### @Controller 注解的作用 和@RequestMapping 注解的作用
+
+@Controller注解用来把一个类定义为Controller。
+
+@RequestMapping注解用来把web请求映射到相应的处理函数。
+
+@Controller和@RequestMapping结合起来完成了Spring MVC请求的派发流程。
+
+### @RequestMapping流程可以分为下面6步
+
+> [@RequestMapping原理分析 - 码农教程 (manongjc.com)](http://www.manongjc.com/detail/7-rlbhflvwwprjixi.html)
+
+1. 注册RequestMappingHandlerMapping bean 。
+
+2. 实例化RequestMappingHandlerMapping bean。
+
+3. 获取RequestMappingHandlerMapping bean实例。
+
+4. 接收requst请求。
+
+5. 在RequestMappingHandlerMapping实例methodMap中查找对应的handler。
+
+6. handler处理请求。
+
+接口和url怎么注册
+
+1. 根据配置的扫描路径获取所有的bean
+2. 通过@Controller或@RequestMapping来判断是否是handler，如果是就通过registerHandlerMethod方法注册（类似于map）   
+
+
+### 怎么根据url找handle
+
+在RequestMappingHandlerMapping实例methodMap中查找对应的handler
+
+### 介绍一下 WebApplicationContext ？
+
+WebApplicationContext 是实现ApplicationContext接口的子类，专门为 WEB 应用准备的。
+
+- 它允许从相对于 Web 根目录的路径中**加载配置文件**，**完成初始化 Spring MVC 组件的工作**。
+- 从 WebApplicationContext 中，可以获取 ServletContext 引用，整个 Web 应用上下文对象将作为属性放置在 ServletContext 中，以便 Web 应用环境可以访问 Spring 上下文。
+
+###  Spring MVC 和 Struts2 的异同？
+
+1. 入口不同
+   - Spring MVC 的入门是一个 Servlet **控制器**。
+   - Struts2 入门是一个 Filter **过滤器**。
+2. 配置映射不同，
+   - Spring MVC 是基于**方法**开发，传递参数是通过**方法形参**，一般设置为**单例**。
+   - Struts2 是基于**类**开发，传递参数是通过**类的属性**，只能设计为**多例**。
+
+- 视图不同
+  - Spring MVC 通过参数解析器是将 Request 对象内容进行解析成方法形参，将响应数据和页面封装成 **ModelAndView** 对象，最后又将模型数据通过 **Request** 对象传输到页面。其中，如果视图使用 JSP 时，默认使用 **JSTL** 。
+  - Struts2 采用**值栈**存储请求和响应的数据，通过 **OGNL** 存取数据。
+
+### 详细介绍下 Spring MVC 拦截器？
+
+`org.springframework.web.servlet.HandlerInterceptor` ，拦截器接口。代码如下
+
+- 一共有三个方法，分别为：
+  - `#preHandle(...)` 方法，调用 Controller 方法之**前**执行。
+  - `#postHandle(...)` 方法，调用 Controller 方法之**后**执行。
+  - `#afterCompletion(...)`方法，处理完 Controller 方法返回结果之后执行。
+    - 例如，页面渲染后。
+    - **当然，要注意，无论调用 Controller 方法是否成功，都会执行**。
+
+### Spring MVC 的拦截器和 Filter 过滤器有什么差别？
+
+看了文章 [《过滤器( Filter )和拦截器( Interceptor )的区别》](https://blog.csdn.net/xiaodanjava/article/details/32125687) ，感觉对比的怪怪的。艿艿觉得主要几个点吧：
+
+- **功能相同**：拦截器和 Filter都能实现相应的功能，谁也不比谁强。
+- **容器不同**：拦截器构建在 Spring MVC 体系中；Filter 构建在 Servlet 容器之上。
+- **使用便利性不同**：拦截器提供了三个方法，分别在不同的时机执行；过滤器仅提供一个方法，当然也能实现拦截器的执行时机的效果，就是麻烦一些。
+
+### @PathVariable 注解，在 Spring MVC 做了什么? 为什么 REST 在 Spring 中如此有用？
+
+`@PathVariable` 注解，是 Spring MVC 中有用的注解之一，它允许您从 URI 读取值，比如查询参数。它在使用 Spring 创建 RESTful Web 服务时特别有用，因为在 REST 中，资源标识符是 URI 的一部分。
+
+## Spring-Boot
+
+## 面
+
+>[给冰冰看的SpringAOP面试题 (qq.com)](https://mp.weixin.qq.com/s/qlAvW10TRNVak1oJyHO39Q)
+>
+>[Spring常见问题总结（补充版） (qq.com)](https://mp.weixin.qq.com/s/wcK2qsZxKDJTLIGqEIyaNg)
+
+### 什么是Spring框架
+
+Spring 是一种轻量级开发框架，旨在提高开发人员的开发效率以及系统的可维护性。Spring 官网：https://spring.io/。
+
+我们一般说 Spring 框架指的都是 Spring Framework，它是很多模块的集合，使用这些模块可以很方便地协助我们进行开发。这些模块是：核心容器、数据访问/集成,、Web、AOP（面向切面编程）、工具、消息和测试模块。比如：Core Container 中的 Core 组件是Spring 所有组件的核心，Beans 组件和 Context 组件是实现IOC和依赖注入的基础，AOP组件用来实现面向切面编程。
+
+Spring 官网列出的 Spring 的 6 个特征:
+
+- **核心技术** ：依赖注入(DI)，AOP，事件(events)，资源，i18n，验证，数据绑定，类型转换，SpEL。
+- **测试** ：模拟对象，TestContext框架，Spring MVC 测试，WebTestClient。
+- **数据访问** ：事务，DAO支持，JDBC，ORM，编组XML。
+- **Web支持** : Spring MVC和Spring WebFlux Web框架。
+- **集成** ：远程处理，JMS，JCA，JMX，电子邮件，任务，调度，缓存。
+- **语言** ：Kotlin，Groovy，动态语言。
+
+### AOP的核心概念
+
+> - 切面(Aspect)：似于 Java 中的类声明，常用于应用中配置事务或者日志管理。一般使用 `@Aspect` 注解或者 `<aop:aspect>` 来定义一个切面。
+>
+> - 连接点(Join Point)：程序执行中的特定点，比如方法执行、处理一个异常等
+>
+> - 切点(Pointcut)：通过一种规则匹配的正则表达式，当有连接点可以匹配到切点时，就会触发改切点相关联的指定通知。
+>
+> - 通知(Advice)：在切面中某个连接点采取的动作，通知方式也有5种
+>
+> - - around(环绕通知)：前后都加
+>   - before(前置通知)
+>   - after(后置通知)
+>   - exception(异常通知)
+>   - return(返回通知)
+>
+> - 织入(Weaving)：链接切面和目标对象创建一个通知对象的过程。
+>
+> AOP其实就是一种编程思想，而这上面的这个点就是编程的具体实现规范。
+>
+> 一个应用中可以有多种通知方式所以在AOP中引入一种设计模式**责任链模式**通过这这种模式来顺序执行每一个通知当然也可以使用`@Order`注解，配置数字越小，越先执行。关于责任链模式的大家也可以去看看我之前写的设计模式复习一下。
+
+### AOP事务功能
+
+AOP处理常见的配置切面处理日志等业务，还有大家也比较熟悉的那就是事务。
+
+其实AOP的事务也是通过配置的advice的方式来执行的
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpyFDnnzmIkbwBtCuIbUeszhsjicicDVJWICYnd230kQKEb39zBO3Y7wysXQr2nqMfesHeEW1TicQHyvA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+通知对advice的拆解来实现事务的功能。
+
+> 在看源码的时候能给我们带来很多的思考，对我们
+
+在Spring中大家可以通过`@Transactional`注解来现实事务功能，看过源码的同学肯定看过`TransactionAspectSupport`这个类
+
+```java
+public abstract class TransactionAspectSupport implements BeanFactoryAware, InitializingBean {
+ // 省略其他代码。。。。
+ @Nullable
+ protected Object invokeWithinTransaction(Method method, @Nullable Class<?> targetClass,
+   final InvocationCallback invocation) throws Throwable {
+
+  // If the transaction attribute is null, the method is non-transactional.
+  TransactionAttributeSource tas = getTransactionAttributeSource();
+  final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
+  final PlatformTransactionManager tm = determineTransactionManager(txAttr);
+  final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
+
+  if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
+   // Standard transaction demarcation with getTransaction and commit/rollback calls.
+   TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);
+   Object retVal = null;
+   try {
+    // This is an around advice: Invoke the next interceptor in the chain.
+    // This will normally result in a target object being invoked.
+    retVal = invocation.proceedWithInvocation();
+   }
+   catch (Throwable ex) {
+    // target invocation exception
+        // 异常回滚 重点
+    completeTransactionAfterThrowing(txInfo, ex);
+    throw ex;
+   }
+   finally {
+    cleanupTransactionInfo(txInfo);
+   } 
+      // 成功后提交 重点
+   commitTransactionAfterReturning(txInfo);
+   return retVal;
+  }
+ 
+ // 省略其他的代码。。。。
+
+}
+```
+
+因此SpringAOP的声明事务也是通过advice实现。
+
+> AOP的事务整体来说比较简单，说白了就是通过advice的从新组合来完成事务功能，当然也是Spring的强大之处，扩展性是真的高。
 
 ### 在 Spring 框架 xm配置中共有 5 种自动装配
 
@@ -555,6 +885,8 @@ Spring AOP 已经集成了 AspectJ ，AspectJ 应该算的上是 Java 生态系�
 如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比 Spring AOP 快很多。
 
 ### Spring AOP和AspectJ是什么关系？
+
+**Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。** Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。
 
 AspectJ是更强的AOP框架，是实际意义的AOP标准；
 
