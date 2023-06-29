@@ -514,8 +514,6 @@ public Result<String> upOrDown(Long departmentId, Long swapId) {
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/iaIdQfEric9TxiaKwgUUHQX0aVpNnuopm5wvNYJUuopN5R9BDcW2wxDdnEVyzke9a2paria5AcekHmVaFxicu6qV4kA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1) 
 
- 
-
 核心架构的具体流程步骤如下： 
 
 1. 客户端（浏览器）发送请求，直接请求到 `DispatcherServlet`。
@@ -536,8 +534,11 @@ public Result<String> upOrDown(Long departmentId, Long swapId) {
 > 7. 返回控制权给DispatcherServlet，由DispatcherServlet 返回响应给用户，到此一个流程结束。
 >
 
-
 ## 面
+
+>[15个经典的Spring面试常见问题 (qq.com)](https://mp.weixin.qq.com/s/OMlwHHnGcN7iZ8lerUvW7w)
+>
+>[Spring常见问题总结（补充版） (qq.com)](https://mp.weixin.qq.com/s/wcK2qsZxKDJTLIGqEIyaNg)
 
 ### Spring MVC 的控制器是不是单例模式,如果是,有什么问题,怎么解决？
 
