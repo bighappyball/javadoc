@@ -567,6 +567,14 @@ Java 语言通过字节码的方式，在一定程度上解决了传统解释型
 
 可以保证相同内容的字符串变量引用同一的内存对象,会将对象放到字符串常量池内，底层代码时native。
 
+### String长度限制
+
+>[敖丙说精通字符串，面试官竟然问Java中的String有没有长度限制！ (qq.com)](https://mp.weixin.qq.com/s/6YhpbuhdTX9BM_OimoW8MA)
+
+字符串有长度限制，在编译期，要求字符串常量池中的常量不能超过65535，并且在javac执行过程中控制了最大值为65534。
+
+在运行期，长度不能超过Int的范围 2的31次方-1，否则会抛异常。
+
 ### 抽象类与接口
 
 ![img](../md copy/_media/analysis/netty/wps14DC.tmp.jpg) 

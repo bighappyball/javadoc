@@ -197,7 +197,23 @@
 - 并发与多线程
 
   - [多线程基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/多线程基础知识.md)
+
+    - [可重入锁](https://mp.weixin.qq.com/s/GDno-X1N8zc98h9MZ8_KoA)
+
+      [(并发问题的根源到底是什么？)](https://mp.weixin.qq.com/s/TsENp5ygFdE0_REgz5Y3Ew)
+
+      [敖丙稳住了多线程翻车的现场](https://mp.weixin.qq.com/s/g_eWT05_38AURchMIvNSnA)
+
+      [2w字 + 40张图带你参透并发编程！](https://mp.weixin.qq.com/s/NZAJWBiFvGzCZXjr0KC9Dw)
+
+      [图解Java中那18 把锁](https://mp.weixin.qq.com/s/XCR93HSm_E0c3KDcmZk3cA)
   - [常见关键字](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/常见关键字.md)
+
+    -  [死磕Synchronized源码](https://mp.weixin.qq.com/s/2ka1cDTRyjsAGk_-ii4ngw)
+
+       [当Synchronized遇到这玩意儿，有个大坑，要注意！](https://mp.weixin.qq.com/s/0oUXYFxpsi6Q9MfR5NKtLQ)
+
+       [面试官想到，一个Volatile，敖丙都能吹半小时](https://mp.weixin.qq.com/s/Oa3tcfAFO9IgsbE22C5TEg)
   - [多线程锁机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/多线程锁机制.md)
   - [线程池知识点](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/线程池知识点.md)
   - [常见的JUC工具类](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/常见的JUC工具类.md)
@@ -228,37 +244,37 @@
 
   - [Spring全家桶以及源码分析](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/spring.md)
 
-    - [一分钟带你玩转 Spring IoC](https://mp.weixin.qq.com/s/WpRSitDqtgOuU9GnI1-HDw)
+    - :ballot_box_with_check: [一分钟带你玩转 Spring IoC](https://mp.weixin.qq.com/s/WpRSitDqtgOuU9GnI1-HDw)
 
-      [AOP 面试造火箭事件始末](https://mp.weixin.qq.com/s/NXZp8a3n-ssnC6Y1Hy9lzw)
+      :ballot_box_with_check: [AOP 面试造火箭事件始末](https://mp.weixin.qq.com/s/NXZp8a3n-ssnC6Y1Hy9lzw)
 
-      [SpringAOP面试题](https://mp.weixin.qq.com/s/qlAvW10TRNVak1oJyHO39Q)
+      :ballot_box_with_check: [SpringAOP面试题](https://mp.weixin.qq.com/s/qlAvW10TRNVak1oJyHO39Q)
 
-      [Spring事务传播行为](https://mp.weixin.qq.com/s/IglQITCkmx7Lpz60QOW7HA)
+      :ballot_box_with_check: [Spring事务传播行为](https://mp.weixin.qq.com/s/IglQITCkmx7Lpz60QOW7HA)
 
-      [什么是 Spring 循环依赖？](https://mp.weixin.qq.com/s/5mwkgJB7GyLdKDgzijyvXw)
+       :ballot_box_with_check:[什么是 Spring 循环依赖？](https://mp.weixin.qq.com/s/5mwkgJB7GyLdKDgzijyvXw)
 
-      [Spring常见问题总结（补充版）](https://mp.weixin.qq.com/s/wcK2qsZxKDJTLIGqEIyaNg)
+       :ballot_box_with_check: [Spring常见问题总结（补充版）](https://mp.weixin.qq.com/s/wcK2qsZxKDJTLIGqEIyaNg)
 
-      [15个经典的Spring面试常见问题](https://mp.weixin.qq.com/s/OMlwHHnGcN7iZ8lerUvW7w)
+       :ballot_box_with_check:  [15个经典的Spring面试常见问题](https://mp.weixin.qq.com/s/OMlwHHnGcN7iZ8lerUvW7w)
 
-      [敖丙说精通字符串，面试官竟然问Java中的String有没有长度限制！](https://mp.weixin.qq.com/s/6YhpbuhdTX9BM_OimoW8MA)
+       :ballot_box_with_check: [敖丙说精通字符串，面试官竟然问Java中的String有没有长度限制！](https://mp.weixin.qq.com/s/6YhpbuhdTX9BM_OimoW8MA)
 
-      [Spring中的循环依赖](https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ)
+       :ballot_box_with_check: [Spring中的循环依赖](https://mp.weixin.qq.com/s/kS0K5P4FdF3v-fiIjGIvvQ)
 
-      [Spring容器启动流程](https://mp.weixin.qq.com/s/ut3mRwhfqXNjrBtTmI0oWg)
+       :ballot_box_with_check:  [Spring容器启动流程](https://mp.weixin.qq.com/s/ut3mRwhfqXNjrBtTmI0oWg)
 
-      [Spring循环依赖](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
+       :ballot_box_with_check:  [Spring循环依赖](https://mp.weixin.qq.com/s/u29hMRkfTj_1RHNSukDtEw)
 
-      [我是如何在面试别人Spring事务时“套路”对方的](https://mp.weixin.qq.com/s/JcHt99SAbNIlY063rmylpA)
+       :ballot_box_with_check: [我是如何在面试别人Spring事务时“套路”对方的](https://mp.weixin.qq.com/s/JcHt99SAbNIlY063rmylpA)
 
-      [SpringIOC 面试题（下）](https://mp.weixin.qq.com/s/4z9V4-k2Whqiz69gXy5iMQ)
+       :ballot_box_with_check: [SpringIOC 面试题（下）](https://mp.weixin.qq.com/s/4z9V4-k2Whqiz69gXy5iMQ)
 
-      [SpringIOC 面试题（上）](https://mp.weixin.qq.com/s/SH4laewpIsio66MUJFLTyg)
+       :ballot_box_with_check: [SpringIOC 面试题（上）](https://mp.weixin.qq.com/s/SH4laewpIsio66MUJFLTyg)
 
-      [深入浅出Spring架构设计](https://mp.weixin.qq.com/s/wXkgudY0ThIRLFxUmohJog)
+       :ballot_box_with_check: [深入浅出Spring架构设计](https://mp.weixin.qq.com/s/wXkgudY0ThIRLFxUmohJog)
 
-      [Spring](https://mp.weixin.qq.com/s/liWn2Dn91cmuiqHSxVO_fA)
+       :ballot_box_with_check: [Spring](https://mp.weixin.qq.com/s/liWn2Dn91cmuiqHSxVO_fA)
   - [SpringCloud](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/必会框架/SpringCloud.md)
 
     - :ballot_box_with_check: [外行人都能看懂的SpringCloud，错过了血亏！](https://mp.weixin.qq.com/s/MJrahcDXwxgDr5zBdO3XWw)

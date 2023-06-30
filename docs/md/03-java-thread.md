@@ -72,8 +72,9 @@
 
 处理器为了提高程序运行效率，可能会对输入代码进行优化，它不保证程序中各个语句的执行先后顺序同代码中的顺序一致，但是它会保证程序最终执行结果和代码顺序执行的结果是一致的。(仅能保证单线程的顺序，多线程还是会出现指令排序问题)
 
-
 ### 并发的三个概念
+
+>[学妹问我，并发问题的根源到底是什么？ (qq.com)](https://mp.weixin.qq.com/s/TsENp5ygFdE0_REgz5Y3Ew)
 
 - 原子性：即一个操作或者多个操作 要么全部执行并且执行的过程不会被任何因素打断，要么就都不执行。
 
@@ -377,7 +378,13 @@ handler :饱和策略。关于饱和策略下面单独介绍一下。
 
 - ThreadPoolExecutor.DiscardOldestPolicy： 此策略将丢弃最早的未处理的任务请求。
 
+## 关键字
+
+>[死磕Synchronized底层实现 (qq.com)](https://mp.weixin.qq.com/s/2ka1cDTRyjsAGk_-ii4ngw)
+
 ## 锁
+
+>[图解Java中那18 把锁 (qq.com)](https://mp.weixin.qq.com/s/XCR93HSm_E0c3KDcmZk3cA)
 
 1. **乐观锁**：悲观锁认为自己在使用数据的时候一定有别的线程来修改数据，因此在获取数据的时候会先加锁，确保数据不会被别的线程修改。Java中，synchronized关键字和Lock的实现类都是悲观锁。
 2. **悲观锁：**乐观锁认为自己在使用数据时不会有别的线程修改数据，所以不会添加锁，只是在更新数据的时候去判断之前有没有别的线程更新了这个数据
@@ -580,6 +587,244 @@ ReentrantLock的基本实现可以概括为：先通过CAS尝试获取锁。如�
 5. **锁绑定多个条件：**一个 ReentrantLock 可以同时绑定多个 Condition 对象。
 
 使用选择：优先使用 synchronized，JVM 原生地支持它，而 ReentrantLock 不是所有的 JDK 版本都支持，并且使用 synchronized 不用担心没有释放锁而导致死锁问题，因为 JVM 会确保锁的释放
+
+### 可重入锁实现原理
+
+> [可重入锁 (qq.com)](https://mp.weixin.qq.com/s/GDno-X1N8zc98h9MZ8_KoA)
+
+重入锁内部实现的主要类如下图：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpyp2AiaQvh6QgNXhY2ZY5fQjyicj1lXLXDdaWJVTSuMiaoa4JO2AImQEMDlhBLoyqn9x3FB70rLFExvA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+重入锁的核心功能委托给内部类Sync实现，并且根据是否是公平锁有FairSync和NonfairSync两种实现。这是一种典型的策略模式。
+
+实现重入锁的方法很简单，就是基于一个状态变量state。这个变量保存在AbstractQueuedSynchronizer对象中
+
+```
+private volatile int state;
+```
+
+当这个state==0时，表示锁是空闲的，大于零表示锁已经被占用， 它的数值表示当前线程重复占用这个锁的次数。因此，lock()的最简单的实现是：
+
+```java
+ final void lock() {
+ // compareAndSetState就是对state进行CAS操作，如果修改成功就占用锁
+ if (compareAndSetState(0, 1))
+     setExclusiveOwnerThread(Thread.currentThread());
+ else
+ //如果修改不成功，说明别的线程已经使用了这个锁，那么就可能需要等待
+     acquire(1);
+}
+```
+
+下面是acquire()  的实现：
+
+```java
+ public final void acquire(int arg) {
+ //tryAcquire() 再次尝试获取锁，
+ //如果发现锁就是当前线程占用的，则更新state，表示重复占用的次数，
+ //同时宣布获得所成功,这正是重入的关键所在
+ if (!tryAcquire(arg) &&
+     // 如果获取失败，那么就在这里入队等待
+     acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+     //如果在等待过程中 被中断了，那么重新把中断标志位设置上
+     selfInterrupt();
+}
+```
+
+#### 公平的重入锁
+
+默认情况下，重入锁是不公平的。什么叫不公平呢。也就是说，如果有1,2,3,4 这四个线程，按顺序，依次请求锁。那等锁可用的时候，谁会先拿到锁呢？在非公平情况下，答案是随机的。如下图所示，可能线程3先拿到锁。
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpyp2AiaQvh6QgNXhY2ZY5fQjmDEq08nljyOWJibnQKjO8U7ic32qkRmemKwy6uibOCktYvZWtjcg23UBQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+如果你是一个公平主义者，强烈坚持先到先得的话，那么你就需要在构造重入锁的时候，指定这是一个公平锁：
+
+```java
+ReentrantLock fairLock = new ReentrantLock(true);
+```
+
+这样一来，每一个请求锁的线程，都会乖乖的把自己放入请求队列，而不是上来就进行争抢。但一定要注意，公平锁是有代价的。**维持公平竞争是以牺牲系统性能为代价的**。如果你愿意承担这个损失，公平锁至少提供了一种普世价值观的实现吧！
+
+那公平锁和非公平锁实现的核心区别在哪里呢？来看一下这段lock()的代码：
+
+```java
+//非公平锁 
+ final void lock() {
+     //上来不管三七二十一，直接抢了再说
+     if (compareAndSetState(0, 1))
+         setExclusiveOwnerThread(Thread.currentThread());
+     else
+         //抢不到，就进队列慢慢等着
+         acquire(1);
+ }
+
+ //公平锁
+ final void lock() {
+     //直接进队列等着
+     acquire(1);
+ }
+```
+
+从上面的代码中也不难看到，非公平锁如果第一次争抢失败，后面的处理和公平锁是一样的，都是进入等待队列慢慢等。
+
+对于tryLock()也是非常类似的：
+
+```java
+ //非公平锁 
+ final boolean nonfairTryAcquire(int acquires) {
+      final Thread current = Thread.currentThread();
+      int c = getState();
+      if (c == 0) {
+          //上来不管三七二十一，直接抢了再说
+          if (compareAndSetState(0, acquires)) {
+              setExclusiveOwnerThread(current);
+              return true;
+          }
+      }
+      //如果就是当前线程占用了锁，那么就更新一下state，表示重复占用锁的次数
+      //这是“重入”的关键所在
+      else if (current == getExclusiveOwnerThread()) {
+          //我又来了哦~~~
+          int nextc = c + acquires;
+          if (nextc < 0) // overflow
+              throw new Error("Maximum lock count exceeded");
+          setState(nextc);
+          return true;
+      }
+      return false;
+  }
+ 
+
+ //公平锁
+ protected final boolean tryAcquire(int acquires) {
+     final Thread current = Thread.currentThread();
+     int c = getState();
+     if (c == 0) {
+         //先看看有没有别人在等，没有人等我才会去抢，有人在我前面 ，我就不抢啦
+         if (!hasQueuedPredecessors() &&
+             compareAndSetState(0, acquires)) {
+             setExclusiveOwnerThread(current);
+             return true;
+         }
+     }
+     else if (current == getExclusiveOwnerThread()) {
+         int nextc = c + acquires;
+         if (nextc < 0)
+             throw new Error("Maximum lock count exceeded");
+         setState(nextc);
+         return true;
+     }
+     return false;
+ }
+```
+
+#### Condition
+
+Condition可以理解为重入锁的伴生对象。它提供了在重入锁的基础上，进行等待和通知的机制。可以使用 newCondition()方法生成一个Condition对象，如下所示。
+
+```java
+ private final Lock lock = new ReentrantLock();
+ private final Condition condition = lock.newCondition();
+```
+
+那Condition对象怎么用呢。在JDK内部就有一个很好的例子。让我们来看一下ArrayBlockingQueue吧。ArrayBlockingQueue是一个队列，你可以把元素塞入队列(enqueue)，也可以拿出来take()。但是有一个小小的条件，就是如果队列是空的，那么take()就需要等待，一直等到有元素了，再返回。那这个功能，怎么实现呢？这就可以使用Condition对象了。
+
+实现在ArrayBlockingQueue中，就维护一个Condition对象
+
+```java
+lock = new ReentrantLock(fair);
+notEmpty = lock.newCondition();
+```
+
+这个notEmpty 就是一个Condition对象。它用来通知其他线程，ArrayBlockingQueue是不是空着的。当我们需要拿出一个元素时:
+
+```java
+public E take() throws InterruptedException {
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        while (count == 0)
+            // 如果队列长度为0，那么就在notEmpty condition上等待了，一直等到有元素进来为止
+            // 注意，await()方法，一定是要先获得condition伴生的那个lock，才能用的哦
+            notEmpty.await();
+        //一旦有人通知我队列里有东西了，我就弹出一个返回
+        return dequeue();
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+当有元素入队时：
+
+```java
+   public boolean offer(E e) {
+     checkNotNull(e);
+     final ReentrantLock lock = this.lock;
+     //先拿到锁，拿到锁才能操作对应的Condition对象
+     lock.lock();
+     try {
+         if (count == items.length)
+             return false;
+         else {
+             //入队了， 在这个函数里，就会进行notEmpty的通知，通知相关线程，有数据准备好了
+             enqueue(e);
+             return true;
+         }
+     } finally {
+         //释放锁了，等着的那个线程，现在可以去弹出一个元素试试了
+         lock.unlock();
+     }
+ }
+
+ private void enqueue(E x) {
+     final Object[] items = this.items;
+     items[putIndex] = x;
+     if (++putIndex == items.length)
+         putIndex = 0;
+     count++;
+     //元素已经放好了，通知那个等着拿东西的人吧
+     notEmpty.signal();
+ }
+```
+
+因此，整个流程如图所示：
+
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpyp2AiaQvh6QgNXhY2ZY5fQjibtcWaaqzcIxdFLDgcticS8o2C2PUIibsJsSMZkDC0NcQhEggskcFzyAQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+
+#### 重入锁的使用示例
+
+为了让大家更好的理解重入锁的使用方法。现在我们使用重入锁，实现一个简单的计数器。这个计数器可以保证在多线程环境中，统计数据的精确性，请看下面示例代码：
+
+```java
+public class Counter {
+    //重入锁
+    private final Lock lock = new ReentrantLock();
+    private int count;
+    public void incr() {
+        // 访问count时，需要加锁
+        lock.lock();
+        try {
+            count++;
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    public int getCount() {
+        //读取数据也需要加锁，才能保证数据的可见性
+        lock.lock();
+        try {
+            return count;
+        }finally {
+            lock.unlock();
+        }
+    }
+}
+```
+
+## 
 
 ## volatile详解
 
@@ -1091,9 +1336,7 @@ park()/unpark()底层的原理是“二元信号量”，你可以把它相像�
 
  
 
-## 零拷贝
 
-[傻瓜三歪让我教他「零拷贝」 (qq.com)](https://mp.weixin.qq.com/s/FgBCop2zFfcX5ZszE0NoCQ)
 
 ## 其他
 
