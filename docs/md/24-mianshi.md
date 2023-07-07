@@ -198,26 +198,59 @@
 
   - [多线程基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/多线程基础知识.md)
 
-    - [可重入锁](https://mp.weixin.qq.com/s/GDno-X1N8zc98h9MZ8_KoA)
+    - :ballot_box_with_check:[可重入锁](https://mp.weixin.qq.com/s/GDno-X1N8zc98h9MZ8_KoA)
 
-      [(并发问题的根源到底是什么？)](https://mp.weixin.qq.com/s/TsENp5ygFdE0_REgz5Y3Ew)
+      :ballot_box_with_check:[(并发问题的根源到底是什么？)](https://mp.weixin.qq.com/s/TsENp5ygFdE0_REgz5Y3Ew)
 
-      [敖丙稳住了多线程翻车的现场](https://mp.weixin.qq.com/s/g_eWT05_38AURchMIvNSnA)
+      :ballot_box_with_check:[敖丙稳住了多线程翻车的现场](https://mp.weixin.qq.com/s/g_eWT05_38AURchMIvNSnA)
 
-      [2w字 + 40张图带你参透并发编程！](https://mp.weixin.qq.com/s/NZAJWBiFvGzCZXjr0KC9Dw)
+      :ballot_box_with_check:[2w字 + 40张图带你参透并发编程！](https://mp.weixin.qq.com/s/NZAJWBiFvGzCZXjr0KC9Dw)
 
-      [图解Java中那18 把锁](https://mp.weixin.qq.com/s/XCR93HSm_E0c3KDcmZk3cA)
+      :ballot_box_with_check:[图解Java中那18 把锁](https://mp.weixin.qq.com/s/XCR93HSm_E0c3KDcmZk3cA)
+
   - [常见关键字](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/常见关键字.md)
 
-    -  [死磕Synchronized源码](https://mp.weixin.qq.com/s/2ka1cDTRyjsAGk_-ii4ngw)
+    -  :ballot_box_with_check:[死磕Synchronized源码](https://mp.weixin.qq.com/s/2ka1cDTRyjsAGk_-ii4ngw)
 
-       [当Synchronized遇到这玩意儿，有个大坑，要注意！](https://mp.weixin.qq.com/s/0oUXYFxpsi6Q9MfR5NKtLQ)
+       :ballot_box_with_check:[当Synchronized遇到这玩意儿，有个大坑，要注意！](https://mp.weixin.qq.com/s/0oUXYFxpsi6Q9MfR5NKtLQ)
 
-       [面试官想到，一个Volatile，敖丙都能吹半小时](https://mp.weixin.qq.com/s/Oa3tcfAFO9IgsbE22C5TEg)
+       :ballot_box_with_check:[面试官想到，一个Volatile，敖丙都能吹半小时](https://mp.weixin.qq.com/s/Oa3tcfAFO9IgsbE22C5TEg)
+
   - [多线程锁机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/多线程锁机制.md)
+
+    ​	:ballot_box_with_check: [乐观锁、悲观锁](https://mp.weixin.qq.com/s/WtAdXvaRuBZ-SXayIKu1mA)
+
+    ​    :ballot_box_with_check: [互斥锁、自旋锁、读写锁、悲观锁、乐观锁的应用场景](https://mp.weixin.qq.com/s/6QrQ0TZVqSQq26Rms0_mvA)
+
   - [线程池知识点](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/线程池知识点.md)
+
+    - :ballot_box_with_check:[记一次线程池引发的故障 排查下来是三歪的锅](https://mp.weixin.qq.com/s/TQGtNpPiTypeKd5kUnfxEw)
+
+      :ballot_box_with_check:[深入线程池，连环17问](https://mp.weixin.qq.com/s/NDOx94yY06OnHjrYq2lVYw)
+
   - [常见的JUC工具类](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/常见的JUC工具类.md)
+
+    - [AQS](https://mp.weixin.qq.com/s/hB5ncpe7_tVovQj1sNlDRA)
+
+      :ballot_box_with_check:[我画了35张图就是为了让你深入 AQS](https://mp.weixin.qq.com/s/trsjgUFRrz40Simq2VKxTA)
+
+      :ballot_box_with_check:[1.5w字，30图带你彻底掌握 AQS！](https://mp.weixin.qq.com/s/iNz6sTen2CSOdLE0j7qu9A)
+
+      :ballot_box_with_check:[TheadLocal 引起的内存泄露故障分析](https://mp.weixin.qq.com/s/Gf4MiHPz8DynY80UmwH04Q)
+
+      :ballot_box_with_check:[终于有人把 CountDownLatch，CyclicBarrier，Semaphore 说明白了!](https://mp.weixin.qq.com/s/TDw7GnzDw5FK3RWwkIzzZA)
+
+      :ballot_box_with_check:[Java面试必问：ThreadLocal](https://mp.weixin.qq.com/s/LzkZXPtLW2dqPoz3kh3pBQ)
+
+      :ballot_box_with_check:[StampedLock](https://mp.weixin.qq.com/s/gjfeayR36vDAr3FAVd4w4g)
+
   - [多线程经典面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/并发与多线程/多线程经典面试题.md)
+
+    -  :ballot_box_with_check: [【面试】如果把线程当作一个人来对待，所有问题都瞬间明白了](https://mp.weixin.qq.com/s/PrUa0tFyu3UZllP2FRDyVA)
+
+       :ballot_box_with_check:[Java 并发进阶常见面试题总结](https://mp.weixin.qq.com/s/cdHfTTvMpH60SwG2bjTMBw)
+
+       :ballot_box_with_check:[如果你这样回答“什么是线程安全”，面试官都会对你刮目相看（建议珍藏）](https://mp.weixin.qq.com/s/WDeewsvWUEBIuabvVVhweA)
 
 - 常用工具集
 
@@ -305,9 +338,81 @@
 - 高并发架构基石-缓存
 
   - [Redis数据结构、基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis数据结构、基础知识.md)
+
+    - [Redis基础知识](https://mp.weixin.qq.com/s/aOiadiWG2nNaZowmoDQPMQ)
+
+      [图解 Redis 数据结构](https://mp.weixin.qq.com/s/qptE172slg_6Tl1yuzdbfw)
+
+      [Redis为什么这么快？](https://mp.weixin.qq.com/s/KtzvawDnQQwhfjnCoXpcMQ)
+
+      [集群高可用、哨兵、持久化、LRU](https://mp.weixin.qq.com/s/EjDeypra_d9Tfsn-WkJZdw)
+
+      [布隆过滤器(BloomFilter)](https://github.com/AobingJava/JavaFamily/blob/master/docs/redis/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8(BloomFilter).md)
+
+      [Redis—分布式锁深入探究](https://mp.weixin.qq.com/s/49hgH3COla3wU0rgyiUVgg)
+
+      [Redis—跳跃表](https://mp.weixin.qq.com/s/NOsXdrMrWwq4NTm180a6vw)
+
+      [Redis—5种基本数据结构](https://mp.weixin.qq.com/s/MT1tB2_7f5RuOxKhuEm1vQ)
+
+      [Redis—持久化](https://mp.weixin.qq.com/s/O_qDco6-Dasu3RomWIK_Ig)
+
+      [Reids—神奇的HyperLoglog解决统计问题](https://mp.weixin.qq.com/s/9dtGe3d_mbbxW5FpVPDNow)
+
+      [Redis分布式锁](https://mp.weixin.qq.com/s/Z_xriP-jc2Bnmdcm0l5xzg) 
+
+      [Redis数据结构底层系列-SDS](https://mp.weixin.qq.com/s/VY31lBOSggOHvVf54GzvYw)
+
+      [短小精悍之 Redis 命令行工具有趣的罕见用法](https://mp.weixin.qq.com/s/eSx4aL7iaMZlW0cPZswghA)
+
+      [Redis分布式锁(全)](https://mp.weixin.qq.com/s/RnSokJxYxYDeenOP_JE3fQ)
+
+      [Redis源码之BitMap](https://mp.weixin.qq.com/s/LavkCpqMTled_1m9CpJQ6w)
+
+      [Redis源码之SDS](https://mp.weixin.qq.com/s/uYUQ1P8Dq1Cdknxif7lF-g)
+
+      [读懂Redis源码，我总结了这7点心得](https://mp.weixin.qq.com/s/h-OEbiUUmKvUZqxmjfmgtg)
   - [Redis常见线上故障及其解决方案](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis常见线上故障及其解决方案.md)
+
+    -  [缓存击穿、雪崩、穿透](https://mp.weixin.qq.com/s/knz-j-m8bTg5GnKc7oeZLg)
+
+       [布隆过滤器实战【防止缓存击穿】](https://mp.weixin.qq.com/s/BdwZViiAqnFhCde4ZsxwPg)
+
+       [分布式锁、并发竞争、双写一致性](https://mp.weixin.qq.com/s/2hTgP3MRTVDxmmoUFhOaGw)
   - [Redis常见面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis常见面试题.md)
+
+    -  [Redis面试题](https://mp.weixin.qq.com/s/LkIcGS9kFTXNLFlxASPYUA)
+
+       [Redis常见面试题](https://mp.weixin.qq.com/s/R1TJMo2IbPUUMox9OAAafQ)
+
+       [Redis为什么变慢了？一文讲透如何排查Redis性能问题](https://mp.weixin.qq.com/s/rw42cFbJXwPtsGiqkFErfw)
+
+       [Redis不是一直号称单线程效率也很高吗，为什么又采用多线程了？](https://mp.weixin.qq.com/s/mscKInWNAuhCbg183Um9_g) 
+
+       [缓存一致性问题怎么解决？](https://mp.weixin.qq.com/s/dYvM8_6SQnYRB6KjPsprbw)
+
+       [内存耗尽后Redis会发生什么？](https://mp.weixin.qq.com/s/-caMTrOXQu-o0O44e6I9dQ)
+
+       [妈妈再也不担心我面试被Redis问得脸都绿了](https://mp.weixin.qq.com/s/vXBFscXqDcXS_VaIERplMQ)
   - [知识点之外的缓存之路](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/知识点之外的缓存之路.md)
+
+    -  [缓存和数据库一致性问题](https://mp.weixin.qq.com/s/D4Ik6lTA_ySBOyD3waNj1w)
+
+       [一个架构师的缓存修炼之路](https://mp.weixin.qq.com/s/Ls-Bld0Q6OQ1VD_az3iqbg)  
+
+       [再见了Antirez我永远的神](https://mp.weixin.qq.com/s/u3Ws1FGhJVIJdpM8IHI7OQ)
+
+       [敖丙在蘑菇街的redis技术分享](https://mp.weixin.qq.com/s/xS2dqi5IG10AF7cHbzguAA)
+
+       [课代表总结](https://mp.weixin.qq.com/s/lLTbL5YW0gIJu9Yx2T2OtA)
+
+       [Redis最佳实践：7个维度+43条使用规范，带你彻底玩转Redis](https://mp.weixin.qq.com/s/8EN9vrZMhCK-40o_OdnOlg)
+
+       [布隆过滤器过时了，未来属于布谷鸟过滤器？](https://mp.weixin.qq.com/s/XxY3b5FoVXCvHJWMxQH29g)
+
+       [什么鬼，面试官竟然让敖丙用Redis实现一个消息队列！！？](https://mp.weixin.qq.com/s/5NOTLJ6AM3QJfhvXMSR-MA)
+
+       [我最爱用的一款 Redis 可视化管理工具！好用到爆！！！](https://mp.weixin.qq.com/s/LDkcDO75gsivs04XXNLzTA)
 
 - 消息队列
 
