@@ -181,18 +181,61 @@
 
 - 集合框架
 
-  - [HashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/HashMap.md)
-  - [ConcurrentHashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ConcurrentHashMap.md)
-  - [ArrayList](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ArrayList.md)
-  - [Vector](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/Vector.md)
+  - :ballot_box_with_check:[HashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/HashMap.md)
+- [HashMap](https://mp.weixin.qq.com/s/0Gf2DzuzgEx0i3mHVvhKNQ)
+
+​		  [面试官：HashMap 为什么线程不安全？](https://mp.weixin.qq.com/s/VtIpj-uuxFj5Bf6TmTJMTw)
+
+​          [万万没想到，HashMap默认容量的选择，竟然背后有这么多思考！？](https://mp.weixin.qq.com/s/ktre8-C-cP_2HZxVW5fomQ)
+
+  - :ballot_box_with_check:[ConcurrentHashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ConcurrentHashMap.md)
+
+    - [ConcurrentHashMap & Hashtable（文末送书）](https://mp.weixin.qq.com/s/AixdbEiXf3KfE724kg2YIw)
+
+      [我就知道面试官接下来要问我 ConcurrentHashMap 底层原理了](https://mp.weixin.qq.com/s/My4P_BBXDnAGX1gh630ZKw)
+  - :ballot_box_with_check:[ArrayList](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ArrayList.md)
+
+    - [ArrayList](https://mp.weixin.qq.com/s/WoGclm7SsbURGigI3Mwr3w)
+
+      [ArrayList源码解析，老哥，来一起复习一哈？](https://mp.weixin.qq.com/s/3PNWmtS-bEZgZjd9wyMiDA)
+  - :ballot_box_with_check:[Vector](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/Vector.md)
+
+    -  [面试官问我同步容器（如Vector）的所有操作一定是线程安全的吗？我懵了！](https://mp.weixin.qq.com/s/0cMrE87iUxLBw_qTBMYMgA)
+
 
 - 深入浅出JVM
 
-  - [JVM内存模型](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/深入浅出JVM.md)
-  - [性能调优、线上问题排查](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/性能调优、线上问题排查.md)
-  - [类加载机制详解](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/类加载机制详解.md)
-  - [垃圾回收机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收机制.md)
-  - [垃圾回收器、垃圾回收算法](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收器、垃圾回收算法.md)
+  - :ballot_box_with_check:[JVM内存模型](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/深入浅出JVM.md)	
+
+    - [【JVM故事】了解JVM的结构，好在面试时吹牛](https://mp.weixin.qq.com/s/fit90VdZUa2pG9lbET0i7w)
+
+      [Java堆内存是线程共享的！面试官：你确定吗？](https://mp.weixin.qq.com/s/Wws24Fhg1nH4dHvtcFYi2g)
+
+      [JVM](https://mp.weixin.qq.com/s/0XqhneKz7F5A-PE9CdzyoA)
+
+      [面试系列重启：JVM篇](https://mp.weixin.qq.com/s/FEPtidbx7WKz6LbhoerRcA)
+  - :ballot_box_with_check:[性能调优、线上问题排查](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/性能调优、线上问题排查.md)
+
+    -  [线上服务的FGC问题排查，看这篇就够了！](https://mp.weixin.qq.com/s/P8s3kuceBNovUP5adXpFCQ)
+
+       [记一次大促期间JVM堆外内存泄漏故障排查记录](https://mp.weixin.qq.com/s/yutHXOi6Xl3-Qn91Pvg9wA)
+
+       [怎么排查堆内存溢出啊？](https://mp.weixin.qq.com/s/7XGD-Z3wrThv5HyoK3B8AQ)
+
+       [CPU100%，排查](https://mp.weixin.qq.com/s/roEMz-5tzBZvGxbjq8NhOQ)
+
+       [排查YGC问题](https://mp.weixin.qq.com/s/LRx9tLtx1tficWPvUWUTuQ)
+
+       [CPU飙高排查](https://mp.weixin.qq.com/s/nWghy4McYx6Ix3QPSLSmkQ)
+  - :ballot_box_with_check:[类加载机制详解](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/类加载机制详解.md)
+
+    -  [JVM必问知识点:类加载过程](https://mp.weixin.qq.com/s/eHqFONXXNc-LD4ugaKM6UA)
+  - :ballot_box_with_check:[垃圾回收机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收机制.md)
+
+    -  [看完这篇垃圾回收，和面试官扯皮没问题了](https://mp.weixin.qq.com/s/_AKQs-xXDHlk84HbwKUzOw)
+  - :ballot_box_with_check:[垃圾回收器、垃圾回收算法](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收器、垃圾回收算法.md)
+
+    - [垃圾回收底层原理](https://mp.weixin.qq.com/s/nY6vL5MlUXY1lfnIvNHMnw)
 
 - 并发与多线程
 
@@ -339,96 +382,212 @@
 
   - [Redis数据结构、基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis数据结构、基础知识.md)
 
-    - [Redis基础知识](https://mp.weixin.qq.com/s/aOiadiWG2nNaZowmoDQPMQ)
+    - :ballot_box_with_check: [Redis基础知识](https://mp.weixin.qq.com/s/aOiadiWG2nNaZowmoDQPMQ)
 
-      [图解 Redis 数据结构](https://mp.weixin.qq.com/s/qptE172slg_6Tl1yuzdbfw)
+      :ballot_box_with_check: [图解 Redis 数据结构](https://mp.weixin.qq.com/s/qptE172slg_6Tl1yuzdbfw)
 
-      [Redis为什么这么快？](https://mp.weixin.qq.com/s/KtzvawDnQQwhfjnCoXpcMQ)
+      :ballot_box_with_check:[Redis为什么这么快？](https://mp.weixin.qq.com/s/KtzvawDnQQwhfjnCoXpcMQ)
 
-      [集群高可用、哨兵、持久化、LRU](https://mp.weixin.qq.com/s/EjDeypra_d9Tfsn-WkJZdw)
+      :ballot_box_with_check: [集群高可用、哨兵、持久化、LRU](https://mp.weixin.qq.com/s/EjDeypra_d9Tfsn-WkJZdw)
 
-      [布隆过滤器(BloomFilter)](https://github.com/AobingJava/JavaFamily/blob/master/docs/redis/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8(BloomFilter).md)
+      :ballot_box_with_check: [布隆过滤器(BloomFilter)](https://github.com/AobingJava/JavaFamily/blob/master/docs/redis/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8(BloomFilter).md)
 
-      [Redis—分布式锁深入探究](https://mp.weixin.qq.com/s/49hgH3COla3wU0rgyiUVgg)
+      :ballot_box_with_check: [Redis—分布式锁深入探究](https://mp.weixin.qq.com/s/49hgH3COla3wU0rgyiUVgg)
 
-      [Redis—跳跃表](https://mp.weixin.qq.com/s/NOsXdrMrWwq4NTm180a6vw)
+      :ballot_box_with_check: [Redis—跳跃表](https://mp.weixin.qq.com/s/NOsXdrMrWwq4NTm180a6vw)
 
-      [Redis—5种基本数据结构](https://mp.weixin.qq.com/s/MT1tB2_7f5RuOxKhuEm1vQ)
+      :ballot_box_with_check: [Redis—5种基本数据结构](https://mp.weixin.qq.com/s/MT1tB2_7f5RuOxKhuEm1vQ)
 
-      [Redis—持久化](https://mp.weixin.qq.com/s/O_qDco6-Dasu3RomWIK_Ig)
+      :ballot_box_with_check: [Redis—持久化](https://mp.weixin.qq.com/s/O_qDco6-Dasu3RomWIK_Ig)
 
-      [Reids—神奇的HyperLoglog解决统计问题](https://mp.weixin.qq.com/s/9dtGe3d_mbbxW5FpVPDNow)
+      :ballot_box_with_check: [Reids—神奇的HyperLoglog解决统计问题](https://mp.weixin.qq.com/s/9dtGe3d_mbbxW5FpVPDNow)
 
-      [Redis分布式锁](https://mp.weixin.qq.com/s/Z_xriP-jc2Bnmdcm0l5xzg) 
+      :ballot_box_with_check: [Redis分布式锁](https://mp.weixin.qq.com/s/Z_xriP-jc2Bnmdcm0l5xzg) 
 
-      [Redis数据结构底层系列-SDS](https://mp.weixin.qq.com/s/VY31lBOSggOHvVf54GzvYw)
+      :ballot_box_with_check: [Redis数据结构底层系列-SDS](https://mp.weixin.qq.com/s/VY31lBOSggOHvVf54GzvYw)
 
-      [短小精悍之 Redis 命令行工具有趣的罕见用法](https://mp.weixin.qq.com/s/eSx4aL7iaMZlW0cPZswghA)
+      :ballot_box_with_check: [短小精悍之 Redis 命令行工具有趣的罕见用法](https://mp.weixin.qq.com/s/eSx4aL7iaMZlW0cPZswghA)
 
-      [Redis分布式锁(全)](https://mp.weixin.qq.com/s/RnSokJxYxYDeenOP_JE3fQ)
+      :ballot_box_with_check: [Redis分布式锁(全)](https://mp.weixin.qq.com/s/RnSokJxYxYDeenOP_JE3fQ)
 
-      [Redis源码之BitMap](https://mp.weixin.qq.com/s/LavkCpqMTled_1m9CpJQ6w)
+      :ballot_box_with_check: [Redis源码之BitMap](https://mp.weixin.qq.com/s/LavkCpqMTled_1m9CpJQ6w)
 
-      [Redis源码之SDS](https://mp.weixin.qq.com/s/uYUQ1P8Dq1Cdknxif7lF-g)
+      :ballot_box_with_check: [Redis源码之SDS](https://mp.weixin.qq.com/s/uYUQ1P8Dq1Cdknxif7lF-g)
 
-      [读懂Redis源码，我总结了这7点心得](https://mp.weixin.qq.com/s/h-OEbiUUmKvUZqxmjfmgtg)
+      :ballot_box_with_check: [读懂Redis源码，我总结了这7点心得](https://mp.weixin.qq.com/s/h-OEbiUUmKvUZqxmjfmgtg)
   - [Redis常见线上故障及其解决方案](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis常见线上故障及其解决方案.md)
 
-    -  [缓存击穿、雪崩、穿透](https://mp.weixin.qq.com/s/knz-j-m8bTg5GnKc7oeZLg)
+    -  :ballot_box_with_check: [缓存击穿、雪崩、穿透](https://mp.weixin.qq.com/s/knz-j-m8bTg5GnKc7oeZLg)
 
-       [布隆过滤器实战【防止缓存击穿】](https://mp.weixin.qq.com/s/BdwZViiAqnFhCde4ZsxwPg)
+       :ballot_box_with_check: [布隆过滤器实战【防止缓存击穿】](https://mp.weixin.qq.com/s/BdwZViiAqnFhCde4ZsxwPg)
 
-       [分布式锁、并发竞争、双写一致性](https://mp.weixin.qq.com/s/2hTgP3MRTVDxmmoUFhOaGw)
+       :ballot_box_with_check: [分布式锁、并发竞争、双写一致性](https://mp.weixin.qq.com/s/2hTgP3MRTVDxmmoUFhOaGw)
   - [Redis常见面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/Redis常见面试题.md)
 
-    -  [Redis面试题](https://mp.weixin.qq.com/s/LkIcGS9kFTXNLFlxASPYUA)
+    -  :ballot_box_with_check: [Redis面试题](https://mp.weixin.qq.com/s/LkIcGS9kFTXNLFlxASPYUA)
 
-       [Redis常见面试题](https://mp.weixin.qq.com/s/R1TJMo2IbPUUMox9OAAafQ)
+       :ballot_box_with_check: [Redis常见面试题](https://mp.weixin.qq.com/s/R1TJMo2IbPUUMox9OAAafQ)
 
-       [Redis为什么变慢了？一文讲透如何排查Redis性能问题](https://mp.weixin.qq.com/s/rw42cFbJXwPtsGiqkFErfw)
+       :ballot_box_with_check: [Redis为什么变慢了？一文讲透如何排查Redis性能问题](https://mp.weixin.qq.com/s/rw42cFbJXwPtsGiqkFErfw)
 
-       [Redis不是一直号称单线程效率也很高吗，为什么又采用多线程了？](https://mp.weixin.qq.com/s/mscKInWNAuhCbg183Um9_g) 
+       :ballot_box_with_check: [Redis不是一直号称单线程效率也很高吗，为什么又采用多线程了？](https://mp.weixin.qq.com/s/mscKInWNAuhCbg183Um9_g) 
 
-       [缓存一致性问题怎么解决？](https://mp.weixin.qq.com/s/dYvM8_6SQnYRB6KjPsprbw)
+       :ballot_box_with_check: [缓存一致性问题怎么解决？](https://mp.weixin.qq.com/s/dYvM8_6SQnYRB6KjPsprbw)
 
-       [内存耗尽后Redis会发生什么？](https://mp.weixin.qq.com/s/-caMTrOXQu-o0O44e6I9dQ)
+       :ballot_box_with_check: [内存耗尽后Redis会发生什么？](https://mp.weixin.qq.com/s/-caMTrOXQu-o0O44e6I9dQ)
 
-       [妈妈再也不担心我面试被Redis问得脸都绿了](https://mp.weixin.qq.com/s/vXBFscXqDcXS_VaIERplMQ)
+       :ballot_box_with_check: [妈妈再也不担心我面试被Redis问得脸都绿了](https://mp.weixin.qq.com/s/vXBFscXqDcXS_VaIERplMQ)
   - [知识点之外的缓存之路](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/缓存/知识点之外的缓存之路.md)
 
-    -  [缓存和数据库一致性问题](https://mp.weixin.qq.com/s/D4Ik6lTA_ySBOyD3waNj1w)
+    -  :ballot_box_with_check: [缓存和数据库一致性问题](https://mp.weixin.qq.com/s/D4Ik6lTA_ySBOyD3waNj1w)
 
-       [一个架构师的缓存修炼之路](https://mp.weixin.qq.com/s/Ls-Bld0Q6OQ1VD_az3iqbg)  
+       :ballot_box_with_check: [一个架构师的缓存修炼之路](https://mp.weixin.qq.com/s/Ls-Bld0Q6OQ1VD_az3iqbg)  
 
-       [再见了Antirez我永远的神](https://mp.weixin.qq.com/s/u3Ws1FGhJVIJdpM8IHI7OQ)
+       :ballot_box_with_check: [再见了Antirez我永远的神](https://mp.weixin.qq.com/s/u3Ws1FGhJVIJdpM8IHI7OQ)
 
-       [敖丙在蘑菇街的redis技术分享](https://mp.weixin.qq.com/s/xS2dqi5IG10AF7cHbzguAA)
+       :ballot_box_with_check: [敖丙在蘑菇街的redis技术分享](https://mp.weixin.qq.com/s/xS2dqi5IG10AF7cHbzguAA)
 
-       [课代表总结](https://mp.weixin.qq.com/s/lLTbL5YW0gIJu9Yx2T2OtA)
+       :ballot_box_with_check: [课代表总结](https://mp.weixin.qq.com/s/lLTbL5YW0gIJu9Yx2T2OtA)
 
-       [Redis最佳实践：7个维度+43条使用规范，带你彻底玩转Redis](https://mp.weixin.qq.com/s/8EN9vrZMhCK-40o_OdnOlg)
+       :ballot_box_with_check: [Redis最佳实践：7个维度+43条使用规范，带你彻底玩转Redis](https://mp.weixin.qq.com/s/8EN9vrZMhCK-40o_OdnOlg)
 
-       [布隆过滤器过时了，未来属于布谷鸟过滤器？](https://mp.weixin.qq.com/s/XxY3b5FoVXCvHJWMxQH29g)
+       :ballot_box_with_check: [布隆过滤器过时了，未来属于布谷鸟过滤器？](https://mp.weixin.qq.com/s/XxY3b5FoVXCvHJWMxQH29g)
 
-       [什么鬼，面试官竟然让敖丙用Redis实现一个消息队列！！？](https://mp.weixin.qq.com/s/5NOTLJ6AM3QJfhvXMSR-MA)
+       :ballot_box_with_check: [什么鬼，面试官竟然让敖丙用Redis实现一个消息队列！！？](https://mp.weixin.qq.com/s/5NOTLJ6AM3QJfhvXMSR-MA)
 
-       [我最爱用的一款 Redis 可视化管理工具！好用到爆！！！](https://mp.weixin.qq.com/s/LDkcDO75gsivs04XXNLzTA)
+       :ballot_box_with_check: [我最爱用的一款 Redis 可视化管理工具！好用到爆！！！](https://mp.weixin.qq.com/s/LDkcDO75gsivs04XXNLzTA)
 
 - 消息队列
 
-  - [消息队列基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/消息队列基础.md)
-  - [Kafka](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/kafka.md)
-  - [RocketMQ](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/RocketMQ.md)
-  - [消息队列面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/消息队列面试题.md)
+  - :ballot_box_with_check: [消息队列基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/消息队列基础.md)
+
+    - [消息队列基础知识](https://mp.weixin.qq.com/s/Qhw4oS0OeN1N7uT1z6rbqg)
+
+      [用通俗的语言介绍 RPC 框架的架构原理](https://mp.weixin.qq.com/s/jKr_ZDPww8A9huLAMBPEIQ)
+
+      [消息重复消费、分布式事务、顺序消费](https://mp.weixin.qq.com/s/OKon95MRUqDc9IwtEqPSjQ)
+  - :ballot_box_with_check: [Kafka](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/kafka.md)
+
+    - [Kafka架构与原理](https://mp.weixin.qq.com/s/-IPfWPS1WQMEgcIu0Ak2VQ)
+
+      [Kafka 架构设计](https://mp.weixin.qq.com/s/8wfZEsNDpeLr-_uu2CawFw)
+
+      [Kafka性能篇：为何Kafka这么"快"？](https://mp.weixin.qq.com/s/kMIhPW2uLdy-mgS9sF6agw)
+
+      [Kafka 精妙的高性能设计（上篇）](https://mp.weixin.qq.com/s/kImrkVLE4dtpVnb-Yp479Q)
+
+      [Kafka 精妙的高性能设计（下篇）](https://mp.weixin.qq.com/s/YJFltTP4J5si1Z5SbuMUJw)
+
+      [kafka夺命连环11问](https://mp.weixin.qq.com/s/sFUvgaQUXSA8b4hshhbwOQ)
+  - :ballot_box_with_check: [RocketMQ](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/RocketMQ.md)
+
+    -  [RocketMQ](https://mp.weixin.qq.com/s/y-4TVwbc7AFGEA7q-_OkYw)
+  - :ballot_box_with_check: [消息队列面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/mq/消息队列面试题.md)
+
+    -  [面试题：如何保证消息不丢失？处理重复消息？消息有序性？消息堆积处理？](https://mp.weixin.qq.com/s/1r1x-Irbatvzdc90haaecA)
+
+       [面试官：你对Kafka比较熟？ 那说说kafka日志段如何读写的吧？](https://mp.weixin.qq.com/s/68XX9qnEvDTCOw8gYLNBxQ)
+
+       [师兄大厂面试遇到面试官的 Kafka 暴击三连问，快面哭了！](https://mp.weixin.qq.com/s/ejZBAGI7qLE_QYSe-AqipA)
+
+       [消息队列之推还是拉，RocketMQ 和 Kafka是如何做的？](https://mp.weixin.qq.com/s/S_0YCwUtyQqeBml02jPYqg)
 
 - 数据库
 
-  - [MySQL基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/MySQL基础知识.md)
-  - [索引、锁机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/索引、锁机制.md)
-  - [事务特性、隔离级别、数据安全](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/事务特性、隔离级别、数据安全.md)
-  - [数据库性能调优](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/数据库性能调优.md)
-  - [分库分表](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/分库分表.md)
-  - [数据库面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/数据库面试题.md)
+  - :ballot_box_with_check:[MySQL基础知识](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/MySQL基础知识.md)
+
+    -  [国庆肝了8天整整2W字的数据库知识点](https://mp.weixin.qq.com/s/J3kCOJwyv2nzvI0_X0tlnA)
+
+       [MySQL大表怎么DDL变更](https://mp.weixin.qq.com/s/pinOFeF09orQCnIp4L6XyA)
+
+       [MySql主从复制，从原理到实践！](https://mp.weixin.qq.com/s/eEWMSTAUF1H-gFBx26jujw)
+
+       [MySQL查询缓存](https://mp.weixin.qq.com/s/LZBctWNWi3qehb-dgUCmxQ)
+
+       [MySQL 的 InnoDB 存储引擎是怎么设计的？](https://mp.weixin.qq.com/s/wr2gJGQSA8QH_lmPh1XOkw)
+
+       [你怎么连模糊匹配like %%怎么优化都不知道](https://mp.weixin.qq.com/s/ygvuP35B_sJAlBHuuEJhfg)
+
+       [数据库基础知识](https://mp.weixin.qq.com/s/NDL1Q6nqdPq5oMBWSpq4ug)
+
+       [MySQL面试夺命20问](https://mp.weixin.qq.com/s/vwHkXGNCdRdx8k7BeBMy9w)
+
+       [mysql 的一行记录是怎么存储的？](https://mp.weixin.qq.com/s/3d66-yXVZoDFRG1wyRw7kA)
+
+       [MySQL的性能到底有多强？](https://mp.weixin.qq.com/s/Chsfldp_BUNOFFCoCPN-ZQ)
+
+       [MySql 35卷](https://mp.weixin.qq.com/s/MaVYENapeJcLNpYcR7tqBQ)
+
+       [为什么 MySQL 喜欢 B+ 树？](https://mp.weixin.qq.com/s/AoPq8poENF9T4mVS1fDFPw)
+  - :ballot_box_with_check:[索引、锁机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/索引、锁机制.md)
+
+    -  [数据库索引](https://mp.weixin.qq.com/s/_9rDde9wRYoZeh07EASNQQ)
+
+       [一口气搞懂MySQL索引所有知识点](https://mp.weixin.qq.com/s/faOaXRQM8p0kwseSHaMCbg)
+
+       [你都是如何设计索引的？](https://mp.weixin.qq.com/s/fShA7jxjshKyHEHfVDrLVA)
+
+       [MySQL的索引是怎么加速查询的？](https://mp.weixin.qq.com/s/7TPVOT7sloDUKmhldf9uvg)
+
+       [索引下推](https://mp.weixin.qq.com/s/87qsrj-_hG54uxcOlFr35Q)
+
+       [MySQL 的全局锁、表锁和行锁](https://mp.weixin.qq.com/s/1LGJjbx_n_cvZndjM3R8mQ)
+
+       [聊聊索引失效？](https://mp.weixin.qq.com/s/WnO_4SoEL6jugkxPHW4KCg)
+  - :ballot_box_with_check:[事务特性、隔离级别、数据安全](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/事务特性、隔离级别、数据安全.md)
+
+    -  [MySQL安全方案](https://mp.weixin.qq.com/s/rQDitOOnLpLEoj8M11NHwg)
+
+       [数据库连接池到底应该设多大？这篇文章可能会颠覆你的认知](https://mp.weixin.qq.com/s/dQFSrXEmgBMh1PW835rlwQ)
+
+       [数据库设计](https://mp.weixin.qq.com/s/yo_LJ6IwGnjiBXSA7ZHdOA)
+
+       [漫话：如何给女朋友解释什么是撞库、脱库和洗库？](https://mp.weixin.qq.com/s/L0XUMHInnwN9gSYGH2nzdg)
+
+       [MVCC和事务隔离级别的关系](https://mp.weixin.qq.com/s/0-YEqTMd0OaIhW99WqavgQ)
+
+       [MySQL事务与MVCC如何实现的隔离级别](https://mp.weixin.qq.com/s/CZHuGT4sKs_QHD_bv3BfAQ)
+
+       [数据库事务](https://mp.weixin.qq.com/s/iFmvvt4DJ-_qFeb0XUh6QA)
+
+       [MySQL 默认隔离级别是RR，为什么阿里等大厂会改成RC？](https://mp.weixin.qq.com/s/mIz0T0v68_dvUgCrj-qdug)
+  - :ballot_box_with_check:[数据库性能调优](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/数据库性能调优.md)
+
+    -  [为什么MySQL不建议使用delete删除数据？](https://mp.weixin.qq.com/s/7dpNkLaglIyb_9DKdH43eQ)
+
+       [工作以来总结的大厂SQL调优姿势](https://mp.weixin.qq.com/s/nEmN4S9JOTVGj5IHyfNtCw)
+
+       [为啥阿里巴巴不建议MySQL使用Text类型？](https://mp.weixin.qq.com/s/oVjm_iLvbkximBjHv9d8ig)
+
+       [用对了这些场景下的索引，技术总监夸我棒](https://mp.weixin.qq.com/s/-gmAPfiKMNJgHhIZqR2C4A)
+
+       [MySQL索引凭什么让查询效率提高这么多？](https://mp.weixin.qq.com/s/qESZSzHoxUKQRJhb1EQA_Q)
+
+       [MySQL调优](https://mp.weixin.qq.com/s/e0CqJG2-PCDgKLjQfh02tw)
+  - :ballot_box_with_check:[分库分表](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/分库分表.md)
+
+    - [我们为什么要分库分表？](https://mp.weixin.qq.com/s/-Jipxjwe-jAax4hJSe-9Jg)
+
+      [分库分表方案](https://mp.weixin.qq.com/s/dMqXBW6W8DeqfAPvko3ViQ)
+  - :ballot_box_with_check:[数据库面试题](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/db/数据库面试题.md)
+
+    -  [innodb是如何插入数据的?](https://mp.weixin.qq.com/s/SqSPxSRslkjUcDasBHGRSQ)
+
+       [数据库自增ID用完了会怎么样？](https://mp.weixin.qq.com/s/qEA1pC2pfh3xz9HuM8iIBg)
+
+       [阿里面试：说说一致性读实现原理？](https://mp.weixin.qq.com/s/qHzb6oPrrbAPoIlfLJVNAg)
+
+       [我说 SELECT COUNT(*) 会造成全表扫描，面试官让我回去等通知](https://mp.weixin.qq.com/s/SNRvdmyS57oWS_CyYKVvSA)
+
+       [原来MySQL面试还会问这些(undo log)](https://mp.weixin.qq.com/s/Lx4TNPLQzYaknR7D3gmOmQ)
+
+       [explain](https://mp.weixin.qq.com/s/izOKK9Ft5wLts8hWIo4ODQ)
+
+       [你说说一条更新SQL的执行过程？](https://mp.weixin.qq.com/s/-5N6eg1yMBUvDMbJOXp0eg)
+
+       [一条SQL语句执行得很慢的原因有哪些？](https://mp.weixin.qq.com/s/YKmFEtHcZPBn1S9so0kxYw)
+
+       [数据库的锁，到底锁的是什么？](https://mp.weixin.qq.com/s/mvG0wVr2kpbM8iqfZnimiQ)
 
 - 大数据
 

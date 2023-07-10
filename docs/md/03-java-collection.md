@@ -2,6 +2,29 @@
 
 # 第2节：容器
 
+- - [HashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/HashMap.md)
+    - [HashMap](https://mp.weixin.qq.com/s/0Gf2DzuzgEx0i3mHVvhKNQ)
+
+​		  [面试官：HashMap 为什么线程不安全？](https://mp.weixin.qq.com/s/VtIpj-uuxFj5Bf6TmTJMTw)
+
+​          [万万没想到，HashMap默认容量的选择，竟然背后有这么多思考！？](https://mp.weixin.qq.com/s/ktre8-C-cP_2HZxVW5fomQ)
+
+  - [ConcurrentHashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ConcurrentHashMap.md)
+
+    - [ConcurrentHashMap & Hashtable（文末送书）](https://mp.weixin.qq.com/s/AixdbEiXf3KfE724kg2YIw)
+
+      [我就知道面试官接下来要问我 ConcurrentHashMap 底层原理了](https://mp.weixin.qq.com/s/My4P_BBXDnAGX1gh630ZKw)
+
+  - [ArrayList](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ArrayList.md)
+
+    - [ArrayList](https://mp.weixin.qq.com/s/WoGclm7SsbURGigI3Mwr3w)
+
+      [ArrayList源码解析，老哥，来一起复习一哈？](https://mp.weixin.qq.com/s/3PNWmtS-bEZgZjd9wyMiDA)
+
+  - [Vector](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/Vector.md)
+
+    -  
+
 ## ArrayList
 
 #### 自动扩容

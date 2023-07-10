@@ -4,9 +4,11 @@
 
 
 
-# Redis
+# 第十六节 Redis
 
 >[Redis为什么这么快？ (qq.com)](https://mp.weixin.qq.com/s/KtzvawDnQQwhfjnCoXpcMQ)
+>
+>[短小精悍之 Redis 命令行工具有趣的罕见用法 (qq.com)](https://mp.weixin.qq.com/s/eSx4aL7iaMZlW0cPZswghA)
 
 ## 简介
 
@@ -33,9 +35,17 @@
 
 ## 数据结构
 
-Redis内部使用一个redisObject对象来表示所有的key和value
+> [Redis—5种基本数据结构 (qq.com)](https://mp.weixin.qq.com/s/MT1tB2_7f5RuOxKhuEm1vQ)
+>
+> [敖丙带你看Redis数据结构底层系列-SDS (qq.com)](https://mp.weixin.qq.com/s/VY31lBOSggOHvVf54GzvYw)
+>
+> [面试杀手锏：Redis源码之SDS (qq.com)](https://mp.weixin.qq.com/s/uYUQ1P8Dq1Cdknxif7lF-g)
+>
+> [读懂Redis源码，我总结了这7点心得 (qq.com)](https://mp.weixin.qq.com/s/h-OEbiUUmKvUZqxmjfmgtg)
+>
+> [面试杀手锏：Redis源码之BitMap (qq.com)](https://mp.weixin.qq.com/s/LavkCpqMTled_1m9CpJQ6w)
 
-​                 ![img](https://wdcdn.qpic.cn/MTY4ODg1MTI2MTkxMzIyMQ_283750_V1WWf1-VS0QimcVL_1656491776?w=640&h=300)      
+Redis内部使用一个redisObject对象来表示所有的key和value                ![img](https://wdcdn.qpic.cn/MTY4ODg1MTI2MTkxMzIyMQ_283750_V1WWf1-VS0QimcVL_1656491776?w=640&h=300)      
 
 ### String
 
@@ -106,7 +116,7 @@ BloomFilter(布隆过滤器)
 
 
 
-- - - 
+- - -
 - List
   - 分页的坑
 - HyperLogLog
@@ -142,6 +152,10 @@ BloomFilter(布隆过滤器)
 
 ## 缓存雪崩
 
+> [《吊打面试官》系列-缓存雪崩、击穿、穿透 (qq.com)](https://mp.weixin.qq.com/s/knz-j-m8bTg5GnKc7oeZLg)
+>
+> [布隆过滤器实战【防止缓存击穿】（开头附：我和三歪、鸡蛋的流感惊魂） (qq.com)](https://mp.weixin.qq.com/s/BdwZViiAqnFhCde4ZsxwPg)
+
 大量缓存同一时间失效，请求全落在数据库上
 
 解决方案：
@@ -150,7 +164,7 @@ BloomFilter(布隆过滤器)
 2. 如果 Redis 是集群部署，将热点数据均匀分布在不同的 Redis 库中也能避免全部失效。
 3. 限流，避免同时处理大量的请求。
 
-## **缓存穿透和击穿**
+## 缓存穿透和击穿
 
 - 缓存穿透是指缓存和数据库中都没有的数据，而用户（黑客）不断发起请求。
 - 缓存击穿不同的是缓存击穿是指一个 Key 非常热点，在不停地扛着大量的请求，大并发集中对这一个点进行访问，当这个 Key 在失效的瞬间，持续的大并发直接落到了数据库上，就在这个 Key 的点上击穿了缓存。
@@ -189,6 +203,8 @@ BloomFilter(布隆过滤器)
 ![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpw3kedn8KYhTFdutS1fDAiaqTqoQmnM3mySKvBNrFr4U6R70kDkv4nVlQrW1VL5bPibQzfNYEC6cZqA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
 
 ## 持久化
+
+> [mp.weixin.qq.com/s/O_qDco6-Dasu3RomWIK_Ig](https://mp.weixin.qq.com/s/O_qDco6-Dasu3RomWIK_Ig)
 
 Redis 4.0 开始支持 RDB 和 AOF 的混合持久化（默认关闭，可以通过配置项 aof-use-rdb-preamble 开启）。
 
@@ -378,6 +394,10 @@ Redis 通过IO 多路复用程序 来监听来自客户端的大量连接（或�
 
 [Redis—分布式锁深入探究 (qq.com)](https://mp.weixin.qq.com/s/49hgH3COla3wU0rgyiUVgg)
 
+[姗姗来迟的Redis分布式锁 (qq.com)](https://mp.weixin.qq.com/s/Z_xriP-jc2Bnmdcm0l5xzg)
+
+[Redis分布式锁到底安全吗？ (qq.com)](https://mp.weixin.qq.com/s/RnSokJxYxYDeenOP_JE3fQ)
+
 **redis服务停了锁会不会释放**
 
 默认锁有效时间为30s,如果正常占用锁的时间大于30s redisson还会有一个看门狗机制 如果我们未制定 lock 的超时时间，就使用 30 秒作为看门狗的默认时间。只要占锁成功，就会启动一个定时任务：每隔 10 秒重新给锁设置过期的时间，过期时间为 30 秒。
@@ -511,6 +531,40 @@ min-slaves-max-lag 10
 ## 其他
 
 >[《吊打面试官》系列-Redis基础 (qq.com)](https://mp.weixin.qq.com/s/aOiadiWG2nNaZowmoDQPMQ)
+>
+>[《吊打面试官》系列-Redis终章_凛冬将至 FPX_新王登基 (qq.com)](https://mp.weixin.qq.com/s/2hTgP3MRTVDxmmoUFhOaGw)
+>
+>[Redis面试题](https://mp.weixin.qq.com/s/LkIcGS9kFTXNLFlxASPYUA)
+>
+>[Redis常见面试题](https://mp.weixin.qq.com/s/R1TJMo2IbPUUMox9OAAafQ)
+>
+>[Redis为什么变慢了？一文讲透如何排查Redis性能问题](https://mp.weixin.qq.com/s/rw42cFbJXwPtsGiqkFErfw)
+>
+>[Redis不是一直号称单线程效率也很高吗，为什么又采用多线程了？](https://mp.weixin.qq.com/s/mscKInWNAuhCbg183Um9_g) 
+>
+>[缓存一致性问题怎么解决？](https://mp.weixin.qq.com/s/dYvM8_6SQnYRB6KjPsprbw)
+>
+>[内存耗尽后Redis会发生什么？](https://mp.weixin.qq.com/s/-caMTrOXQu-o0O44e6I9dQ)
+>
+>[妈妈再也不担心我面试被Redis问得脸都绿了](https://mp.weixin.qq.com/s/vXBFscXqDcXS_VaIERplMQ)
+>
+>[缓存和数据库一致性问题](https://mp.weixin.qq.com/s/D4Ik6lTA_ySBOyD3waNj1w)
+>
+>[一个架构师的缓存修炼之路](https://mp.weixin.qq.com/s/Ls-Bld0Q6OQ1VD_az3iqbg)  
+>
+>[再见了Antirez我永远的神](https://mp.weixin.qq.com/s/u3Ws1FGhJVIJdpM8IHI7OQ)
+>
+>[敖丙在蘑菇街的redis技术分享](https://mp.weixin.qq.com/s/xS2dqi5IG10AF7cHbzguAA)
+>
+>[课代表总结](https://mp.weixin.qq.com/s/lLTbL5YW0gIJu9Yx2T2OtA)
+>
+>[Redis最佳实践：7个维度+43条使用规范，带你彻底玩转Redis](https://mp.weixin.qq.com/s/8EN9vrZMhCK-40o_OdnOlg)
+>
+>[布隆过滤器过时了，未来属于布谷鸟过滤器？](https://mp.weixin.qq.com/s/XxY3b5FoVXCvHJWMxQH29g)
+>
+>[什么鬼，面试官竟然让敖丙用Redis实现一个消息队列！！？](https://mp.weixin.qq.com/s/5NOTLJ6AM3QJfhvXMSR-MA)
+>
+>[我最爱用的一款 Redis 可视化管理工具！好用到爆！！！](https://mp.weixin.qq.com/s/LDkcDO75gsivs04XXNLzTA)
 
 ### 假如Redis里面有1亿个key，其中有10w个key是以某个固定的已知的前缀开头的，如何将它们全部找出来？
 

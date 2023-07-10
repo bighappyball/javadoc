@@ -1,4 +1,40 @@
-# **虚拟机**
+# 虚拟机
+
+- [JVM内存模型](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/深入浅出JVM.md)	
+
+  - [【JVM故事】了解JVM的结构，好在面试时吹牛](https://mp.weixin.qq.com/s/fit90VdZUa2pG9lbET0i7w)
+
+    [Java堆内存是线程共享的！面试官：你确定吗？](https://mp.weixin.qq.com/s/Wws24Fhg1nH4dHvtcFYi2g)
+
+    [JVM](https://mp.weixin.qq.com/s/0XqhneKz7F5A-PE9CdzyoA)
+
+    [面试系列重启：JVM篇](https://mp.weixin.qq.com/s/FEPtidbx7WKz6LbhoerRcA)
+
+- [性能调优、线上问题排查](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/性能调优、线上问题排查.md)
+
+  -  [线上服务的FGC问题排查，看这篇就够了！](https://mp.weixin.qq.com/s/P8s3kuceBNovUP5adXpFCQ)
+
+     [记一次大促期间JVM堆外内存泄漏故障排查记录](https://mp.weixin.qq.com/s/yutHXOi6Xl3-Qn91Pvg9wA)
+
+     [怎么排查堆内存溢出啊？](https://mp.weixin.qq.com/s/7XGD-Z3wrThv5HyoK3B8AQ)
+
+     [CPU100%，排查](https://mp.weixin.qq.com/s/roEMz-5tzBZvGxbjq8NhOQ)
+
+     [排查YGC问题](https://mp.weixin.qq.com/s/LRx9tLtx1tficWPvUWUTuQ)
+
+     [CPU飙高排查](https://mp.weixin.qq.com/s/nWghy4McYx6Ix3QPSLSmkQ)
+
+- [类加载机制详解](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/类加载机制详解.md)
+
+  -  [JVM必问知识点:类加载过程](https://mp.weixin.qq.com/s/eHqFONXXNc-LD4ugaKM6UA)
+
+- [垃圾回收机制](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收机制.md)
+
+  -  [看完这篇垃圾回收，和面试官扯皮没问题了](https://mp.weixin.qq.com/s/_AKQs-xXDHlk84HbwKUzOw)
+
+- [垃圾回收器、垃圾回收算法](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/jvm/垃圾回收器、垃圾回收算法.md)
+
+  - [垃圾回收底层原理](https://mp.weixin.qq.com/s/nY6vL5MlUXY1lfnIvNHMnw)
 
 ## 类加载机制
 
