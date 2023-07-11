@@ -62,7 +62,7 @@ RPC，Remote Procedure Call 即远程过程调用，远程过程调用其实对�
 
 ### 总体架构
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpysOH9vvW1SMXroibXRCiaJz3eNQBQ3nAcsibCX2mdibg9yX6xic2ld0Ezb76lLrQsdAzuoE3FAB5Reib8A/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640.jpeg)
 
 | 节点      | 角色说明                     |
 | :-------- | :--------------------------- |
@@ -130,9 +130,304 @@ Proxy 持有一个 Invoker 对象，调用 invoke 之后需要通过 Cluster 先
 
 完成整个调用过程！
 
-## Dubbo负载均衡
+## Dubbo集群容错
 
 >[妹妹问我：Dubbo集群容错负载均衡 (qq.com)](https://mp.weixin.qq.com/s/-IkHNAM4B0R_j50LkQunig)
+
+### invoker是什么
+
+其实这个在之前就说过了，今天再来复习一遍，因为真的很关键。
+
+在 Dubbo 中 invoker 其实就是一个具有调用功能的对象，在服务暴露端封装的就是真实的服务实现，把真实的服务实现封装一下变成一个 invoker。
+
+在服务引入端就是从注册中心得到服务提供者的配置信息，然后一条配置信息对应封装成一个 invoker，这个 invoker 就具备远程调用能力，当然要是走的是 injvm 协议那真实走的还是本地的调用。
+
+然后还有个 ClusterInvoker ，它也是个 invoker ，它封装了服务引入生成的 invoker 们，赋予其集群容错等能力，这个 invoker 就是暴露给消费者调用的 invoker。
+
+所以说 Dubbo 就是搞了个统一模型，将能**调用的服务的对象都封装成 invoker**。
+
+我们今天主要讲的是服务消费者这边的事情，因为**集群容错是消费者端实现的**。
+
+![图片](../_media/dubbo/640-1689058699756-20.jpeg)
+
+### 服务目录到底是什么
+
+服务目录也就是 Directory，其实之前也介绍过的，但不是单独拎出来讲的，可能大伙儿还不太清晰，今儿咱再来盘一下。
+
+服务目录到底是个什么东西呢，看名字好像就是服务的目录，通过这个目录来查找远程服务？
+
+对了一半！可以通过服务目录来查找远程服务，但是它不是"目录"，实际上它是一堆 invoker 的集合，
+
+前面说到服务的提供者都会集群部署，所有同样的服务会有多个提供者，因此就搞个服务目录来聚集它们，到时候要选择的时候就去服务目录里挑。
+
+而服务提供者们也不是一成不变的，比如集群中加了一台服务提供者，那么相应的服务目录就需要添加一个 invoker，下线了一台服务提供者，目录里面也需要删除对应的 invoker，修改了配置也一样得更新。
+
+所以这个服务目录其实还实现了监听注册中心的功能（指的是 RegistryDirectory ）。
+
+![图片](../_media/dubbo/640-1689058706065-23.png)
+
+这个 Node 就不管了，主要是看 Directory ，正常操作搞一个抽象类来实现 Directory 接口，抽象类会实现一些公共方法，并且定义好逻辑，然后具体的实现由子类来完成，可以看到有两个子类，分别是 StaticDirectory 和 RegistryDirectory。
+
+### RegistryDirectory
+
+我们先来看下 RegistryDirectory ，它是一个动态目录，我们来看一下具体的结构。
+
+![图片](../_media/dubbo/640-1689058710763-26.png)
+
+从截图可以看到 RegistryDirectory 内部存储了 DemoService 的两个服务提供者 url 和对应的 invoker。
+
+而且从上面的继承结构也可以看出，它实现了 NotifyListener 接口，所以它可以监听注册中心的变化，当服务中心的配置发生变化之后， RegistryDirectory 就可以收到变更通知，然后根据配置刷新其 Invoker 列表。
+
+所以说 RegistryDirectory 一共有三大作用：
+
+1. 获取 invoker 列表
+2. 监听注册中心的变化
+3. 刷新 invokers。
+
+**获取 invoker 列表**，RegistryDirectory 实现的父类抽象方法 doList，其目的就是得到 invoker 列表，而其内部的实现主要是做了层方法名的过滤，通过方法名找到对应的 invokers。
+
+![图片](../_media/dubbo/640-1689058715583-29.png)
+
+**监听注册中心的变化**，通过实现 NotifyListener 接口能感知到注册中心的数据变更，这其实是在服务引入的时候就订阅的。
+
+```java
+    public void subscribe(URL url) {
+        setConsumerUrl(url);
+        registry.subscribe(url, this); //订阅
+    }
+```
+
+RegistryDirectory 定义了三种集合，分别是 invokerUrls 、routerUrls 、configuratorUrls 分别处理相应的配置变化，然后对应转化成对象。
+
+![图片](../_media/dubbo/640-1689058724409-32.png)
+
+**刷新 Invoker 列表**，其实就是根据监听变更的 invokerUrls 做一波操作，`refreshInvoker(invokerUrls)`, 根据配置更新 invokers。
+
+![图片](../_media/dubbo/640-1689058727648-35.png)
+
+简单的说就是先根据 invokerUrls 数量和协议头是否是 empty，来决定是否禁用所有 invokers，如果不禁用，则将 url 转成 Invoker，得到 <url, Invoker> 的映射关系。
+
+然后再进行转换，得到 <方法名, Invoker 列表> 映射关系，再将同一个组的 Invoker 进行合并，并将合并结果赋值给 methodInvokerMap，这个 methodInvokerMap 就是上面 doList 中使用的那个 Map。
+
+所以是在 refreshInvoker 的时候构造 methodInvokerMap，然后在调用的时候再读 methodInvokerMap，最后再销毁无用的 invoker。
+
+### StaticDirectory
+
+StaticDirectory，这个是**用在多注册中心的时候，它是一个静态目录，即固定的不会增减的**，所有 Invoker 是通过构造器来传入。
+
+可以简单的理解成在**单注册中心**下我们配置的一条 reference 可能对应有多个 provider，然后生成多个 invoker，我们将它们存入 RegistryDirectory 中进行管理，为了便于调用再对外只暴露出一个 invoker 来封装内部的多 invoker 情况。
+
+那多个注册中心就会有多个已经封装好了的 invoker ，这又面临了选择了，于是我们用 StaticDirectory 再来存入这些 invoker 进行管理，也再封装起来对外只暴露出一个 invoker 便于调用。
+
+之所以是静态的是因为多注册中心是写在配置里面的，不像服务可以动态变更。
+
+StaticDirectory 的内部逻辑非常的简单，就是一个 list 存储了这些 invokers，然后实现父类的方法也就单纯的返回这个 list 不做任何操作。
+
+![图片](../_media/dubbo/640-1689058734762-38.png)
+
+### 什么是服务路由
+
+服务路由其实就是路由规则，它规定了服务消费者可以调用哪些服务提供者，Dubbo 一共有三种路由分别是：条件路由 ConditionRouter、脚本路由 ScriptRouter 和标签路由 TagRouter。
+
+最常用的就是条件路由，我们就分析下条件路由。
+
+条件路由是两个条件组成的，是这么个格式 `[服务消费者匹配条件] => [服务提供者匹配条件]`，举个例子官网的例子就是 `host = 10.20.153.10 => host = 10.20.153.11`。
+
+该条规则表示 IP 为 10.20.153.10 的服务消费者只可调用 IP 为 10.20.153.11 机器上的服务，不可调用其他机器上的服务。
+
+这就叫路由了。
+
+路由的配置一样是通过 RegistryDirectory 的 notify 更新和构造的，然后路由的调用在是刷新 invoker 的时候，具体是在调用 `toMethodInvokers` 的时候会进行服务级别的路由和方法级别的路由。
+
+![图片](../_media/dubbo/640-1689058739047-41.png)
+
+具体的路由匹配和表达式解析就不深入了，有兴趣的同学自行了解，其实知道这个功能是干嘛的差不多了，反正经过路由的过滤之后消费者拿到的都是能调用的远程服务。
+
+### Dubbo的Cluster有什么用
+
+前面我们已经说了有服务目录，并且目录还经过了路由规则的过滤，此时我们手上还是有一堆 invokers，那对于消费者来说就需要进行抉择，那到底选哪个 invoker 进行调用呢？
+
+假设选择的那个 invoker 调用出错了怎么办？前面我们已经提到了，这时候就是 cluster 登场的时候了，它会把这一堆 invoker 封装成 clusterInovker，给到消费者调用的就只有一个 invoker 了，
+
+然后在这个 clusterInovker 内部还能做各种操作，比如选择一个 invoker ，调用出错了可以换一个等等。
+
+这些细节都被封装了，消费者感受不到这个复杂度，所以 cluster 就是一个中间层，为消费者屏蔽了服务提供者的情况，简化了消费者的使用。
+
+并且也更加方便的替换各种集群容错措施。
+
+Dubbo 默认的 cluster 实现有很多，主要有以下几种：
+
+![图片](../_media/dubbo/640-1689058743641-44.png)
+
+每个 Cluster 内部其实返回的都是 XXXClusterInvoker，我就举一下 FailoverCluster 这个例子。
+
+![图片](../_media/dubbo/640-1689058747547-47.png)
+
+就下来我们就每个 Cluster 过一遍。
+
+### FailoverClusterInvoker
+
+这个 cluster 实现的是失败自动切换功能，简单的说一个远程调用失败，它就立马换另一个，当然是有重试次数的。
+
+![图片](../_media/dubbo/640-1689058750580-50.png)
+
+可以看到 doInvoke 方法首先是获取重试次数，然后根据重试次数进行循环调用，会 catch 住异常，然后失败后进行重试。
+
+每次循环会通过负载均衡选择一个 Invoker，然后通过这个 Invoker 进行远程调用，如果失败了会记录下异常，并进行重试。
+
+这个 **select 实际上还进行了粘性处理**，也就是会记录上一次选择的 invoker ，这样使得每次调用不会一直换invoker，如果上一次没有 invoker，或者上一次的 invoker 下线了则会进行负载均衡选择。
+
+### FailfastClusterInvoker
+
+这个 cluster 只会进行一次远程调用，如果失败后立即抛出异常，也就是快速失败，它适合于不支持幂等的一些调用。
+
+![图片](../_media/dubbo/640-1689058754135-53.png)
+
+从代码可以看到，很简单还是通过负载均衡选择一个 invoker，然后发起调用，如果失败了就抛错。
+
+### FailsafeClusterInvoker
+
+这个 cluster 是一种失败安全的 cluster，也就是调用出错仅仅就日志记录一下，然后返回了一个空结果，适用于写入审计日志等操作。
+
+![图片](../_media/dubbo/640-1689058757585-56.png)
+
+可以看到代码很简单，抛错就日志记录，返回空结果。
+
+### FailbackClusterInvoker
+
+这个 cluster 会在调用失败后，记录下来这次调用，然后返回一个空结果给服务消费者，并且会通过定时任务对失败的调用进行重调。
+
+适合执行消息通知等最大努力场景。
+
+![图片](../_media/dubbo/640-1689058760841-59.png)
+
+看起来好像代码很多，其实逻辑很简单。
+
+当调用出错的时候就返回空结果，并且加入到 failed 中，并且会有一个定时任务会定时的去调用 failed里面的调用，如果调用成功就从 failed 中移除这个调用。
+
+### ForkingClusterInvoker
+
+这个 cluster 会在运行时把所有 invoker 都通过线程池进行并发调用，只要有一个服务提供者成功返回了结果，doInvoke 方法就会立即结束运行。
+
+适合用在对实时性要求比较高读操作。
+
+![图片](../_media/dubbo/640-1689058763832-62.png)
+
+### BroadcastClusterInvoker
+
+这个 cluster 会在运行时把所有 invoker 逐个调用，然后在最后判断如果有一个调用抛错的话，就抛出异常。
+
+适合通知所有提供者更新缓存或日志等本地资源信息的场景。
+
+![图片](../_media/dubbo/640-1689058767169-65.png)
+
+### AbstractClusterInvoker
+
+这其实是它们的父类，不过 AvailableCluster 内部就是返回 AbstractClusterInvoker，这个主要用在多注册中心的时候，比较简单，就是哪个能用就用那个。
+
+![图片](../_media/dubbo/640-1689058770305-68.png)
+
+## Dubbo负载均衡
+
+负载均衡其实分为硬件负载均衡和软件负载均衡，大伙儿应该对软件负载均衡比较熟悉，例如 Nginx。
+
+而 Dubbo 也有自己的负载均衡，即 LoadBalance，前面我们提到服务提供者一般都是集群部署，这 cluster 虽然暴露出一个 invoker 给消费者调用，但是真的调用给到它的时候，它也得判断具体是要调用哪一个服务提供者，这时候负载均衡就上场了。
+
+所以 Dubbo 中的负载均衡是用来选择出合适的服务提供者给消费者调用的，默认 Dubbo 提供了多种负载均衡算法：
+
+![图片](../_media/dubbo/640-1689058773555-71.png)
+
+我们一个一个看过去，虽说这涉及到算法了，但是影响不大，大致懂个意思也是可以的，当然能全理解最好了。我们先来看看这些实现类的父类。
+
+### AbstractLoadBalance
+
+这些实现类都继承于这个类，该类实现了 LoadBalance 接口，并封装了一些公共的逻辑，同样还是模板方法，熟悉的配方。
+
+![图片](../_media/dubbo/640-1689058776673-74.png)
+
+逻辑很简单，我们再来看一下计算权重的方法，这是个公共逻辑，其实是为了服务预热，我们知道缓存有预热，JIT 也有预热，反应到服务上就是服务需要预热。
+
+当服务刚启动的时候不能一下次让它负载过高，得让它慢慢热身，再加上负载，所以这个方法会判断服务运行的时间，来进行服务的降权，这是一个优化手段。
+
+![图片](../_media/dubbo/640-1689058780228-77.png)
+
+### RandomLoadBalance
+
+这个算法是加权随机，思想其实很简单，我举个例子：假设现在有两台服务器分别是 A 和 B，我想让 70% 的请求落到 A 上，30% 的请求落到 B上，此时我只要搞个随机数生成范围在 [0,10)，这个 10 是由 7+3 得来的。
+
+然后如果得到的随机数在 [0,7) 则选择服务器 A，如果在 [7,10) 则选择服务器 B ，当然前提是这个随机数的分布性很好，概率才会正确。
+
+![图片](../_media/dubbo/640-1689058783618-80.png)
+
+现在我们再来看看 Dubbo 是怎么实现的，思想就是上面的思想。
+
+![图片](../_media/dubbo/640-1689058786472-83.png)
+
+可以看到还是挺简单的，比如随机数拿到的是5，此时 5-7 < 0 所以选择了 A ，如果随机数是8， 那么 8-7 大于1，然后 1-3 小于0 所以此时选择了 B。
+
+这是 Dubbo **默认采取的负载均衡实现**。
+
+### LeastActiveLoadBalance
+
+这个是最少活跃数负载均衡，从名字就可以知道选择现在活跃调用数最少的提供者进行调用，活跃的调用数少说明它现在很轻松，而且活跃数都是从 0 加起来的，来一个请求活跃数+1，一个请求处理完成活跃数-1，所以活跃数少也能变相的体现处理的快。
+
+这其实就是最少活跃数的思想了，而 Dubbo 在活跃数相等的时候再通过权重来判断，这个权重其实就和 RandomLoadBalance 的实现一样了。
+
+代码我就不贴了，简单的说下流程就是先遍历 invokers 列表，寻找活跃数最小的 Invoker，如果有多个 Invoker 具有相同的最小活跃数，则记录这些 invoker 的下标，并累加它们的权重来进行权重选择。
+
+如果最小活跃数的 invoker 只有一个则直接返回即可。
+
+### ConsistentHashLoadBalance
+
+这个是一致性 Hash 负载均衡算法，一致性 Hash 想必大家都很熟悉了，常见的一致性 Hash 算法是 Karger 提出的，就是将 hash值空间设为 [0, 2^32 - 1]，并且是个循环的圆环状。
+
+将服务器的 IP 等信息生成一个 hash 值，将这个值投射到圆环上作为一个节点，然后当 key 来查找的时候顺时针查找第一个大于等于这个 key 的 hash 值的节点。
+
+一般而言还会引入虚拟节点，使得数据更加的分散，避免数据倾斜压垮某个节点，来看下官网的一个图。
+
+![图片](../_media/dubbo/640-1689058791689-86.png)
+
+整体的实现也不难，就是上面所说的那个逻辑，而圆环这是利用 treeMap 来实现的，通过 tailMap 来查找大于等于的第一个 invoker，如果没找到说明要拿第一个，直接赋值 treeMap 的 firstEntry。
+
+然后 Dubbo 默认搞了 160 个虚拟节点，整体的 hash 是方法级别的，即一个 service 的每个方法有一个 ConsistentHashSelector，并且是根据参数值来进行 hash的，也就是说负载均衡逻辑只受参数值影响，具有相同参数值的请求将会被分配给同一个服务提供者。
+
+先来看下一致性 hash 的实现，这个 virtualInvokers 是 TreeMap。![图片](../_media/dubbo/640-1689058795277-89.png)
+
+然后来看下如果通过一致性 hash 来获取 invoker 的。
+
+![图片](../_media/dubbo/640-1689058797996-92.png)
+
+### RoundRobinLoadBalance
+
+这个是加权轮询负载均衡，轮询我们都知道，这个加权也就是加了权重的轮询，比如说现在有两台服务器 A、B，轮询的调用顺序就是 A、B、A、B....，如果加了权重，A比B 的权重是3:1，那现在的调用顺序就是 A、A、A、B、A、A、A、B....
+
+**加权的原因是个别服务器性能比较好，所以想轮询的多一些**。
+
+不过这种方式可以看到前三次都请求 A，然后再 B，不太均匀，假设是 90:80 这种，前 90 次都打到 A 上，A太繁忙，B 太空了。所以还需要平滑一下。
+
+这种平滑的加权轮询比较好了，比如 A、B、A、A、B、A.....，简单的说就是打乱顺序的轮询。
+
+Dubbo 的加权轮询就经历了上述的加权轮询到平滑加权轮询的过程。
+
+具体的代码不做分析了，比较绕，反正就是这个意思， Dubbo 是参考 Nginx 做的平滑加权轮询。
+
+我个人觉得这和第一个说的 RandomLoadBalance 差不多。
+
+### 串联它们
+
+至此包括服务目录、集群、负载均衡想必大家都已经知道是用来干嘛的了，然后还有 Dubbo 默认的这么些个实现类的区别和适用的场景，下面我就来串着来说一下这几个配合完成集群容错负载均衡功能。
+
+先来看下官网的这一张图，很是清晰，然后我再用语言来阐述一遍。
+
+![图片](../_media/dubbo/640-1689058801753-95.png)
+
+首先在服务引入的时候，将多个远程调用都塞入 Directory 中，然后通过 Cluster 来封装这个目录，封装的同时提供各种容错功能，比如 FailOver、FailFast 等等，最终暴露给消费者的就是一个 invoker。
+
+然后消费者调用的时候会目录里面得到 invoker 列表，当然会经过路由的过滤，得到这些 invokers 之后再由 loadBalance 来进行负载均衡选择一个 invoker，最终发起调用。
+
+这种过程其实是在 Cluster 的内部发起的，所以能在发起调用出错的情况下，用上容错的各种措施。
+
+
 
 ## Dubbo调用过程
 
@@ -216,7 +511,7 @@ spring.schemas 就是指明了约束文件的路径，而 spring.handlers 指明
 
 loadRegistries 方法我就不做分析了，就是根据配置组装成注册中心相关的 URL ，我就给大家看下拼接成的 URL的样子。
 
-```
+```xml
 registry://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-provider&dubbo=2.0.2&pid=7960&qos.port=22222&registry=zookeeper&timestamp=1598624821286
 ```
 
@@ -286,11 +581,11 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 可以有些同学已经有点晕，没事我这里立马搞个图带大家过一遍。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblzGqW0Ebo1TqXUU611Idn2HfgMMnibLpVxTLgsJ5GBpiaOfTYQzyVagAg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058847993-98.jpeg)
 
 对 exportLocal 再来一波时序图分析。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsibl6hxnozZoBEs8INI7vENeEXP7pIrwJBhcIvPRia4kqAUY08pMb140kJg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058851994-101.jpeg)
 
 #### 远程暴露
 
@@ -308,23 +603,23 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 现在我们把目光聚焦到 RegistryProtocol#export 方法上，我们先过一遍整体的流程，然后再进入 doLocalExport 的解析。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblnYxKNq333alcwsZevKfSNtXWKnDRz6glgUbjBf21icJfMKLC8kLXbUA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058858712-104.jpeg)
 
 可以看到这一步主要是将上面的 export=dubbo://... 先转换成 exporter ，然后获取注册中心的相关配置，如果需要注册则向注册中心注册，并且在 ProviderConsumerRegTable 这个表格中记录服务提供者，其实就是往一个 ConcurrentHashMap 中将塞入 invoker，key 就是服务接口全限定名，value 是一个 set，set 里面会存包装过的 invoker 。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblRlb5hOLHW0krzeBictdYNZyiaMEuUvKEryHIPRHA019KZhBYAu06g1Ow/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058861490-107.jpeg)
 
 我们再把目光聚焦到  doLocalExport 方法内部。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsibldYyndfEjR7cHSYVFQn0UpLc48eMTJ9icfDut7yACQqTPfX9upp4a9Wg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058864402-110.jpeg)
 
 这个方法没什么难度，主要就是根据URL上 Dubbo 协议暴露出 exporter，接下来就看下 DubboProtocol#export 方法。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsibljEBUibbiatNwW4WBwOT7tcSyob38DHKSttxVL6ys0AUVSuibq69edN0qw/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058866699-113.jpeg)
 
 可以看到这里的关键其实就是打开 Server ，RPC 肯定需要远程调用，这里我们用的是 NettyServer 来监听服务。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblc4NugZVXZvn4k7n2IrAnnW5TgWwxNGibmiaKAhy57AwicJMIYuJJts5hg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058869360-116.jpeg)
 
 再下面我就不跟了，我总结一下 Dubbo 协议的 export 主要就是根据 URL 构建出 key（例如有分组、接口名端口等等），然后 key 和 invoker 关联，关联之后存储到 DubboProtocol 的 exporterMap 中，然后如果是服务初次暴露则会创建监听服务器，默认是 NettyServer，并且会初始化各种 Handler 比如心跳啊、编解码等等。
 
@@ -332,43 +627,43 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 其实上面的 protocol 是个代理类，在内部会通过 SPI 机制找到具体的实现类。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblw6mCmsR1dokn5rlX5kMEdBFcMjcAJaianBOwBLxiaiacIYQuFg0vj7BWQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058872170-119.jpeg)
 
 这张图是上一篇文章的，可以看到 export 具体的实现。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblibJYC6favuibufq5WAeTpPSxibtSvNxAjnNibC3lv3q4BJTQic0viaicuqlZg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058874817-122.jpeg)
 
 复习下上一篇的要点，通过 Dubbo SPI 扫包会把 wrapper 结尾的类缓存起来，然后当加载具体实现类的时候会包装实现类，来实现 Dubbo 的 AOP，我们看到 DubboProtocol 有什么包装类。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblwjQlIHIeXyZib8aWqicmiaw3dTaFhlghfkmxd6rUF0UsuvCwanCibhQVfw/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058878842-125.jpeg)
 
 可以看到有两个，分别是 ProtocolFilterWrapper 和 ProtocolListenerWrapper
 
 对于所有的 Protocol 实现类来说就是这么个调用链。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblw6wOGicrq2BX7QS0kyLnIa1tNIxy3UnlNOzFF5I1PhVegU9J9v32HeA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058881621-128.jpeg)
 
 而在 ProtocolFilterWrapper 的 export 里面就会把 invoker 组装上各种 Filter。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblw6wOGicrq2BX7QS0kyLnIa1tNIxy3UnlNOzFF5I1PhVegU9J9v32HeA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058884503-131.jpeg)
 
 看看有 8 个在。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblOZPPdMIGbDj6S30XeDo3E7Ih6Nx1yL4jNT3ic1q9XmHXPl8JslVqKuQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058887256-134.jpeg)
 
 我们再来看下 zookeeper 里面现在是怎么样的，关注 dubbo 目录。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblo6ofqlKicMcIRQG6ibnQEz3iaAeJ6DwQwvKvHVayJ66sCkMbd6ib8vMf6w/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058890175-137.jpeg)
 
 两个 service 占用了两个目录，分别有 configurators 和 providers 文件夹，文件夹里面记录的就是 URL 的那一串，值是服务提供者 ip。
 
 至此服务流程暴露差不多完结了，可以看到还是有点内容在里面的，并且还需要掌握 Dubbo SPI，不然有些点例如自适应什么的还是很难理解的。最后我再来一张完整的流程图带大家再过一遍，具体还是有很多细节，不过不是主干我就不做分析了，不然文章就有点散。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblwxBsUibsTPN5VM0JQXzbzcHiaibhVjgFtSyAmiaLelVPtBFibtzGmmZD3BA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058925993-158.jpeg)
 
 然后再引用一下官网的时序图。
 
-![图片](data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='1px' height='1px' viewBox='0 0 1 1' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3E%3C/title%3E%3Cg stroke='none' stroke-width='1' fill='none' fill-rule='evenodd' fill-opacity='0'%3E%3Cg transform='translate(-249.000000, -126.000000)' fill='%23FFFFFF'%3E%3Crect x='249' y='126' width='1' height='1'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/svg%3E)![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1Fpz82arDLk6S32wLdibQBnsiblbj7gR5D3ZHxGo6AhfwBTmIhHt9pkJpqHDRaAEd9Fp01SmaeXSib0UCw/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058931000-161.jpeg)
 
 ## Dubbo的服务引用过程
 
@@ -382,7 +677,7 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 整体大致流程如下：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrXv1lLAjPPFbhOG7j0n3IU9Ez3V7HDZkeZY2PCufvUPrCEEMxN7MJJQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058973023-164.png)
 
 ### 服务引入的时机
 
@@ -422,7 +717,7 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 服务的引入又分为了三种，第一种是本地引入、第二种是直接连接引入远程服务、第三种是通过注册中心引入远程服务。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrmmOgiaU3K060l9w9mWbUOHYtkYUN5CgUFPOZ2NpUK6CT8SlDC8Yzlsg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058979392-167.png)
 
 **本地引入**不知道大家是否还有印象，之前服务暴露的流程每个服务都会通过搞一个本地暴露，走 injvm 协议（当然你要是 scope = remote 就没本地引用了），因为**存在一个服务端既是 Provider 又是 Consumer 的情况，然后有可能自己会调用自己的服务**，因此就弄了一个本地引入，这样就避免了远程网络调用的开销。
 
@@ -438,7 +733,7 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 默认是懒汉式的，所以服务引入的入口就是 ReferenceBean 的 getObject 方法。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrUbHyCWZvXrQWJlz2gdvjEL3ZD6G4mibcofjIAmPgALtgHdiaqAX2BxIg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058982928-170.png)
 
 可以看到很简单，就是调用 get 方法，如果当前还没有这个引用那么就执行 init 方法。
 
@@ -448,13 +743,13 @@ Protocol 的 export 方法是标注了 @ Adaptive 注解的，因此会生成代
 
 toString 调用的是 AbstractConfig#toString，而这个方法会通过反射调用了 ReferenceBean 的 getObject 方法，触发了引入服务动作，所以说到断点的时候 `ref != null`。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdr6lECMvsYUAm5HASdDvKHY6dqNQsKAjgBfVTO9L4vdqzqU821j6VJJA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058985987-173.png)
 
 可以看到是通过方法名来进行反射调用的，而 getObject 就是 get 开头的，因此会被调用。
 
 所以这个哥们提了个 PR，但是一开始没有被接受，一位 Member 认为这不是 bug， idea 设置一下不让调用 toString 就好了。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrtmiaBh3JJicSqiaq7Y3MQ3fCBPm3IMYdgbL1GhOuWJIOuvpFYlAXBeLug/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058989748-176.png)
 
 不过另一位 Member 觉得这个 PR 挺好的，并且 Dubbo 项目二代掌门人北纬30也发话了，因此这个 PR 被受理了。
 
@@ -466,7 +761,7 @@ toString 调用的是 AbstractConfig#toString，而这个方法会通过反射�
 
 我又打开了**2.7.5**版本的代码，发现是修改过的判断。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdr1PrUJ565qicL524YajjJl4CdEpwiaX55xBM1E0E8VW5v0ibBKhBrPibwKQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058994468-179.png)
 
 我又去特意下了 **2.6.6** 版本的代码，发现也是修改过的，因此这个修改并不是随着 **2.6.5** 版本发布，而是 **2.6.6**，除非我下的是个假包，这就是我说的小问题了，不过影响不大。
 
@@ -474,7 +769,7 @@ toString 调用的是 AbstractConfig#toString，而这个方法会通过反射�
 
 init 方法很长，不过大部分就是检查配置然后将配置构建成 map ，这一大段我就不分析了，我们直接看一下构建完的 map 长什么样。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrIwVhwDSUcObSHGDSczzPxzrBf1qStwhgFKxoJB4PicYhdI6tHbjMTBQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689058997778-182.png)
 
 然后就进入重点方法 createProxy，从名字可以得到就是要创建的一个代理，因为代码很长，我就**一段一段的分析**。
 
@@ -494,7 +789,7 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 最终拼接出来的 URL 长这样。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrHMTHpA73Z90DOJQ9K1Baaicicn9YHqzgew5rao4A6IJPo3oZSxdlojxQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059008065-185.png)
 
 可以看到这一部分其实就是根据各种参数来组装 URL ，因为我们的自适应扩展都需要根据 URL 的参数来进行的。
 
@@ -502,7 +797,7 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 至此我先画个图，给大家先捋一下。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrlyHedol8mkDRbeecs6TibqBibWQ4NAlmXT8CStgS4Z1ZJXut3XdqYJRg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059014692-188.png)
 
 这其实就是整个流程了，简述一下就是先检查配置，通过配置构建一个 map ，然后利用 map 来构建 URL ，再通过 URL 上的协议利用自适应扩展机制调用对应的 protocol.refer 得到相应的 invoker 。
 
@@ -514,11 +809,11 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 从前面的截图我们可以看到此时的协议是 registry 因此走的是 RegistryProtocol#refer，我们来看一下这个方法。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdromJ8WP6SvDqslKyibk7Nlg91vmJZCzO4K1t1Uia4NCWcBfC5qC68fzdw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059018837-191.png)
 
 主要就是获取注册中心实例，然后调用 doRefer 进行真正的 refer。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrZdgkbWZlRjPhgH4sWlicrXF6MvvJ8Ch860Gw0PzPTwZOQsOWQpMbwgg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059021626-194.png)
 
 这个方法很关键，可以看到生成了`RegistryDirectory` 这个 directory 塞了注册中心实例，它自身也实现了`NotifyListener` 接口，因此**注册中心的监听其实是靠这家伙来处理的**。
 
@@ -528,37 +823,37 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 所以我们知道`Conusmer` 是在 RegistryProtocol#refer 中向注册中心注册自己的信息，并且订阅 Provider 和配置的一些相关信息，我们看看订阅返回的信息是怎样的。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrMPHw3C3zPow0ODKgSCduespHTUUodL6EnPsjZzu8nGJ2GSguhGzAng/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059025794-197.png)
 
 拿到了`Provider`的信息之后就可以通过监听触发 DubboProtocol# refer 了（具体调用哪个 protocol 还是得看 URL的协议的，我们这里是 dubbo 协议），整个触发流程我就不一一跟一下了，看下调用栈就清楚了。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdruxQeyeTV9Z4m3PqB18z4BuKbCM8guHTuZGVDkH9Zr1aN9OmnjlibUibg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059028603-200.png)
 
 终于我们从注册中心拿到远程`Provider` 的信息了，然后进行服务的引入。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrGjs4RiavT2BF6Ayoib2JgUBrpe4mYVjVLrOcl3Fwib1u6TWA5sgicH3kOw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059031489-203.png)
 
 这里的重点在 `getClients`，因为终究是要跟远程服务进行网络调用的，而 getClients 就是用于获取客户端实例，实例类型为 ExchangeClient，底层依赖 Netty 来进行网络通信，并且可以看到默认是共享连接。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrGjs4RiavT2BF6Ayoib2JgUBrpe4mYVjVLrOcl3Fwib1u6TWA5sgicH3kOw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059035364-206.png)
 
 `getSharedClient` 我就不分析了，就是通过远程地址找 client ，这个 client 还有引用计数的功能，如果该远程地址还没有 client 则调用 initClient，我们就来看一下 initClient 方法。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrLrLOibVQkEib9WAPjwjAmLOicMFXSs8t3hkheRSyibrFiaASqU8Oq5iazcBg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059038239-209.png)
 
 而这个`connect`最终返回 `HeaderExchangeClient`里面封装的是 `NettyClient` 。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrXyZCwBTXr4HKRc7XWJAjDOUq7lfxWwmbG80icjcjB9iafbe6GTf6lmtQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059041298-212.png)
 
 然后最终得到的 `Invoker`就是这个样子，可以看到记录的很多信息，基本上该有的都有了，我这里走的是对应的服务只有一个 url 的情况，多个 url 无非也是利用 `directory` 和 `cluster`再封装一层。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrTVRmAU5kjbVvDAjorC4gYoibeOkxNeaO4WbsE6DEktRRezRqStz99AA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059045322-215.png)
 
 最终将调用 `return (T) proxyFactory.getProxy(invoker);` 返回一个代理对象，这个就不做分析了。
 
 到这里，整个流程就是分析完了，不知道大家清晰了没？我再补充前面的图，来一个完整的流程给大家再过一遍。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/uChmeeX1Fpz5d8nUSmg6LId8fd5ibJPdrpk1g5xYFUKsBNiaXQPibnYicl8bhiawpzKlgloDmoAUEZCPSpTDiaWPSkzg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059049832-218.png)
 
 ## Dubbo服务调用过程
 
@@ -572,7 +867,7 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 然后根据这些信息找到对应的实现类，然后进行调用，调用完了之后再原路返回，然后客户端解析响应再返回即可。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpzRZ8zcIIAfAouFVhHEibwPf8uRmicqkl1Tk8oKmeHPghKiaAnib5hvgO4PZV42ias8JCTAnc4hfoBsG9w/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059053962-221.jpeg)
 
 ### 调用具体的信息
 
@@ -584,7 +879,7 @@ init 方法很长，不过大部分就是检查配置然后将配置构建成 ma
 
 然后组装响应返回即可，我这里贴一个实际调用请求对象列子。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/uChmeeX1FpzRZ8zcIIAfAouFVhHEibwPfAloNdB7ISl1punyfrbuWrMt2aVp6u22AW8lsfek3w8X7EwMaIXfDnA/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/dubbo/640-1689059056634-224.jpeg)
 
 data 就是我所说的那些数据，其他是框架的，包括协议版本、调用方式等等这个下面再分析。
 

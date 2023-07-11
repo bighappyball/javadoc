@@ -1,9 +1,25 @@
 /* 目录样式 */
 #plantuml-toc {
+
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 30px 15px 40px;
+  position: relative;
   /* padding: 5px;
   max-height: 400px;
   overflow-x: auto;
   width: 100%; */
+  /* position: fixed;
+  top: 0;
+  z-index: 100;
+  background-color: #fff;
+  width: 100%;
+  max-height: 400px;
+  overflow-x: auto;
+  overflow-y: auto;
+  left: 20%;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1) */
+  
 }
 
 #plantuml-control {
@@ -16,8 +32,7 @@
   border-radius: 15px;
   transition: .3s;
   cursor: pointer;
-  right: 15px;
-  bottom: 200px;
+
   background-image: url(../img/svg/目录.svg);
   background-repeat: no-repeat;
   background-size: 100% 100%;  
@@ -27,6 +42,8 @@
   transform: scale(1.1);
   box-shadow: -2px 2px 4px -4px #333, -4px 4px 8px -4px #333;
 }
+
+
 
 /* .g-resize { 
   content: "";
@@ -72,7 +89,7 @@
 #plantuml-content {
   width: 100%;
   max-height: 500px;
-  text-align: center;
+  /* text-align: center; */
   /* background-color: #fff; */
   overflow-y: scroll;
 }

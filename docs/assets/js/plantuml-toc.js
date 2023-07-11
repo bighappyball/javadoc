@@ -7,7 +7,6 @@ var defaultOptions = {
   isOpen: false
 }
 
-
 function compress(s) {
   //UTF8
   s = unescape(encodeURIComponent(s));
@@ -77,6 +76,17 @@ var handleUrl = function (url) {
   return url
 }
 
+var activeClass = function(e) {
+  var divs = document.querySelectorAll('#plantuml-toc .active');
+
+  // 删除之前的样式
+  [].forEach.call(divs, function(div) {
+    div.setAttribute('class', '')
+  });
+
+  // 给当前点击的项加入新的样式
+  e.target.parentNode.setAttribute('class', 'active')
+};
 
 
 var buildPlantumlToc = function (options) {
@@ -158,6 +168,7 @@ function plugin(hook, vm) {
       var plantumlcontent = window.Docsify.dom.create("div", "");
       plantumlcontent.id = "plantuml-content"
       window.Docsify.dom.appendTo(plantumltoc, plantumlcontent);
+
 
       // var plantumlGoTop = window.Docsify.dom.create("span", "<i class='fas fa-arrow-up'></i>");
       // plantumlGoTop.id = "plantuml-toc-gotop";

@@ -10,44 +10,36 @@
 
 ## Zookeeper简介
 
-- ZooKeeper主要**服务于分布式系统**，可以用ZooKeeper来做：统一配置管理、统一命名服务、分布式锁、集群管理。
-- 使用分布式系统就无法避免对节点管理的问题(需要实时感知节点的状态、对节点进行统一管理等等)，而由于这些问题处理起来可能相对麻烦和提高了系统的复杂性，ZooKeeper作为一个能够**通用**解决这些问题的中间件就应运而生了。
+1. ZooKeeper主要**服务于分布式系统**，可以用ZooKeeper来做：统一配置管理、统一命名服务、分布式锁、集群管理。
+2. 使用分布式系统就无法避免对节点管理的问题(需要实时感知节点的状态、对节点进行统一管理等等)，而由于这些问题处理起来可能相对麻烦和提高了系统的复杂性，ZooKeeper作为一个能够**通用**解决这些问题的中间件就应运而生了。
 
 ## ZooKeeper结构
 
-ZooKeeper的数据结构，跟Unix文件系统非常类似，可以看做是一颗**树**，每个节点叫做**ZNode**。每一个节点可以通过**路径**来标识;
+ZooKeeper的数据结构，跟Unix文件系统非常类似，可以看做是一颗**树**，每个节点叫做**ZNode**。每一个节点可以通过**路径**来标识; ZooKeeper的节点我们称之为**Znode**，Znode分为**两种**类型：
 
-ZooKeeper的节点我们称之为**Znode**，Znode分为**两种**类型：
-
-- **短暂/临时(Ephemeral)**：当客户端和服务端断开连接后，所创建的Znode(节点)**会自动删除**
-- **持久(Persistent)**：当客户端和服务端断开连接后，所创建的Znode(节点)**不会删除**
+1. **短暂/临时(Ephemeral)**：当客户端和服务端断开连接后，所创建的Znode(节点)**会自动删除**
+2. **持久(Persistent)**：当客户端和服务端断开连接后，所创建的Znode(节点)**不会删除**
 
 > ZooKeeper和Redis一样，也是C/S结构(分成客户端和服务端)
 
-![图片](../_media/netty1/640-1676451627457-3.jpeg)
+![图片](../_media/zookeeper/640-1676451627457-3.jpeg)
 
 ## Watch监听器
 
-在上面我们已经简单知道了ZooKeeper的数据结构了，ZooKeeper还配合了**监听器**才能够做那么多事的。
+在上面我们已经简单知道了ZooKeeper的数据结构了，ZooKeeper还配合了**监听器**才能够做那么多事的。**常见**的监听场景有以下两项：
 
-**常见**的监听场景有以下两项：
+1. 监听Znode节点的**数据变化**
+2. 监听子节点的**增减变化**
 
-- 监听Znode节点的**数据变化**
-- 监听子节点的**增减变化**
+![图片](../_media/netty1/640-1676451809882-6.jpeg)					监听Znode节点的数据有无变化
 
-![图片](../_media/netty1/640-1676451809882-6.jpeg)监听Znode节点的数据有无变化
-
-![图片](../_media/netty1/640-1676451812654-9.jpeg)监听子节点的增减变化
+![图片](../_media/netty1/640-1676451812654-9.jpeg)					监听子节点的增减变化
 
 没错，通过**监听+Znode节点(持久/短暂[临时])**，ZooKeeper就可以玩出这么多花样了。
 
 ### 原理
 
-Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wather监听机制。
-
-客户端可以向服务端注册Wather监听，服务端的指定事件触发之后，就会向客户端发送一个事件通知。
-
-他有几个特性：
+Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wather监听机制。客户端可以向服务端注册Wather监听，服务端的指定事件触发之后，就会向客户端发送一个事件通知。他有几个特性：
 
 1. 一次性：一旦一个Wather触发之后，Zookeeper就会将它从存储中移除
 2. 客户端串行：客户端的Wather回调处理是串行同步的过程，不要因为一个Wather的逻辑阻塞整个客户端
@@ -59,7 +51,7 @@ Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wath
 2. 保存Wather对象到客户端本地的WatherManager中
 3. 服务端Wather事件触发后，客户端收到服务端通知，从WatherManager中取出对应Wather对象执行回调逻辑
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/ibBMVuDfkZUmqb0t9xOJOXebntahoHMGMz4C1XzPqtyOSg6M8YericJaxEkjNxFmricS9BHQiatWft8SaYKSB3VDOQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/zookeeper/640.jpeg)
 
 ## ZooKeeper实现原理
 
@@ -73,9 +65,7 @@ Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wath
 
 ![图片](../_media/netty1/640-1676451816056-12.jpeg)
 
-做法：我们可以将`common.yml`这份配置放在ZooKeeper的Znode节点中，系统A、B、C监听着这个Znode节点有无变更，如果变更了，**及时**响应。
-
-![图片](data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='1px' height='1px' viewBox='0 0 1 1' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3E%3C/title%3E%3Cg stroke='none' stroke-width='1' fill='none' fill-rule='evenodd' fill-opacity='0'%3E%3Cg transform='translate(-249.000000, -126.000000)' fill='%23FFFFFF'%3E%3Crect x='249' y='126' width='1' height='1'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/svg%3E)系统A、B、C监听着ZooKeeper的节点，一旦common.yml内容有变化，及时响应
+做法：我们可以将`common.yml`这份配置放在ZooKeeper的Znode节点中，系统A、B、C监听着这个Znode节点有无变更，如果变更了，**及时**响应。系统A、B、C监听着ZooKeeper的节点，一旦common.yml内容有变化，及时响应
 
 参考资料：
 
@@ -102,17 +92,16 @@ Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wath
 
 系统A、B、C都去访问`/locks`节点
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/2BGWl1qPxib1WCfFk2icxudIMHNPQMHIDJNqt17v32q9icicE67f9UVYHbseicaUYZgmy1ObqichHm54LLicXRFSGBcMQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)系统A、B、C都去访问locks节点
+![图片](../_media/zookeeper/640-1689055848855-6.jpeg)系统A、B、C都去访问locks节点
 
 访问的时候会创建**带顺序号的临时/短暂**(`EPHEMERAL_SEQUENTIAL`)节点，比如，系统A创建了`id_000000`节点，系统B创建了`id_000002`节点，系统C创建了`id_000001`节点。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/2BGWl1qPxib1WCfFk2icxudIMHNPQMHIDJczzKQ6bLPE3Buwib1YJeqluPWicmZUbPadvFCU6UopDDkajKQu1FLO3A/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)创建出临时带顺序号的节点
+![图片](../_media/zookeeper/640-1689055893283-9.jpeg)						创建出临时带顺序号的节点
 
 接着，拿到`/locks`节点下的所有子节点(id_000000,id_000001,id_000002)，**判断自己创建的是不是最小的那个节点**
 
 - 如果是，则拿到锁。
-
-- - 释放锁：执行完操作后，把创建的节点给删掉
+  - 释放锁：执行完操作后，把创建的节点给删掉
 
 - 如果不是，则监听比自己要小1的节点变化
 
@@ -131,15 +120,13 @@ Zookeeper可以提供分布式数据的发布/订阅功能，依赖的就是Wath
 
 还是以我们三个系统A、B、C为例，在ZooKeeper中创建**临时节点**即可：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/2BGWl1qPxib1WCfFk2icxudIMHNPQMHIDJ4lnbuRg5lEDmjlSTmdarCs8Dq7Pjg213pAq7QlXxzc7dIklkGuAWYQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)各维护一个临时节点
+![图片](../_media/zookeeper/640-1689055934995-12.jpeg)						各维护一个临时节点
 
 只要系统A挂了，那`/groupMember/A`这个节点就会删除，通过**监听**`groupMember`下的子节点，系统B和C就能够感知到系统A已经挂了。(新增也是同理)
 
 除了能够感知节点的上下线变化，ZooKeeper还可以实现**动态选举Master**的功能。(如果集群是主从架构模式下)
 
-原理也很简单，如果想要实现动态选举Master的功能，Znode节点的类型是带**顺序号的临时节点**(`EPHEMERAL_SEQUENTIAL`)就好了。
-
-- Zookeeper会每次选举最小编号的作为Master，如果Master挂了，自然对应的Znode节点就会删除。然后让**新的最小编号作为Master**，这样就可以实现动态选举的功能了。
+原理也很简单，如果想要实现动态选举Master的功能，Znode节点的类型是带**顺序号的临时节点**(`EPHEMERAL_SEQUENTIAL`)就好了。Zookeeper会每次选举最小编号的作为Master，如果Master挂了，自然对应的Znode节点就会删除。然后让**新的最小编号作为Master**，这样就可以实现动态选举的功能了。
 
 ### 队列管理
 
@@ -148,8 +135,9 @@ Zookeeper 可以处理两种类型的队列：
 1. 当一个队列的成员都聚齐时，这个队列才可用，否则一直等待所有成员到达，这种是同步队列。
 2. 队列按照 FIFO 方式进行入队和出队操作，例如实现生产者和消费者模型。
    创建一个父目录 `/synchronizing`，每个成员都监控标志（Set Watch）位目录 /`synchronizing/start` 是否存在，然后每个成员都加入这个队列，加入队列的方式就是创建 /`synchronizing/member_i` 的临时目录节点，然后每个成员获取 `/synchronizing` 目录的所有目录节点，也就是 member_i。判断 i 的值是否已经是成员的个数，如果小于成员个数等待 `/synchronizing/start` 的出现，如果已经相等就创建 `/synchronizing/start`。
-   FIFO 队列用 Zookeeper 实现思路如下：
-   在特定的目录下创建 SEQUENTIAL 类型的子目录 /queue_i，这样就能保证所有成员加入队列时都是有编号的，出队列时通过 getChildren( ) 方法可以返回当前所有的队列中的元素，然后消费其中最小的一个，这样就能保证 FIFO。
+
+   >FIFO 队列用 Zookeeper 实现思路如下：
+   >在特定的目录下创建 SEQUENTIAL 类型的子目录 /queue_i，这样就能保证所有成员加入队列时都是有编号的，出队列时通过 getChildren( ) 方法可以返回当前所有的队列中的元素，然后消费其中最小的一个，这样就能保证 FIFO。
 
 ## 分布式锁
 
@@ -236,7 +224,7 @@ minCommittedLog：Leader提议缓存队列中最小ZXID
 
 maxCommittedLog：Leader提议缓存队列中最大ZXID
 
-### 直接差异化同步 DIFF同步
+### 直接差异化同步DIFF同步
 
 如果PeerLastZxid在minCommittedLog和maxCommittedLog之间，那么则说明Learner服务器还没有完全同步最新的数据。
 
@@ -244,9 +232,9 @@ maxCommittedLog：Leader提议缓存队列中最大ZXID
 2. 发送完成之后发送一个NEWLEADER命令给Learner，同时Learner返回ACK表示已经完成了同步
 3. 接着等待集群中过半的Learner响应了ACK之后，就发送一个UPTODATE命令，Learner返回ACK，同步流程结束
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/ibBMVuDfkZUmqb0t9xOJOXebntahoHMGMq3ibXzCYESnGByY8IUk13LPXTk59CRTr9gWfqB6Mztpnw70bWia7QAIQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../_media/zookeeper/640-1689056196478-15.jpeg)
 
-### 先回滚再差异化同步 TRUNC+DIFF同步
+### 先回滚再差异化同步TRUNC+DIFF同步
 
 这个设置针对的是一个异常的场景。
 
