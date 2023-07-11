@@ -3,7 +3,7 @@
 
 "use strict";
 var defaultOptions = {
-  headings: 'h1,h2,h3,h4,h5',
+  headings: 'h2,h3,h4,h5',
   isOpen: false
 }
 
@@ -50,6 +50,22 @@ var getPlantumlLevel = function (header) {
   return decs ? Math.min.apply(null, decs) : 1;
 };
 
+var getHeaders = function(selector) {
+  var allHeadings = document.querySelectorAll(selector);
+  var ret = [];
+
+  [].forEach.call(allHeadings, function(heading) {
+    ret = ret.concat(heading);
+  });
+
+  return ret;
+};
+
+var getLevel = function(header) {
+  var decs = header.match(/\d/g);
+
+  return decs ? Math.min.apply(null, decs) : 1;
+};
 
 var handleUrl = function (url) {
   // 转小写
@@ -69,7 +85,7 @@ var buildPlantumlToc = function (options) {
   var width = options.width ? options.width : 900;
   var skin = options.skin ? options.skin : "cerulean-outline"
   // scale ${height} height\n scale ${width} width\n
-  var data = `@startmindmap\n  !theme ${skin}\n`
+  var data = `@startmindmap\n  !theme ${skin}\n<style>\nroot{\nHyperLinkColor #2FA4E7\n}\n</style>\n`
   var headers = getPlantumlHeaders(`.markdown-section`, options.headings).filter(h => h.id);
   var baseURL = window.location.href.split("?", 1)[0]
   var levels = new Array(10).fill(0)
@@ -83,22 +99,28 @@ var buildPlantumlToc = function (options) {
         levels[i] = 0;
       }
     }
-    for (var j = 0; j < currentLevel; j++) {
+    data += '+';
+    for (var j = 1; j < currentLevel; j++) {
       data += '+';
       autoHeaderText += `${levels[j]}`
       if (j != currentLevel - 1) {
         autoHeaderText += '.'
       }
     }
-
-    data += `_ [[${baseURL}?id=${handleUrl(curr.innerText.toLowerCase())} ${autoHeaderText}]] ${curr.innerText}\n`
-    // data += `_ <color:black>${curr.innerText}</color>\n`
-    // console.log(curr.innerHTML)
-    curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + ' ' + curr.innerText}</span>`)
-    // curr.outerText= autoHeaderText+curr.outerText
+    if(currentLevel===1){
+      data += `_ ${curr.innerText}\n`
+    }
+    // 添加标题序号
+    if(currentLevel>1){
+      // data += `_ [[${baseURL}?id=${handleUrl(curr.innerText.toLowerCase())} ${autoHeaderText + '. ' + curr.innerText}]] ${curr.innerText}\n`
+      data += `_ [[${baseURL}?id=${handleUrl(curr.innerText.toLowerCase())} ${autoHeaderText + '.'}]] ${curr.innerText}\n`
+      curr.innerHTML = curr.innerHTML.replace(`<span>${curr.innerText}</span>`, `<span>${autoHeaderText + '. ' + curr.innerText}</span>`)
+    }
+    
     return currentLevel;
   }, getPlantumlLevel(options.headings));
   data += ` @endmindmap`
+  console.log(data)
   var eleStr = `<p data-lang="plantuml">${compress(data)}</p>`
   ret.innerHTML = eleStr
   return ret;
@@ -122,13 +144,13 @@ function plugin(hook, vm) {
       // plantumlcontrol.onclick=activeClass
       // window.Docsify.dom.appendTo(plantumltoc, plantumlcontrol);
       // var plantumlresize = window.Docsify.dom.create("div", "");
-   
+
       // plantumlresize.className="g-resize"
       // window.Docsify.dom.appendTo(plantumlcontrol, plantumlresize);
       // var plantumlcontent = window.Docsify.dom.create("div", "");
       // plantumlcontent.className="g-content"
       // window.Docsify.dom.appendTo(plantumlcontrol, plantumlcontent);
-      
+
       // plantumlcontrol.innerHTML="<span>目录</span>"
       // plantumlcontrol.onclick = activeClass;
 

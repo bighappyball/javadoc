@@ -1,10 +1,10 @@
-## SpringCloud
+# 第十九节 SpringCloud
 
 >- [外行人都能看懂的SpringCloud，错过了血亏！](https://mp.weixin.qq.com/s/MJrahcDXwxgDr5zBdO3XWw)
 >
 >- [20000 字的 Spring Cloud 总结](https://mp.weixin.qq.com/s/pGSx8eKFH3YnUos3SM2ITw)
 
-### 简介
+## 简介
 
 我所理解的`Spring Cloud`就是微服务系统架构的一站式解决方案，在平时我们构建微服务的过程中需要做如**服务发现注册**、**配置中心**、**消息总线**、**负载均衡**、**断路器**、**数据监控**等操作，而 Spring Cloud 为我们提供了一套简易的编程模型，使我们能在 Spring Boot 的基础上轻松地实现微服务项目的构建。
 
@@ -15,41 +15,39 @@
 - API网关服务：Spring Cloud Zuul
 - 分布式配置中心：Spring Cloud Config
 
-### 服务治理Eureka
+## 服务治理Eureka
 
-#### 治理机制
+### 治理机制
 
-**服务提供者**
+**1. 服务提供者**
 
 **服务注册：**启动的时候会通过发送REST请求的方式将**自己注册到Eureka Server上**，同时带上了自身服务的一些元数据信息。
 **服务续约：**在注册完服务之后，**服务提供者会维护一个心跳**用来持续告诉Eureka Server:  "我还活着 ” 、
 **服务下线：**当服务实例进行正常的关闭操作时，它会**触发一个服务下线的REST请求**给Eureka Server, 告诉服务注册中心：“我要下线了 ”。
 
-**服务消费者**
+**2. 服务消费者**
 
 **获取服务：**当我们**启动服务消费者**的时候，它会发送一个REST请求给服务注册中心，来获取上面注册的服务清单
 **服务调用：**服务消费者在获取服务清单后，通过**服务名**可以获得具体提供服务的实例名和该实例的元数据信息。在进行服务调用的时候，**优先访问同处一个Zone中的服务提供方**。
 
-**服务注册中心**
+**3. 服务注册中心**
 
 **失效剔除：**默认每隔一段时间（默认为60秒） 将当前清单中超时（默认为90秒）**没有续约的服务剔除出去**。
 **自我保护：**。EurekaServer 在运行期间，会统计心跳失败的比例在15分钟之内是否低于85%(通常由于网络不稳定导致)。Eureka Server会将当前的**实例注册信息保护起来**， 让这些实例不会过期，尽可能**保护这些注册信息**。
 
 
 
-#### 服务提供者的续约
+### 服务提供者的续约
 
-服务提供者的续约（心跳）保活由 Provider Instance 主动定期执行来实现，每隔一段时间就
+服务提供者的续约（心跳）保活由 Provider Instance 主动定期执行来实现，每隔一段时间就调用 Eureka Server 提供的 REST 保活接口，发送 Provider Instance 的状态信息给注册中心，告诉注册中心注册者还在正常运行。Provider Instance 的续约默认是开启的，续约默认的间隔是 30 秒，也就是每 30 秒会向 Eureka Server 发起续约（Renew）操作。
 
-调用 Eureka Server 提供的 REST 保活接口，发送 Provider Instance 的状态信息给注册中心，告诉注册中心注册者还在正常运行。Provider Instance 的续约默认是开启的，续约默认的间隔是 30 秒，也就是每 30 秒会向 Eureka Server 发起续约（Renew）操作。
-
-#### 自我保护模式与失效
+### 自我保护模式与失效
 
 Provider 服务实例注册到 Eureka Server 后会维护一个心跳连接，告诉 Eureka Server 自己还活着。Eureka Server 在运行期间会统计所有 Provider 实例的心跳，如果失效比例在一段时间间隔内（如 15 分钟）低于阈值（如 85%），Eureka Server 就会将当前所有的 Provider 实例的注册信息保护起来，让这些实例不会过期。
 
 eureka.server.enable-self-preservation=true 配置项的默认值为 true。也就是说，在默认情况下，如果 Eureka Server 在一定时间内没有接收到某个微服务实例的心跳，Eureka Server 就会认为该实例已经出现故障，进而注销该实例（默认为 90 秒）。
 
-### 客户端负载均衡Ribbon
+## 客户端负载均衡Ribbon
 
 负载均衡又区分了两种类型：
 
@@ -64,7 +62,7 @@ eureka.server.enable-self-preservation=true 配置项的默认值为 true。也�
 
 `Nginx`是接收了所有的请求进行负载均衡的，而对于`Ribbon`来说它是在消费者端进行的负载均衡。
 
-#### Ribbon细节
+### Ribbon细节
 
 Ribbon是支持负载均衡，默认的负载均衡策略是轮询，我们也是可以根据自己实际的需求自定义负载均衡策略的。
 
@@ -85,7 +83,7 @@ public class MySelfRule
 
 实现起来也很简单：继承AbstractLoadBalancerRule类，重写`public Server choose(ILoadBalancer lb, Object key)`即可。
 
-#### **负载均衡策略**
+### 负载均衡策略
 
 - **RoundRobinRule**：轮询策略。`Ribbon`默认采用的策略。若经过一轮轮询没有找到可用的`provider`，其最多轮询 10 轮。若最终还没有找到，则返回 null。
 - **RandomRule**: 随机策略，从所有可用的 provider 中随机选择一个。
@@ -136,7 +134,7 @@ providerName:
 
 
 
-### 服务容错保Hystrix  
+## 服务容错保Hystrix  
 
 在**高并发**的情况下，由于单个服务的延迟，可能导致**所有的请求都处于延迟状态**，甚至在几秒钟就使服务处于负载饱和的状态，资源耗尽，直到不可用，最终导致这个分布式系统都不可用，这就是“雪崩”。
 
@@ -152,7 +150,7 @@ Hystrix提供几个熔断关键参数：`滑动窗口大小（20）、 熔断器
 
 Hystrix还有请求合并、请求缓存这样强大的功能，在此我就不具体说明了，有兴趣的同学可继续深入学习~
 
-### 声明式服务调用Feign
+## 声明式服务调用Feign
 
 为了**简化**我们的开发，Spring Cloud Feign出现了！它基于 Netflix Feign 实现，**整合**了 Spring Cloud Ribbon 与 Spring Cloud Hystrix,  除了整合这两者的强大功能之外，它还提
 供了**声明式的服务调用**(不再通过RestTemplate)。
@@ -218,7 +216,7 @@ public class DeptClientServiceFallbackFactory implements FallbackFactory<DeptCli
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib3LiaOIcUWPt6eU6UmOJhnk0wS2ZdEFAobePJkXcXRP4bYL3DoT9PZib7icHcyaad3szIvmgMPDib5XSw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
-### API网关服务Zuul
+## API网关服务Zuul
 
 - SpringCloud Zuul通过与SpringCloud Eureka进行整合，将自身注册为Eureka服务治理下的应用，同时从Eureka中获得了所有其他微服务的实例信息。**外层调用都必须通过API网关**，使得**将维护服务实例的工作交给了服务治理框架自动完成**。
 - 在API网关服务上进行统一调用来**对微服务接口做前置过滤**，以实现对微服务接口的**拦截和校验**。
@@ -245,21 +243,21 @@ zuul.sensitive-headers = Cookie,Set-Cookie,token,backend,Authorization
 
 
 
-### 分布式配置中心Config
+## 分布式配置中心Config
 
-### 消息总线Bus
+## 消息总线Bus
 
 你可以简单理解为`Spring Cloud Bus`的作用就是**管理和广播分布式系统中的消息**，也就是消息引擎系统中的广播模式。当然作为**消息总线**的`Spring Cloud Bus`可以做很多事而不仅仅是客户端的配置刷新功能。
 
 而拥有了`Spring Cloud Bus`之后，我们只需要创建一个简单的请求，并且加上`@ResfreshScope`注解就能进行配置的动态修改了
 
-### 消息驱动的微服务Stream
+## 消息驱动的微服务Stream
 
-### 分布式服务跟踪Sleuths
+## 分布式服务跟踪Sleuths
 
 
 
-### 分布式Session 
+## 分布式Session 
 
 Session 是啥？浏览器有个 Cookie，在一段时间内这个 Cookie 都存在，然后每次发请求过来都带上一个特殊的 jsessionid cookie ，就根据这个东西，在服务端可以维护一个对应的 Session 域，里面可以放点数据。
 

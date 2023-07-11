@@ -10,8 +10,9 @@
     content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="./assets/css/vue.css">
   <link rel="stylesheet" href="./assets/css/gitalk.css">
-  <link rel="stylesheet" href="./assets/css/jx-toc.css">
+  <!-- <link rel="stylesheet" href="./assets/css/jx-toc.css"> -->
   <link rel="stylesheet" href="./assets/css/plantuml-toc.css">
+  <link rel="stylesheet" href="./assets/css/docsify-plugin-toc.css">
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/fontawesome.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/solid.css"> -->
   <link rel="stylesheet" href="./assets/css/particles.css">
@@ -34,7 +35,7 @@
   <div id="particles-js">
   </div>
   <div id="app"></div>
-  <script>              
+  <script>
     var gitalkConfig = {
       clientID: '4a657aa4ae6c0f1862a1',
       clientSecret: '94793d5bac0c884a8798ea941f7c5bc9fb004720',
@@ -86,6 +87,11 @@
         levels: 1 | 6, // heading levels h[1-6]
         scope: "main",          // plugin search scope
         debug: true          // show console.log messages
+      },
+      toc: {
+        tocMaxLevel: 5,
+        target: 'h2, h3, h4, h5, h6',
+        ignoreHeaders: ['<!-- {docsify-ignore} -->', '<!-- {docsify-ignore-all} -->']
       },
       plugins: [
         // function (hook, vm) {
@@ -151,8 +157,10 @@
   <script src="./assets/js/zoom-image.js"></script>
   <script src="./assets/js/prism-bash.js"></script>
   <script src="./assets/js/prism-java.min.js"></script>
+  <script src="./assets/js/docsify-plugin-toc.min.js"></script>
   <script src="./assets/js/docsify-plantuml.min.js"></script>
-  <script src="./assets/js/jx-toc.js"></script>
+
+  <!-- <script src="./assets/js/jx-toc.js"></script> -->
   <script src="./assets/js/plantuml-toc.js"></script>
   <script src="./assets/js/synchro2.min.js"></script>
   <script src="./assets/js/countable.js"></script>
