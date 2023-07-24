@@ -1,7 +1,7 @@
 # 分布式基础
 
 >     - [分布式架构由来](https://mp.weixin.qq.com/s/uv9xYgYrHWqM5acXQYFegA)
->         - [什么是分布式配置中心？](https://mp.weixin.qq.com/s/NY7_z7SpiHy7IMJglPUoMw)
+>     - [什么是分布式配置中心？](https://mp.weixin.qq.com/s/NY7_z7SpiHy7IMJglPUoMw)
 
 ## 分布式理论
 
@@ -19,6 +19,8 @@ Eureka遵循的是AP原则，即保证了高可用，失去了一执行。每台
 
 ### Paxos算法
 
+>[Paxos算法详解 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/31780743/)
+
 Paxos 算法是莱斯利·兰伯特(Leslie Lamport)1990 年提出的一种基于消息传递的、具有高容错性的一致性算法。Google Chubby 的作者 Mike Burrows 说过，世上只有一种一致性算法， 那就是 Paxos，所有其他一致性算法都是 Paxos 算法的不完整版。
 
 Paxos 算法是一种公认的晦涩难懂的算法，并且工程实现上也具有很大难度。
@@ -35,7 +37,7 @@ Paxos 算法是一种公认的晦涩难懂的算法，并且工程实现上也�
 
 一个提案的决策者(Acceptor)会存在多个，但在一个集群中提议者(Proposer)也是可能存在多个的，不同的提议者(Proposer)会提出不同的提案。
 
-#### paxos算法特点：
+#### paxos算法特点
 
 > - 没有提案被提出则不会有提案被选定。
 > - 每个提议者在提出提案时都会首先获取到一个具有全局唯一性的、递增的提案编号 N， 即在整个集群中是唯一的编号N，然后将该编号赋予其要提出的提案。（在zookeeper中就是zxid，由epoch 和xid组成）
@@ -242,7 +244,6 @@ BASE 是 Basically Available（基本可用） 、Soft-state（软状态） 和 
 - 高可用 ：生成分布式 ID 的服务要保证可用性无限接近于 100%。
 
 - 方便易用 ：拿来即用，使用方便，快速接入！
-
 
 **Snowflake(雪花算法)**
 

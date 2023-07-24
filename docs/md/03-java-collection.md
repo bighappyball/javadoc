@@ -1,47 +1,45 @@
 <!-- ## 集合 -->
 
-# 第2节：容器
+# 第3节：容器
 
-- - [HashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/HashMap.md)
-    - [HashMap](https://mp.weixin.qq.com/s/0Gf2DzuzgEx0i3mHVvhKNQ)
-
-​		  [面试官：HashMap 为什么线程不安全？](https://mp.weixin.qq.com/s/VtIpj-uuxFj5Bf6TmTJMTw)
-
-​          [万万没想到，HashMap默认容量的选择，竟然背后有这么多思考！？](https://mp.weixin.qq.com/s/ktre8-C-cP_2HZxVW5fomQ)
-
-  - [ConcurrentHashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ConcurrentHashMap.md)
-
-    - [ConcurrentHashMap & Hashtable（文末送书）](https://mp.weixin.qq.com/s/AixdbEiXf3KfE724kg2YIw)
-
-      [我就知道面试官接下来要问我 ConcurrentHashMap 底层原理了](https://mp.weixin.qq.com/s/My4P_BBXDnAGX1gh630ZKw)
-
-  - [ArrayList](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ArrayList.md)
-
-    - [ArrayList](https://mp.weixin.qq.com/s/WoGclm7SsbURGigI3Mwr3w)
-
-      [ArrayList源码解析，老哥，来一起复习一哈？](https://mp.weixin.qq.com/s/3PNWmtS-bEZgZjd9wyMiDA)
-
-  - [Vector](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/Vector.md)
-
-    -  
+>- - [HashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/HashMap.md)
+>    - [HashMap](https://mp.weixin.qq.com/s/0Gf2DzuzgEx0i3mHVvhKNQ)
+>
+>​		  [面试官：HashMap 为什么线程不安全？](https://mp.weixin.qq.com/s/VtIpj-uuxFj5Bf6TmTJMTw)
+>
+>​          [万万没想到，HashMap默认容量的选择，竟然背后有这么多思考！？](https://mp.weixin.qq.com/s/ktre8-C-cP_2HZxVW5fomQ)
+>
+>  - [ConcurrentHashMap](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ConcurrentHashMap.md)
+>
+>    - [ConcurrentHashMap & Hashtable（文末送书）](https://mp.weixin.qq.com/s/AixdbEiXf3KfE724kg2YIw)
+>
+>      [我就知道面试官接下来要问我 ConcurrentHashMap 底层原理了](https://mp.weixin.qq.com/s/My4P_BBXDnAGX1gh630ZKw)
+>
+>  - [ArrayList](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/ArrayList.md)
+>
+>    - [ArrayList](https://mp.weixin.qq.com/s/WoGclm7SsbURGigI3Mwr3w)
+>
+>      [ArrayList源码解析，老哥，来一起复习一哈？](https://mp.weixin.qq.com/s/3PNWmtS-bEZgZjd9wyMiDA)
+>
+>  - [Vector](https://github.com/AobingJava/JavaFamily/blob/master/docs/all/集合框架/Vector.md)
 
 ## ArrayList
 
-#### 自动扩容
+### 自动扩容
 
 通过一个公开的方法ensureCapacity(int minCapacity)来实现,最终是通过grow()方法完成的,数组进行扩容时，默认初始容量大小为10，会将老数组中的元素重新拷贝一份到新的数组中，每次数组容量的增长大约是其原容量的1.5倍
 
-#### remove()
+### remove()
 
 `elementData[--size] = null;` //清除该位置的引用，让GC起作用,如果不手动赋null值，除非对应的位置被其他元素覆盖，否则原来的对象就一直不会被回收
 
-#### 线程不安全
+### 线程不安全
 
-### LinkedList
+## LinkedList
 
 底层双向链表
 
-### Queue
+## Queue
 
 - Queue 是单端队列，只能从一端插入元素，另一端删除元素，实现上一般遵循 先进先出（FIFO） 规则。
 
@@ -62,13 +60,13 @@
 
 
 
-### HashMap
+## HashMap
 
-#### 底层实现
+### 底层实现
 
 **JDK1.8 之前**
 
-JDK1.8 之前 HashMap 底层是 数组和链表 结合在一起使用也就是 链表散列。HashMap 通过 key 的 hashCode 经过扰动函数处理过后得到 hash 值，然后通过 (n - 1) & hash 判断当前元素存放的位置（这里的 n 指的是数组的长度），如果当前位置存在元素的话，就判断该元素与要存入的元素的 hash 值以及 key 是否相同，如果相同的话，直接覆盖，不相同就通过拉链法解决冲突。
+JDK1.8 之前 HashMap 底层是数组和链表 结合在一起使用也就是 链表散列。HashMap 通过 key 的 hashCode 经过扰动函数处理过后得到 hash 值，然后通过 (n - 1) & hash 判断当前元素存放的位置（这里的 n 指的是数组的长度），如果当前位置存在元素的话，就判断该元素与要存入的元素的 hash 值以及 key 是否相同，如果相同的话，直接覆盖，不相同就通过拉链法解决冲突。
 
 所谓扰动函数指的就是 HashMap 的 hash 方法，使用扰动函数之后可以减少碰撞。
 
@@ -78,11 +76,11 @@ JDK1.8 之前 HashMap 底层是 数组和链表 结合在一起使用也就是 �
 
 Java8 中使用 Node，基本没有区别，都是 key，value，hash 和 next 这四个属性，不过，Node 只能用于链表的情况，红黑树的情况需要使用 TreeNode
 
-#### get()
+### get()
 
 根据指定的key值返回对应的value，该方法调用了getEntry(Object key)得到相应的entry，然后返回entry.getValue()。因此getEntry()是算法的核心。算法思想是首先通过hash()函数得到对应bucket的下标，然后依次遍历冲突链表，通过key.equals(k)方法来判断是否是要找的那个entry。
 
-#### put()
+### put()
 
 往map插入元素的时候首先通过对key hash然后与数组长度-1进行与运算((n-1)&hash)，都是2的次幂所以等同于取模，但是位运算的效率更高。找到数组中的位置之后，如果数组中没有元素直接存入，反之则判断key是否相同，key相同就覆盖，否则就会插入到链表的尾部，如果链表长度超过8，且table数组的长度不小于64时，则会转换成红黑树，最后判断数组长度是否超过默认的长度*负载因子也就是12，超过则进行扩容。
 
@@ -103,7 +101,7 @@ Java8 中使用 Node，基本没有区别，都是 key，value，hash 和 next �
 
 1.8 在扩容计算 Node 索引时，会优化（旧的hash值跟当前的数组容量按位与，如果是0，说明不用动位置； 不是0，旧索引+旧容量）
 
-#### 扩容原理
+### 扩容原理
 
 当向容器添加元素的时候，会判断当前容器的元素个数，如果大于等于阈值—即当前数组的长度小于元素乘以加载因子的值的时候，就要自动扩容啦,进行2倍扩容。
 
@@ -114,7 +112,7 @@ HashMap阈值（threshold）：阈值=容量*加载因子。默认 12。当元�
 
 **1.7**
 
-![img](../md copy/_media/analysis/netty/wps14F4.tmp.jpg)
+![img](../_media/analysis/netty/wps14F4.tmp.jpg)
 
 1.8
 
@@ -141,17 +139,17 @@ HashMap阈值（threshold）：阈值=容量*加载因子。默认 12。当元�
 
 我们首先可能会想到采用%取余的操作来实现。但是，重点来了：“取余(%)操作中如果除数是 2 的幂次则等价于与其除数减一的与(&)操作（也就是说 hash%length==hash&(length-1)的前提是 length 是 2 的 n 次方；）。” 并且 采用二进制位操作 &，相对于%能够提高运算效率，这就解释了 HashMap 的长度为什么是 2 的幂次方。
 
-#### 多线程不安全
+### 多线程不安全
 
-**HashMap 多线程操作导致死循环问题**
+**HashMap多线程操作导致死循环问题**
 
 主要原因在于并发数组扩容时链表复制使用的是头插发，并发下的 会造成元素之间会形成一个循环链表。不过，jdk 1.8 改用尾插法后解决了这个问题，但是还是会发送数据覆盖的情况
 
 [为什么HashMap会产生死循环？](https://blog.csdn.net/gupaoedu_tom/article/details/124449573)
 
-### ConcurrentHashMap
+## ConcurrentHashMap
 
-#### 1.7 分段锁
+### 1.7分段锁
 
 1.7 使用Segment+HashEntry分段锁的方式实现
 
@@ -159,7 +157,7 @@ HashMap阈值（threshold）：阈值=容量*加载因子。默认 12。当元�
 
 实际上就是相当于每个Segment都是一个HashMap，默认的Segment长度是16，也就是支持16个线程的并发写，Segment之间相互不会受到影响。
 
-put流程
+**put流程**
 
 其实发现整个流程和HashMap非常类似，只不过是先定位到具体的Segment，然后通过ReentrantLock去操作而已，后面的流程我就简化了，因为和HashMap基本上是一样的。
 
@@ -245,7 +243,7 @@ static finaclass HashEntry<K, V> {
 
 ​	
 
-#### 1.8 CAS+synchronized
+### 1.8CAS+synchronized
 
 1.8抛弃分段锁，转为用CAS+synchronized来实现，同样HashEntry改为Node，也加入了红黑树的实现。主要还是看put的流程。
 
@@ -355,13 +353,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
   }
 ```
 
-
-
- 
-
- 
-
-### HashTable
+## HashTable
 
 数据结构是数组加链表，put用synchronized
 
@@ -369,15 +361,13 @@ static class Node<K,V> implements Map.Entry<K,V> {
 
 Hashtable之所以效率低下主要是因为其实现使用了synchronized关键字对put等操作进行加锁，而synchronized关键字加锁是对整个对象进行加锁，也就是说在进行put等修改Hash表的操作时，锁住了整个Hash表，从而使得其表现的效率低下。
 
-### LinkedHashMap
+## LinkedHashMap
 
 LinkedHashMap在HashMap的基础上，采用双向链表(doubly-linked list)的形式将所有entry连接起来，这样是为保证元素的迭代顺序跟插入顺序相同
 
-### LinkedHashMap
-
 linkedHashMap特点是有序，可以按照插入的顺序或者读取的顺序排序。  
 继承关系：
-![alt 继承关系](../md copy/_media/collection/继承关系.png)   
+![alt 继承关系](../_media/collection/继承关系.png)   
 源码：
 
 ```java
@@ -486,15 +476,15 @@ linkedHashMap特点是有序，可以按照插入的顺序或者读取的顺序�
     }
 ```
 
-### TreeMap,TreeSet
+## TreeMap,TreeSet
 
 排序，TreeMap底层通过红黑树(Red-Black tree)实现
 
-### BigDecimal 
+## BigDecimal 
 
-### 总结
+## 总结
 
-#### 红黑树
+### 红黑树
 
 红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一倍。具体来说，红黑树是满足如下条件的二叉查找树(binary search tree): 
 
@@ -510,7 +500,7 @@ linkedHashMap特点是有序，可以按照插入的顺序或者读取的顺序�
 
  在树的结构发生改变时(插入或者删除操作)，往往会破坏上述条件3或条件4，需要通过调整使得查找树重新满足红黑树的约束条件
 
-#### HashMap 和 Hashtable 的区别
+### HashMap 和 Hashtable 的区别
 
 - 线程是否安全： HashMap 是非线程安全的，Hashtable 是线程安全的,
 
@@ -523,7 +513,7 @@ linkedHashMap特点是有序，可以按照插入的顺序或者读取的顺序�
 - 底层数据结构： JDK1.8 以后的 HashMap 在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为 8）（将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行数组扩容，而不是转换为红黑树）时，将链表转化为红黑树，以减少搜索时间。
 
 
-#### ConcurrentHashMap 和 Hashtable 的区别
+### ConcurrentHashMap 和 Hashtable 的区别
 
 ConcurrentHashMap 和 Hashtable 的区别主要体现在实现线程安全的方式上不同。
 
@@ -531,7 +521,7 @@ ConcurrentHashMap 和 Hashtable 的区别主要体现在实现线程安全的方
 
 - 实现线程安全的方式（重要）： ① 在 JDK1.7 的时候，ConcurrentHashMap（分段锁） 对整个桶数组进行了分割分段(Segment)，每一把锁只锁容器其中一部分数据，多线程访问容器里不同数据段的数据，就不会存在锁竞争，提高并发访问率。 到了 JDK1.8 的时候已经摒弃了 Segment 的概念，而是直接用 Node 数组+链表+红黑树的数据结构来实现，并发控制使用 synchronized 和 CAS 来操作。（JDK1.6 以后 对 synchronized 锁做了很多优化） 整个看起来就像是优化过且线程安全的 HashMap，虽然在 JDK1.8 中还能看到 Segment 的数据结构，但是已经简化了属性，只是为了兼容旧版本；② Hashtable(同一把锁) :使用 synchronized 来保证线程安全，效率非常低下。当一个线程访问同步方法时，其他线程也访问同步方法，可能会进入阻塞或轮询状态，如使用 put 添加元素，另一个线程不能使用 put 添加元素，也不能使用 get，竞争会越来越激烈效率越低。
 
-#### ArrayDeque 与 LinkedList 的区别
+### ArrayDeque 与 LinkedList 的区别
 
 - ArrayDeque 是基于可变长的数组和双指针来实现，而 LinkedList 则通过链表来实现。
 
