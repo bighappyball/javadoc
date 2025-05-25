@@ -1,0 +1,56 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.0.9">
+  <diagram name="第 1 页" id="8VrIZfOlBR3obPcIazXP">
+    <mxGraphModel dx="946" dy="525" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-2" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="80" width="610" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-3" value="HIS" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="90" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-4" value="LIS" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="90" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-5" value="PACK" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="90" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="DIsJ0sGH6j-acf_2fRYi-6" target="DIsJ0sGH6j-acf_2fRYi-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-8" value="HTTP/SQL" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DIsJ0sGH6j-acf_2fRYi-7">
+          <mxGeometry x="-0.1667" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="DIsJ0sGH6j-acf_2fRYi-6" target="DIsJ0sGH6j-acf_2fRYi-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-6" value="数据采集" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="190" width="610" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="DIsJ0sGH6j-acf_2fRYi-9" target="DIsJ0sGH6j-acf_2fRYi-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-9" value="数据清洗" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="260" width="610" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="DIsJ0sGH6j-acf_2fRYi-12" target="DIsJ0sGH6j-acf_2fRYi-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-16" value="同步" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="DIsJ0sGH6j-acf_2fRYi-15">
+          <mxGeometry x="-0.0476" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-12" value="持久化数据库" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="345" y="340" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="DIsJ0sGH6j-acf_2fRYi-13" value="ES" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="510" y="340" width="60" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
