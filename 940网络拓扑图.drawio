@@ -105,8 +105,10 @@
         <mxCell id="U-VU_U9CD3-RhORMb8It-24" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;云服务器&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.cwh_cloud_web_hosting;" vertex="1" parent="1">
           <mxGeometry x="176.25" y="430.75" width="49.8" height="45.6" as="geometry" />
         </mxCell>
-        <mxCell id="U-VU_U9CD3-RhORMb8It-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.448;entryY=0.228;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=classic;startFill=1;startArrow=classic;endFill=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-40" target="Q2KWg7Gsn7121FVP8885-21">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="U-VU_U9CD3-RhORMb8It-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startFill=1;startArrow=classic;endFill=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-40">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="409" y="210" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="U-VU_U9CD3-RhORMb8It-33" value="出站/入站" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="U-VU_U9CD3-RhORMb8It-32">
           <mxGeometry x="-0.0793" y="-2" relative="1" as="geometry">
