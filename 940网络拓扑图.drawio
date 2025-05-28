@@ -1,0 +1,99 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.0.9">
+  <diagram name="第 1 页" id="wXGnLFfdBRW-7BlORtce">
+    <mxGraphModel dx="2010" dy="656" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Q2KWg7Gsn7121FVP8885-3" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="100" width="270" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="100" width="550" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-4" value="阿里云" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="175" y="100" width="125" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-10" value="患者端(小程序/h5)" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.mobile;" vertex="1" parent="1">
+          <mxGeometry x="-140" y="140" width="25" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-11" value="医护端(小程序/h5)" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.mobile;" vertex="1" parent="1">
+          <mxGeometry x="-140" y="250.3" width="25" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-12" target="Q2KWg7Gsn7121FVP8885-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-12" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;网关&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.cloud_security_center;" vertex="1" parent="1">
+          <mxGeometry x="70" y="212" width="43.199999999999996" height="48.9" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.023;entryY=0.532;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-10" target="Q2KWg7Gsn7121FVP8885-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.046;entryY=0.532;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-11" target="Q2KWg7Gsn7121FVP8885-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-16" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;云服务器&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.cwh_cloud_web_hosting;" vertex="1" parent="1">
+          <mxGeometry x="177.7" y="213.65" width="49.8" height="45.6" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-20" value="阿里云" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="855" y="100" width="125" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-21" target="Q2KWg7Gsn7121FVP8885-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-21" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;网关&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.cloud_security_center;" vertex="1" parent="1">
+          <mxGeometry x="406.8" y="290" width="43.199999999999996" height="48.9" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.023;entryY=0.654;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-16" target="Q2KWg7Gsn7121FVP8885-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-23" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="169.3" width="260" height="131" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-24" value="DMZ" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="169.3" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-25" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="400" width="480" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-26" value="内网" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="835" y="400" width="95" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-28" value="应用服务器1" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" vertex="1" parent="1">
+          <mxGeometry x="530" y="430" width="43" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-29" value="应用服务器2" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" vertex="1" parent="1">
+          <mxGeometry x="620" y="430" width="43" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-30" value="数据库服务器1" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.database_server" vertex="1" parent="1">
+          <mxGeometry x="710" y="430" width="38" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-31" value="数据库服务器2" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.database_server" vertex="1" parent="1">
+          <mxGeometry x="789" y="430" width="38" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-34" value="HIS" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" vertex="1" parent="1">
+          <mxGeometry x="573" y="540" width="43" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-35" value="LIS" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" vertex="1" parent="1">
+          <mxGeometry x="650" y="540" width="43" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-36" value="PACK" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" vertex="1" parent="1">
+          <mxGeometry x="730" y="540" width="43" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-37" value="前置机" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.database_synchronization" vertex="1" parent="1">
+          <mxGeometry x="650" y="219" width="39" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-37">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="669" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-40" value="企业微信" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.azure.cloud" vertex="1" parent="1">
+          <mxGeometry x="125" y="420" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="Q2KWg7Gsn7121FVP8885-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.334;entryY=0.631;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-40" target="Q2KWg7Gsn7121FVP8885-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
