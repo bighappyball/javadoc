@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.1.3">
   <diagram name="第 1 页" id="wXGnLFfdBRW-7BlORtce">
-    <mxGraphModel dx="946" dy="525" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1261" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -20,7 +20,7 @@
           <mxGeometry x="148.75" y="370.75" width="157.5" height="209.25" as="geometry" />
         </mxCell>
         <mxCell id="Q2KWg7Gsn7121FVP8885-4" value="阿里云" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-          <mxGeometry x="184.02" y="370.75" width="93.75" height="30" as="geometry" />
+          <mxGeometry x="235" y="370.75" width="71.25" height="19.25" as="geometry" />
         </mxCell>
         <mxCell id="U-VU_U9CD3-RhORMb8It-28" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Q2KWg7Gsn7121FVP8885-10" target="Q2KWg7Gsn7121FVP8885-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -42,6 +42,14 @@
         </mxCell>
         <mxCell id="Q2KWg7Gsn7121FVP8885-38" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=classic;startFill=1;" parent="1" source="Q2KWg7Gsn7121FVP8885-21" target="Q2KWg7Gsn7121FVP8885-23" edge="1">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-15" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-21" target="CTEJ111BISRPczolpmMj-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-20" value="访问" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="CTEJ111BISRPczolpmMj-15">
+          <mxGeometry x="0.4323" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Q2KWg7Gsn7121FVP8885-21" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;防火墙&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=light-dark(#00188d, #a8a8ff);strokeColor=none;shape=mxgraph.alibaba_cloud.cloud_security_center;" parent="1" vertex="1">
           <mxGeometry x="390" y="211.45000000000002" width="43.199999999999996" height="48.9" as="geometry" />
@@ -75,8 +83,13 @@
             <mxPoint x="710" y="330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-5" value="代理" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="Q2KWg7Gsn7121FVP8885-39">
+          <mxGeometry x="0.1475" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="Q2KWg7Gsn7121FVP8885-40" value="企业微信API" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=light-dark(#135dbe, #bfd3ff);shape=mxgraph.azure.cloud" parent="1" vertex="1">
-          <mxGeometry x="202.5" y="167.95" width="50" height="32" as="geometry" />
+          <mxGeometry x="152.5" y="289.99999999999994" width="50" height="32" as="geometry" />
         </mxCell>
         <mxCell id="U-VU_U9CD3-RhORMb8It-7" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
           <mxGeometry x="500" y="580" width="430" height="130" as="geometry" />
@@ -99,18 +112,16 @@
         <mxCell id="U-VU_U9CD3-RhORMb8It-23" value="互联网" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
           <mxGeometry x="165" y="100" width="125" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=1;" edge="1" parent="1" source="U-VU_U9CD3-RhORMb8It-24" target="Q2KWg7Gsn7121FVP8885-40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-4" value="代理" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="CTEJ111BISRPczolpmMj-3">
+          <mxGeometry x="0.1116" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="U-VU_U9CD3-RhORMb8It-24" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;云服务器&lt;/div&gt;" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.cwh_cloud_web_hosting;" parent="1" vertex="1">
           <mxGeometry x="209.3" y="436.4" width="49.8" height="45.6" as="geometry" />
-        </mxCell>
-        <mxCell id="U-VU_U9CD3-RhORMb8It-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startFill=1;startArrow=classic;endFill=1;" parent="1" source="Q2KWg7Gsn7121FVP8885-40" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="409" y="210" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="U-VU_U9CD3-RhORMb8It-33" value="出站/入站" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="U-VU_U9CD3-RhORMb8It-32" vertex="1" connectable="0">
-          <mxGeometry x="-0.0793" y="-2" relative="1" as="geometry">
-            <mxPoint x="-1" as="offset" />
-          </mxGeometry>
         </mxCell>
         <mxCell id="U-VU_U9CD3-RhORMb8It-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.625;exitY=0.49;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="Q2KWg7Gsn7121FVP8885-37" target="Q2KWg7Gsn7121FVP8885-37" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -126,8 +137,33 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="U-VU_U9CD3-RhORMb8It-38" value="出站/入站" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="U-VU_U9CD3-RhORMb8It-37" vertex="1" connectable="0">
+        <mxCell id="U-VU_U9CD3-RhORMb8It-38" value="出站/入站&lt;div&gt;(代理)&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="U-VU_U9CD3-RhORMb8It-37" vertex="1" connectable="0">
           <mxGeometry x="-0.1992" y="-4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-6" value="微信公众号" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=light-dark(#135dbe, #bfd3ff);shape=mxgraph.azure.cloud" vertex="1" parent="1">
+          <mxGeometry x="240" y="290" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-7" value="呼叫中心" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=light-dark(#135dbe, #bfd3ff);shape=mxgraph.azure.cloud" vertex="1" parent="1">
+          <mxGeometry x="185" y="218.8" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-8" value="AI电话" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=light-dark(#135dbe, #bfd3ff);shape=mxgraph.azure.cloud" vertex="1" parent="1">
+          <mxGeometry x="202.5" y="137.3" width="50" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.9;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-21" target="CTEJ111BISRPczolpmMj-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-21" value="访问" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="CTEJ111BISRPczolpmMj-14">
+          <mxGeometry x="0.1281" y="-22" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.89;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="Q2KWg7Gsn7121FVP8885-21" target="CTEJ111BISRPczolpmMj-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CTEJ111BISRPczolpmMj-19" value="访问" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="CTEJ111BISRPczolpmMj-16">
+          <mxGeometry x="0.4416" y="20" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
